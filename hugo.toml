@@ -1,0 +1,4 @@
+baseURL = 'https://example.org/'
+languageCode = 'zh-us'
+title = '晚青'
+theme = 'archie'
