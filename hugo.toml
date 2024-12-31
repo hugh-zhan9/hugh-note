@@ -3,9 +3,8 @@ languageCode = 'zh-cn'
 title = '牧己'
 theme = 'archie'
 [params]
-	mode="auto"
+	mode="toggle"
 	useCDN=false
-	# subtitle = "Minimal and Clean [blog theme for Hugo](https://github.com/athul/archie)"
 
 [[params.social]]
 name = "Running"
