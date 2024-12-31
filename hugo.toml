@@ -11,6 +11,16 @@ name = "Running"
 icon = "battery-charging"
 url = "https://running.zhangyk.space"
 
+[[params.social]]
+name = "Jellyfin"
+icon = "film"
+url = "https://ipv4.zhangyk.space:8096"
+
+[[params.social]]
+name = "Image"
+icon = "image"
+url = "https://ipv4.zhangyk.space:9089"
+
 [[menu.main]]
 name = "Home"
 url = "/"
