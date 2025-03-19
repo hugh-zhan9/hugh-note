@@ -21,14 +21,11 @@ name = "Image"
 icon = "image"
 url = "https://ipv4.zhangyk.space:9089"
 
-<<<<<<< HEAD
-=======
 [[params.social]]
 name = "PengYouQuan"
 icon = "aperture"
 url = "https://ipv4.zhangyk.space:3000"
 
->>>>>>> e12cedad996208e570efe4805ddea58e1bd3c86a
 [[menu.main]]
 name = "Home"
 url = "/"
