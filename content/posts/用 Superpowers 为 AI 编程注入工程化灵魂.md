@@ -3,7 +3,7 @@ title: "用 Superpowers 为 AI 编程注入工程化灵魂"
 draft: false
 date: 2026-03-24T18:34:07+08:00
 description: "本文介绍了 Superpowers 如何通过工程化技能流程，让 AI 编程从盲目生成走向稳定、可控、可交付。"
-tags: [杂记]
+tags: ["AI 编程", 工程化, Superpowers, 技术指南]
 ---
 
 随着 Codex、Claude Code 等 AI 编程工具的普及，我们似乎进入了“动动嘴皮子就能写代码”的时代。然而，当项目复杂度稍微上升，你可能就会遇到这样的噩梦：AI 开始胡乱修改文件、陷入死循环报错（修复一个 Bug 又引发三个）、甚至完全偏离最初的需求。
