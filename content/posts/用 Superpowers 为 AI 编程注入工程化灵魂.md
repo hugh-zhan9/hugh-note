@@ -1,8 +1,8 @@
 ---
-title: "2026-03-24 18:34"
+title: "用 Superpowers 为 AI 编程注入工程化灵魂"
 draft: false
 date: 2026-03-24T18:34:07+08:00
-description: "随着 Codex、Claude Code 等 AI 编程工具的普及，我们似乎进入了“动动嘴皮子就能写代码”的时代。然而，"
+description: "本文介绍了 Superpowers 如何通过工程化技能流程，让 AI 编程从盲目生成走向稳定、可控、可交付。"
 tags: [杂记]
 ---
 
