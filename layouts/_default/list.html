@@ -1,0 +1,21 @@
+{{ define "main" }}
+{{ if isset .Data "Term" }}
+<h1>Entries tagged - "{{ .Data.Term }}"</h1>
+{{ else if eq .Section "posts" }}
+<h1 class="page-title">All articles</h1>
+{{ else if eq .Section "crazy-talk" }}
+<h1 class="page-title">疯言疯语</h1>
+{{ else }}
+<h1 class="page-title">{{ .Title }}</h1>
+{{ end }}
+
+<ul class="posts">
+	{{- range .Data.Pages -}}
+		{{- if (not (in (.Site.Params.excludedTypes | default (slice "page")) .Type)) -}}
+		<li class="post">
+			<a href="{{ .RelPermalink }}">{{ .Title }}</a> <span class="meta">{{ dateFormat ":date_medium" .Date }}{{ if .Draft }} <span class="draft-label">DRAFT</span> {{ end }}</span>
+		</li>
+		{{- end -}}
+	{{- end -}}
+</ul>
+{{ end }}

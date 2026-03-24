@@ -37,6 +37,12 @@ url = "/posts"
 weight = 2
 
 [[menu.main]]
+name = "疯言疯语"
+url = "/crazy-talk/"
+weight = 3
+
+[[menu.main]]
 name = "Tags"
 url = "/tags"
-weight = 3
+weight = 4
+

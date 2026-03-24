@@ -1,0 +1,22 @@
+{{ define "main" }}
+<main class="list">
+	<h1 class="page-title">疯言疯语</h1>
+	{{ with .Content }}
+	<section class="site-description">
+		{{ . }}
+	</section>
+	{{ end }}
+
+	{{ range .Pages.ByDate.Reverse }}
+	<article class="post">
+		<div class="title">
+			<h2 class="title">{{ .Title }}</h2>
+			<div class="meta">{{ dateFormat ":date_medium" .Date }}{{ if .Draft }} <span class="draft-label">DRAFT</span> {{ end }}</div>
+		</div>
+		<section class="body">
+			{{ .Content }}
+		</section>
+	</article>
+	{{ end }}
+</main>
+{{ end }}
