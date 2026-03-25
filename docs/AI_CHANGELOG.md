@@ -42,3 +42,24 @@
 - `/Users/zhangyukun/.codex/skills/crazy-talk-publisher/scripts/test_publish_crazy_talk.py`
 - `docs/AI_CHANGELOG.md`
 ----------------------------------------
+## [2026-03-24 18:30] [Feature]
+- **Change**: 新增 blog-post-publisher skill，支持按文件名从 Obsidian inbox 发布到 content/posts，或按文本直发创建符合 posts 格式的文章，并自动 commit/push
+- **Risk Analysis**: 主要风险是自动发布行为依赖输入 payload 语义，若用户输入与文件名重名会优先按文件发布；已通过测试覆盖文件发布、文本直发、仓库发现缓存和 git 推送流程。另一个风险是 description 取正文首行，若首行包含特殊字符可能影响展示，当前已做双引号转义。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `/Users/zhangyukun/.codex/skills/blog-post-publisher/SKILL.md`
+- `/Users/zhangyukun/.codex/skills/blog-post-publisher/agents/openai.yaml`
+- `/Users/zhangyukun/.codex/skills/blog-post-publisher/scripts/publish_blog_post.py`
+- `/Users/zhangyukun/.codex/skills/blog-post-publisher/scripts/test_publish_blog_post.py`
+- `docs/AI_CHANGELOG.md`
+----------------------------------------
+## [2026-03-24 18:38] [Refactor]
+- **Change**: 调整 blog-post-publisher：直发正文必须显式标题，缺失时报错提示；description 改为按正文自动提炼一句摘要
+- **Risk Analysis**: 主要风险是更严格的标题校验会阻止此前可直接发布的无标题文本；这符合新需求但会改变旧行为。description 提炼使用首句优先策略，若正文缺少句号会按长度截断，可能与用户期望摘要不完全一致。已补充并通过 8 条回归测试。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `/Users/zhangyukun/.codex/skills/blog-post-publisher/scripts/publish_blog_post.py`
+- `/Users/zhangyukun/.codex/skills/blog-post-publisher/scripts/test_publish_blog_post.py`
+- `/Users/zhangyukun/.codex/skills/blog-post-publisher/SKILL.md`
+- `docs/AI_CHANGELOG.md`
+----------------------------------------

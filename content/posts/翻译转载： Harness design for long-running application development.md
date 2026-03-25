@@ -111,7 +111,7 @@ Before each sprint, the generator and evaluator negotiated a sprint contract: ag
 Communication was handled via files: one agent would write a file, another agent would read it and respond either within that file or with a new file that the previous agent would read in turn. The generator then built against the agreed-upon contract before handing the work off to QA. This kept the work faithful to the spec without over-specifying implementation too early.
 通信通过文件进行：一个代理写入一个文件，另一个代理读取该文件并做出响应，响应内容可以是写入该文件本身，也可以是写入一个新文件，供之前的代理读取。生成器随后根据约定的协议进行构建，最后将工作成果交付给质量保证团队。这样既保证了工作成果忠实于规范，又避免了过早地过度定义实现细节。
 
-### Running the harness  ### 运行线束
+### Running the harness / 运行线束
 
 For the first version of this harness, I used Claude Opus 4.5, running user prompts against both the full harness and a single-agent system for comparison. I used Opus 4.5 since this was our best coding model when I began these experiments.
 在这个测试框架的第一个版本中，我使用了 Claude Opus 4.5，并针对完整的测试框架和单代理系统运行用户提示以进行比较。之所以选择 Opus 4.5，是因为在开始这些实验时，这是我们当时最好的编码模型。
