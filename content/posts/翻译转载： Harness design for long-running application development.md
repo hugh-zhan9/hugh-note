@@ -54,12 +54,12 @@ With this in mind, I wrote four grading criteria that I gave to both the generat
 基于此，我编写了四项评分标准，并在提示中将其提供给了生成器和评估器：
 
 *   **Design quality:** Does the design feel like a coherent whole rather than a collection of parts? Strong work here means the colors, typography, layout, imagery, and other details combine to create a distinct mood and identity.
-*   **Originality:** Is there evidence of custom decisions, or is this template layouts, library defaults, and AI-generated patterns? A human designer should recognize deliberate creative choices. Unmodified stock components—or telltale signs of AI generation like purple gradients over white cards—fail here.
-*   **Craft:** Technical execution: typography hierarchy, spacing consistency, color harmony, contrast ratios. This is a competence check rather than a creativity check. Most reasonable implementations do fine here by default; failing means broken fundamentals.
-*   **Functionality:** Usability independent of aesthetics. Can users understand what the interface does, find primary actions, and complete tasks without guessing?
 * **设计质量：** 设计是否感觉像一个连贯的整体，而不是各个部分的简单堆砌？优秀的设计意味着色彩、字体、布局、图像和其他细节能够完美融合，营造出独特的氛围和风格。
+*   **Originality:** Is there evidence of custom decisions, or is this template layouts, library defaults, and AI-generated patterns? A human designer should recognize deliberate creative choices. Unmodified stock components—or telltale signs of AI generation like purple gradients over white cards—fail here.
 * **原创性：** 是否有明显的定制化设计痕迹，还是使用了模板布局、库默认设置或人工智能生成的图案？专业的设计师应该能够识别出精心设计的创意。未经修改的现成组件，或者像白色卡片上叠加紫色渐变这样的人工智能生成痕迹，都无法通过这项测试。
+*   **Craft:** Technical execution: typography hierarchy, spacing consistency, color harmony, contrast ratios. This is a competence check rather than a creativity check. Most reasonable implementations do fine here by default; failing means broken fundamentals.
 * **工艺：** 技术执行：字体层级、间距一致性、色彩和谐、对比度。这更多的是一项能力测试，而非创意测试。大多数合理的实现方式都能做到这一点；如果失败，则意味着基本功出现了问题。
+*   **Functionality:** Usability independent of aesthetics. Can users understand what the interface does, find primary actions, and complete tasks without guessing?
 * **功能性：** 可用性，与美观无关。用户能否理解界面的功能，找到主要操作，并无需猜测即可完成任务？
 
 I emphasized design quality and originality over craft and functionality. Claude already scored well on craft and functionality by default, as the required technical competence tended to come naturally to the model. But on design and originality, Claude often produced outputs that were bland at best. The criteria explicitly penalized highly generic “AI slop” patterns, and by weighting design and originality more heavily it pushed the model toward more aesthetic risk-taking.  
@@ -103,7 +103,7 @@ For this work I built on the foundation from the original harness with a three-a
 **生成器：** 之前框架中采用的一次只开发一个功能的方法在范围管理方面效果很好。我在这里也采用了类似的模型，指示生成器以迭代的方式工作，每次从规范中选取一个功能。每个迭代都使用 React、Vite、FastAPI 和 SQLite（后来是 PostgreSQL）技术栈来实现应用程序，并指示生成器在每个迭代结束时进行自我评估，然后再移交给 QA。它还使用了 Git 进行版本控制。
 
 **Evaluator:** Applications from earlier harnesses often looked impressive but still had real bugs when you actually tried to use them. To catch these, the evaluator used the Playwright MCP to click through the running application the way a user would, testing UI features, API endpoints, and database states. It then graded each sprint against both the bugs it had found and a set of criteria modeled on the frontend experiment, adapted here to cover product depth, functionality, visual design, and code quality. Each criterion had a hard threshold, and if any one fell below it, the sprint failed and the generator got detailed feedback on what went wrong.  
-**评估员：**早期框架中的应用程序通常看起来很棒，但实际使用时仍然存在一些实际的缺陷。为了发现这些问题，评估员使用 Playwright MCP 以用户的方式点击运行中的应用程序，测试 UI 功能、API 端点和数据库状态。然后，评估员根据发现的缺陷以及一套基于前端实验构建的标准对每个迭代进行评分。这套标准经过调整，涵盖产品深度、功能、视觉设计和代码质量。每个标准都有一个硬性阈值，如果任何一项低于该阈值，则该迭代失败，生成器将收到关于出错原因的详细反馈。
+**评估员：** 早期框架中的应用程序通常看起来很棒，但实际使用时仍然存在一些实际的缺陷。为了发现这些问题，评估员使用 Playwright MCP 以用户的方式点击运行中的应用程序，测试 UI 功能、API 端点和数据库状态。然后，评估员根据发现的缺陷以及一套基于前端实验构建的标准对每个迭代进行评分。这套标准经过调整，涵盖产品深度、功能、视觉设计和代码质量。每个标准都有一个硬性阈值，如果任何一项低于该阈值，则该迭代失败，生成器将收到关于出错原因的详细反馈。
 
 Before each sprint, the generator and evaluator negotiated a sprint contract: agreeing on what "done" looked like for that chunk of work before any code was written. This existed because the product spec was intentionally high-level, and I wanted a step to bridge the gap between user stories and testable implementation. The generator proposed what it would build and how success would be verified, and the evaluator reviewed that proposal to make sure the generator was building the right thing. The two iterated until they agreed.  
 每次迭代开始前，开发者和评估者都会协商一份迭代契约：在编写任何代码之前，就该部分工作的“完成”标准达成一致。之所以这样做，是因为产品规格说明有意写得比较概括，而我希望通过这一步骤来弥合用户故事和可测试实现之间的差距。开发者提出要构建的内容以及如何验证成功，评估者则审查该提案，以确保开发者构建的内容是正确的。双方反复沟通，直到达成一致。
@@ -119,7 +119,7 @@ For the first version of this harness, I used Claude Opus 4.5, running user prom
 I wrote the following prompt to generate a retro video game maker:  
 我编写了以下提示，以生成一个复古视频游戏制作工具：
 
-> _Create a 2D retro game maker with features including a level editor, sprite editor, entity behaviors, and a playable test mode._
+> _Create a 2D retro game maker with features including a level editor, sprite editor, entity behaviors, and a playable test mode._  
 > _创建一个包含关卡编辑器、精灵编辑器、实体行为和可玩测试模式等功能的 2D 复古游戏制作工具。_
 
 The table below shows the harness type, length it ran for, and the total cost.  
@@ -163,7 +163,11 @@ Reading through the logs, it was clear that the evaluator kept the implementatio
 | User can select and delete placed entity spawn points | **FAIL** — Delete key handler at `LevelEditor.tsx:892` requires both `selection` and `selectedEntityId`to be set, but clicking an entity only sets `selectedEntityId`. Condition should be `selection || (selectedEntityId && activeLayer === 'entity')`. |
 | User can reorder animation frames via API | **FAIL** — `PUT /frames/reorder` route defined after `/{frame_id}` routes. FastAPI matches 'r`eorder`' as a frame_id integer and returns 422: "unable to parse string as an integer." |
 
-| **合同标准** | **评估者发现** | | --- | --- | | 矩形填充工具允许通过点击拖动来用选定的图块填充矩形区域 | **失败** — 该工具仅将图块放置在拖动的起点/终点，而不是填充区域。`fillRectangle` 函数存在，但在鼠标抬起时未正确触发。 | | 用户可以选择并删除已放置的实体生成点 | **失败** — `LevelEditor.tsx:892` 处的删除键处理程序需要同时设置 `selection` 和 `selectedEntityId`，但点击实体只会设置 `selectedEntityId`。条件应为 `selection || (selectedEntityId && activeLayer === 'entity')`。 | | 用户可以通过 API 重新排列动画帧 | **失败** — `PUT /frames/reorder` 路由定义在 `/{frame_id}` 路由之后。 FastAPI 将 'r`eorder`' 匹配为 frame_id 整数，并返回 422：“无法将字符串解析为整数。” |
+| **合同标准** | **评估者发现** |
+| --- | --- |
+| 矩形填充工具允许通过点击拖动来用选定的图块填充矩形区域 | **失败** — 该工具仅将图块放置在拖动的起点/终点，而不是填充区域。`fillRectangle` 函数存在，但在鼠标抬起时未正确触发。 |
+| 用户可以选择并删除已放置的实体生成点 | **失败** — `LevelEditor.tsx:892` 处的删除键处理程序需要同时设置 `selection` 和 `selectedEntityId`，但点击实体只会设置 `selectedEntityId`。条件应为 `selection || (selectedEntityId && activeLayer === 'entity')`。 |
+| 用户可以通过 API 重新排列动画帧 | **失败** — `PUT /frames/reorder` 路由定义在 `/{frame_id}` 路由之后。 FastAPI 将 'r`eorder`' 匹配为 frame_id 整数，并返回 422：“无法将字符串解析为整数。” |
 
 Getting the evaluator to perform at this level took work. Out of the box, Claude is a poor QA agent. In early runs, I watched it identify legitimate issues, then talk itself into deciding they weren't a big deal and approve the work anyway. It also tended to test superficially, rather than probing edge cases, so more subtle bugs often slipped through. The tuning loop was to read the evaluator's logs, find examples where its judgment diverged from mine, and update the QAs prompt to solve for those issues. It took several rounds of this development loop before the evaluator was grading in a way that I found reasonable. Even then, the harness output showed the limits of the model’s QAing capabilities: small layout issues, interactions that felt unintuitive in places, and undiscovered bugs in more deeply nested features that the evaluator hadn't exercised thoroughly. There was clearly more verification headroom to capture with further tuning. But compared to the solo run, where the central feature of the application simply didn't work, the lift was obvious.  
 要让评估器达到这个水平需要付出很多努力。Claude 本身并不是一个合格的质量保证代理。在早期运行中，我发现它虽然识别出了合理的问题，但却会自我安慰，认为这些问题无关紧要，最终还是批准了工作。它也倾向于进行表面测试，而不是深入探究各种极端情况，因此一些更隐蔽的 bug 常常被忽略。调整流程是读取评估器的日志，找出它判断与我不同的例子，并更新质量保证提示以解决这些问题。经过几轮这样的开发循环，评估器的评分方式才最终达到我认可的合理水平。即便如此，测试结果仍然显示出该模型质量保证能力的局限性：一些小的布局问题、某些地方交互体验不够直观，以及评估器尚未彻底测试的更深层嵌套功能中存在的未发现 bug。显然，通过进一步的调整，还有更大的验证空间。但与应用程序核心功能根本无法正常工作的单独运行相比，提升是显而易见的。
@@ -201,7 +205,7 @@ Alongside the structural simplification, I also added prompting to improve how t
 To put the updated harness to the test, I used the following prompt to generate a Digital Audio Workstation (DAW), a music production program for composing, recording, and mixing songs:  
 为了测试更新后的设备，我使用以下提示符生成了一个数字音频工作站 (DAW)，这是一个用于作曲、录音和混音的音乐制作程序：
 
-> _Build a fully featured DAW in the browser using the Web Audio API._
+> _Build a fully featured DAW in the browser using the Web Audio API._  
 > _使用 Web Audio API 在浏览器中构建功能齐全的数字音频工作站 (DAW)。_
 
 The run was still lengthy and expensive, at about 4 hours and $124 in token costs.  
@@ -220,6 +224,7 @@ Most of the time went to the builder, which ran coherently for over two hours wi
 |Build (Round 3)|10.9 min|$5.88|
 |QA (Round 3) | 9.6 min|$4.06|
 |**Total V2 Harness**|**3 hr 50 min**|**$124.70**|
+  
 
 |**代理及阶段**|**持续时间**|**成本**|
 |-----|----|----|
@@ -238,23 +243,18 @@ As with the previous harness, the planner expanded the one-line prompt into a fu
 That being said, the QA agent still caught real gaps. In its first-round feedback, it noted:  
 尽管如此，质检人员还是发现了一些实际问题。在第一轮反馈中，它指出：
 
-> This is a strong app with excellent design fidelity, solid AI agent, and good backend. The main failure point is Feature Completeness — while the app looks impressive and the AI integration works well, several core DAW features are display-only without interactive depth: clips can't be dragged/moved on the timeline, there are no instrument UI panels (synth knobs, drum pads), and no visual effect editors (EQ curves, compressor meters). These aren't edge cases — they're the core interactions that make a DAW usable, and the spec explicitly calls for them.
+> This is a strong app with excellent design fidelity, solid AI agent, and good backend. The main failure point is Feature Completeness — while the app looks impressive and the AI integration works well, several core DAW features are display-only without interactive depth: clips can't be dragged/moved on the timeline, there are no instrument UI panels (synth knobs, drum pads), and no visual effect editors (EQ curves, compressor meters). These aren't edge cases — they're the core interactions that make a DAW usable, and the spec explicitly calls for them.  
 > 这款应用功能强大，设计精良，AI 代理稳定可靠，后端也相当出色。其主要不足之处在于功能完整性——尽管应用界面美观，AI 集成也运行良好，但一些核心的 DAW 功能仅供显示，缺乏交互深度：片段无法在时间线上拖拽/移动，没有乐器 UI 面板（合成器旋钮、鼓垫），也没有可视化效果编辑器（均衡器曲线、压缩器电平表）。这些并非个别情况——它们是 DAW 可用的核心交互功能，规范中也明确要求具备这些功能。
 
 In its second round feedback, it again caught several functionality gaps:  
 在第二轮反馈中，它再次发现了一些功能上的不足：
 
-> Remaining gaps:
-> 
+> Remaining gaps / 剩余缺陷:
 > - Audio recording is still stub-only (button toggles but no mic capture)
-> 
+> - 音频录制功能仍然很简陋（按钮可以切换，但没有麦克风录制） 
 > - Clip resize by edge drag and clip split not implemented
-> 
+> - 边缘拖动调整片段大小和片段分割功能尚未实现 
 > - Effect visualizations are numeric sliders, not graphical (no EQ curve)
-
-> 剩余缺陷： 
->  - 音频录制功能仍然很简陋（按钮可以切换，但没有麦克风录制） 
->  - 边缘拖动调整片段大小和片段分割功能尚未实现 
 > - 效果可视化为数值滑块，而非图形（没有均衡器曲线）
 
 The generator was still liable to miss details or stub features when left to its own devices, and the QA still added value in catching those last mile issues for the generator to fix.  
@@ -316,14 +316,14 @@ User Stories: As a user, I want to:
 用户故事：作为用户，我希望：
 
 - Create a new game project with a name and description, so that I can begin designing my game
-- See all my existing projects displayed as visual cards showing the project name, last modified date, and a thumbnail preview, so that I can quickly find and continue my work
-- Open any project to enter the full game editor workspace, so that I can work on my game
-- Delete projects I no longer need, with a confirmation dialog to prevent accidents, so that I can keep my workspace organized
-- Duplicate an existing project as a starting point for a new game, so that I can reuse my previous work
 - 创建一个新的游戏项目，并添加名称和描述，以便开始游戏设计。
+- See all my existing projects displayed as visual cards showing the project name, last modified date, and a thumbnail preview, so that I can quickly find and continue my work
 - 查看所有现有项目，以卡片形式呈现，显示项目名称、最后修改日期和缩略图预览，方便快速查找并继续工作。
+- Open any project to enter the full game editor workspace, so that I can work on my game
 - 打开任意项目即可进入完整的游戏编辑器工作区，开始游戏开发。
+- Delete projects I no longer need, with a confirmation dialog to prevent accidents, so that I can keep my workspace organized
 - 删除不再需要的项目，并弹出确认对话框以防止误操作，保持工作区整洁有序。
+- Duplicate an existing project as a starting point for a new game, so that I can reuse my previous work
 - 复制现有项目作为新游戏的起点，以便重复利用之前的工作成果。
 
 Project Data Model: Each project contains:  
