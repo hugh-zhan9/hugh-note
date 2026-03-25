@@ -9,14 +9,15 @@
 <h1 class="page-title">{{ .Title }}</h1>
 {{ end }}
 
-{{- range $index, $page := .Data.Pages -}}
-	{{- if (not (in (.Site.Params.excludedTypes | default (slice "page")) $page.Type)) -}}
-	<div class="post-item">
-		<a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a> <span class="meta">{{ dateFormat ":date_medium" $page.Date }}{{ if $page.Draft }} <span class="draft-label">DRAFT</span> {{ end }}</span>
-	</div>
-	{{- if not (eq $index (sub (len $.Data.Pages) 1)) -}}
-	<hr class="post-divider">
-	{{- end -}}
-	{{- end -}}
+{{- $pages := .Data.Pages -}}
+{{- range $index, $page := $pages -}}
+{{- if (not (in (.Site.Params.excludedTypes | default (slice "page")) $page.Type)) -}}
+<div class="post-item">
+	<a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a> <span class="meta">{{ dateFormat ":date_medium" $page.Date }}{{ if $page.Draft }} <span class="draft-label">DRAFT</span> {{ end }}</span>
+</div>
+{{- if ne $index (sub (len $pages) 1) -}}
+<hr>
+{{- end -}}
+{{- end -}}
 {{- end -}}
 {{ end }}
