@@ -1,0 +1,15 @@
+{{- $img := .Page.Resources.GetMatch .Destination -}}
+{{- if $img -}}
+  {{- $optimized := $img.Resize "800x webp" -}}
+  <figure>
+    <img src="{{ $optimized.RelPermalink }}" 
+         width="{{ $optimized.Width }}" 
+         height="{{ $optimized.Height }}" 
+         alt="{{ .Text }}" 
+         loading="lazy" 
+         style="max-width: 100%; height: auto;">
+    {{- with .Title -}}<figcaption>{{ . }}</figcaption>{{- end -}}
+  </figure>
+{{- else -}}
+  <img src="{{ .Destination | safeURL }}" alt="{{ .Text }}" loading="lazy" style="max-width: 100%; height: auto;">
+{{- end -}}
