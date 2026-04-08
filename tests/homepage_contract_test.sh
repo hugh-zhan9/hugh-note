@@ -41,6 +41,8 @@ assert_contains "$ROOT_DIR/layouts/index.html" 'data-crazy-talk-item'
 assert_contains "$ROOT_DIR/layouts/index.html" '/blog/'
 assert_contains "$ROOT_DIR/layouts/index.html" 'homepage-running-cell level-0'
 assert_contains "$ROOT_DIR/layouts/index.html" '0.0 / 150 km'
+assert_contains "$ROOT_DIR/layouts/index.html" 'data-homepage-theme="light"'
+assert_contains "$ROOT_DIR/layouts/index.html" 'localStorage.getItem("theme-storage")'
 
 assert_contains "$ROOT_DIR/layouts/blog/list.html" '.Site.RegularPages'
 assert_contains "$ROOT_DIR/layouts/blog/list.html" 'Read more ⟶'
@@ -52,6 +54,7 @@ assert_contains "$ROOT_DIR/static/js/homepage.js" 'theme-storage'
 assert_contains "$ROOT_DIR/static/js/homepage.js" 'data-crazy-talk-item'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" '.homepage-grid'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" '[data-homepage-theme="light"]'
-assert_contains "$ROOT_DIR/assets/css/homepage.css" 'grid-template-columns: repeat(7, 1.05rem)'
+assert_contains "$ROOT_DIR/assets/css/homepage.css" 'grid-template-columns: repeat(7, 0.98rem)'
+assert_contains "$ROOT_DIR/assets/css/homepage.css" 'border-radius: 0.85rem'
 
 echo "homepage 改造契约检查通过"

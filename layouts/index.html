@@ -1,7 +1,17 @@
 <!DOCTYPE html>
 <html>
 	{{ partial "header.html" . }}
-	<body class="homepage-enabled">
+	<body class="homepage-enabled" data-homepage-theme="light">
+		<script>
+			(function () {
+				try {
+					var savedTheme = localStorage.getItem("theme-storage") || "light";
+					document.body.setAttribute("data-homepage-theme", savedTheme);
+				} catch (error) {
+					document.body.setAttribute("data-homepage-theme", "light");
+				}
+			})();
+		</script>
 		<div class="content">
 			{{ partial "head.html" . }}
 

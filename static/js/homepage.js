@@ -57,6 +57,10 @@
       return `${date.getFullYear()} 年 ${date.getMonth() + 1} 月`;
     }
 
+    function buildEmptyMonthlyStats(referenceDate) {
+      return buildMonthlyRunningStats([], referenceDate);
+    }
+
     function createRunningDayCell(distanceKm, title) {
       const cell = document.createElement("span");
       let level = "level-0";
@@ -186,16 +190,18 @@
     }
 
     function renderRunningStats(stats) {
+      const safeTotalKm = Number.isFinite(stats.totalKm) ? stats.totalKm : 0;
+
       runningMonth.textContent = stats.label;
-      runningValue.textContent = `${stats.totalKm.toFixed(1)} / ${RUNNING_TARGET_KM} km`;
+      runningValue.textContent = `${safeTotalKm.toFixed(1)} / ${RUNNING_TARGET_KM} km`;
       runningStatus.textContent =
-        stats.totalKm >= RUNNING_TARGET_KM
+        safeTotalKm >= RUNNING_TARGET_KM
           ? "本月目标已达成，继续把热力格点亮。"
           : `距离本月 ${RUNNING_TARGET_KM} km 目标还差 ${Math.max(
-              RUNNING_TARGET_KM - stats.totalKm,
+              RUNNING_TARGET_KM - safeTotalKm,
               0
             ).toFixed(1)} km。`;
-      runningProgress.style.width = `${Math.min((stats.totalKm / RUNNING_TARGET_KM) * 100, 100)}%`;
+      runningProgress.style.width = `${Math.min((safeTotalKm / RUNNING_TARGET_KM) * 100, 100)}%`;
       runningGrid.innerHTML = "";
 
       stats.days.forEach((entry) => {
@@ -207,11 +213,10 @@
       });
     }
 
-    function renderRunningError() {
-      runningMonth.textContent = formatMonthLabel(new Date());
-      runningValue.textContent = `0.0 / ${RUNNING_TARGET_KM} km`;
-      runningStatus.textContent = "这个月暂时还没有跑步记录，或者暂时无法同步 Running 数据。";
-      runningProgress.style.width = "0%";
+    function renderRunningFallback(message) {
+      const fallbackStats = buildEmptyMonthlyStats(new Date());
+      renderRunningStats(fallbackStats);
+      runningStatus.textContent = message;
     }
 
     async function initRunningPanel() {
@@ -225,7 +230,7 @@
         renderRunningStats(monthlyStats);
       } catch (error) {
         console.error(error);
-        renderRunningError();
+        renderRunningFallback("这个月暂时还没有跑步记录，或者暂时无法同步 Running 数据。");
       }
     }
 

@@ -61,3 +61,13 @@ content/crazy-talk/2026-04-01.md
 - `static/js/homepage.js`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-08 15:12] [Bugfix]
+- **Change**: 修复首页主题同步与跑步空数据回退，并为入口按钮补充圆角样式
+- **Risk Analysis**: 风险主要在首页 CSS 变量和运行区回退逻辑。若主题切换脚本与主题插件执行时序再次变化，首页深浅色仍可能出现短暂闪动；跑步数据源结构若未来变化，仍会走 0 公里回退，但至少不会再出现缺格或 -- 文案。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `layouts/index.html`
+- `assets/css/homepage.css`
+- `static/js/homepage.js`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
