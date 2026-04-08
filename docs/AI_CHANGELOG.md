@@ -104,3 +104,11 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-08 15:44] [Bugfix]
+- **Change**: 隐藏首页跑步热力图底部横向滚动条视觉
+- **Risk Analysis**: 风险很低，仅为 CSS 视觉调整。保留了横向滚动能力但隐藏了滚动条，个别浏览器如果不支持对应属性，也只是继续显示滚动条，不影响数据展示。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------

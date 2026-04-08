@@ -288,7 +288,12 @@ body.homepage-enabled .homepage-running-grid {
   justify-content: flex-start;
   max-width: 100%;
   overflow-x: auto;
-  padding-bottom: 0.1rem;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+body.homepage-enabled .homepage-running-grid::-webkit-scrollbar {
+  display: none;
 }
 
 body.homepage-enabled .homepage-running-empty {

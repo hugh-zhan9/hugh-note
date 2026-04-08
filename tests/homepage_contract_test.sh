@@ -63,5 +63,6 @@ assert_contains "$ROOT_DIR/assets/css/homepage.css" 'height: 0.56rem'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" 'box-shadow: inset 0 0 0 1px'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" 'grid-auto-flow: column'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" '#9be9a8'
+assert_contains "$ROOT_DIR/assets/css/homepage.css" 'scrollbar-width: none'
 
 echo "homepage 改造契约检查通过"
