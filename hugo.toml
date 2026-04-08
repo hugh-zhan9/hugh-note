@@ -2,14 +2,18 @@ baseURL = 'https://hugh-zhan9.github.io/'
 languageCode = 'zh-cn'
 title = '牧己'
 theme = 'archie'
+enableGitInfo = true
 [params]
 	mode="toggle"
 	useCDN=false
+	mainSections = ["posts", "crazy-talk"]
+	customCSS = ["css/homepage.css"]
+	customJS = ["js/homepage.js"]
 
 [[params.social]]
 name = "Running"
 icon = "battery-charging"
-url = "https://running.zhangyk.space"
+url = "https://hugh-zhan9.github.io/running/"
 
 [[params.social]]
 name = "Jellyfin"
@@ -32,8 +36,8 @@ url = "/"
 weight = 1
 
 [[menu.main]]
-name = "All posts"
-url = "/posts"
+name = "Blog"
+url = "/blog/"
 weight = 2
 
 [[menu.main]]
@@ -45,4 +49,3 @@ weight = 3
 name = "Tags"
 url = "/tags"
 weight = 4
-
