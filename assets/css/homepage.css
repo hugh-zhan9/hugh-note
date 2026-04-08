@@ -10,7 +10,7 @@ body.homepage-enabled {
   --homepage-interactive-bg: rgba(255, 255, 255, 0.3);
   --homepage-interactive-hover-bg: rgba(208, 143, 56, 0.16);
   --homepage-interactive-hover-text: #17191d;
-  --homepage-cell-base: #ebe1cf;
+  --homepage-cell-base: #ffffff;
   --homepage-cell-border: rgba(38, 33, 26, 0.08);
   --homepage-progress-track: #d9ccb8;
   --homepage-shadow: rgba(45, 31, 12, 0.08);
@@ -32,7 +32,7 @@ body.homepage-enabled[data-homepage-theme="light"] {
   --homepage-interactive-bg: rgba(255, 255, 255, 0.3);
   --homepage-interactive-hover-bg: rgba(208, 143, 56, 0.16);
   --homepage-interactive-hover-text: #17191d;
-  --homepage-cell-base: #ebe1cf;
+  --homepage-cell-base: #ffffff;
   --homepage-cell-border: rgba(38, 33, 26, 0.08);
   --homepage-progress-track: #d9ccb8;
   --homepage-shadow: rgba(45, 31, 12, 0.08);
@@ -53,7 +53,7 @@ body.homepage-enabled[data-homepage-theme="dark"] {
   --homepage-interactive-bg: rgba(255, 255, 255, 0.02);
   --homepage-interactive-hover-bg: rgba(216, 180, 106, 0.16);
   --homepage-interactive-hover-text: #17191d;
-  --homepage-cell-base: #232832;
+  --homepage-cell-base: #161b22;
   --homepage-cell-border: rgba(255, 255, 255, 0.06);
   --homepage-progress-track: #1e2229;
   --homepage-shadow: rgba(0, 0, 0, 0.28);
@@ -243,17 +243,17 @@ body.homepage-enabled .homepage-running-cell {
 
 body.homepage-enabled .homepage-heatmap-cell.level-1,
 body.homepage-enabled .homepage-running-cell.level-1 {
-  background: #69593c;
+  background: #9be9a8;
 }
 
 body.homepage-enabled .homepage-heatmap-cell.level-2,
 body.homepage-enabled .homepage-running-cell.level-2 {
-  background: #af8a4e;
+  background: #40c463;
 }
 
 body.homepage-enabled .homepage-heatmap-cell.level-3,
 body.homepage-enabled .homepage-running-cell.level-3 {
-  background: var(--homepage-accent-strong);
+  background: #216e39;
 }
 
 body.homepage-enabled .homepage-running-value {
@@ -281,9 +281,14 @@ body.homepage-enabled .homepage-progress-bar {
 
 body.homepage-enabled .homepage-running-grid {
   display: grid;
-  grid-template-columns: repeat(7, 0.98rem);
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 0.98rem);
+  grid-auto-columns: 0.98rem;
   gap: 0.2rem;
   justify-content: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.1rem;
 }
 
 body.homepage-enabled .homepage-running-empty {
@@ -395,7 +400,8 @@ body.homepage-enabled .homepage-crazy-talk-section {
   }
 
   body.homepage-enabled .homepage-running-grid {
-    grid-template-columns: repeat(7, 0.86rem);
+    grid-template-rows: repeat(7, 0.86rem);
+    grid-auto-columns: 0.86rem;
     gap: 0.18rem;
   }
 }

@@ -34,6 +34,10 @@
 			{{ $heatmapCounts := $heatmapScratch.Get "counts" }}
 			{{ $activeDays := len $heatmapCounts }}
 			{{ $totalUpdates := len $contentPages }}
+			{{ $blogHeatmapDays := 140 }}
+			{{ $blogHeatmapStart := now.AddDate 0 0 (sub 1 $blogHeatmapDays) }}
+			{{ $blogHeatmapStartLabel := dateFormat "2006-01-02" $blogHeatmapStart }}
+			{{ $blogHeatmapEndLabel := dateFormat "2006-01-02" now }}
 			{{ $maxCount := 0 }}
 			{{ range $key, $value := $heatmapCounts }}
 				{{ if gt $value $maxCount }}
@@ -110,8 +114,8 @@
 							</div>
 						</div>
 						<div class="homepage-heatmap" role="img" aria-label="博客更新热力图">
-							{{ range seq 0 139 }}
-								{{ $offset := sub . 139 }}
+							{{ range seq 0 (sub $blogHeatmapDays 1) }}
+								{{ $offset := sub . (sub $blogHeatmapDays 1) }}
 								{{ $date := now.AddDate 0 0 $offset }}
 								{{ $dateKey := dateFormat "2006-01-02" $date }}
 								{{ $count := 0 }}
@@ -133,7 +137,7 @@
 							{{ end }}
 						</div>
 						<div class="homepage-card-footer">
-							<span>只统计 `content/` 下的内容更新</span>
+							<span>只统计 `content/` 下的内容更新，统计区间 {{ $blogHeatmapStartLabel }} 至 {{ $blogHeatmapEndLabel }}</span>
 							<a href="/blog/">去 /blog 看完整文章流</a>
 						</div>
 					</article>

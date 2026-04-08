@@ -87,3 +87,12 @@ content/crazy-talk/2026-04-01.md
 - `layouts/index.html`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-08 15:24] [Bugfix]
+- **Change**: 统一首页两个热力图为 GitHub 风格配色，并将跑步热力图改为按周横向展开
+- **Risk Analysis**: 风险主要在首页 CSS 与博客热力图统计文案调整。若用户对深色模式下也要求严格复刻 GitHub 配色，当前实现仍是 GitHub 绿色层级加深色底，不影响数据逻辑；跑步热力图横向展开在窄屏上会以横向滚动呈现。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `layouts/index.html`
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
