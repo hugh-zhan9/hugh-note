@@ -96,3 +96,11 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-08 15:31] [Bugfix]
+- **Change**: 调整首页跑步热力图为单行横向条带，并将进度条恢复为整卡片宽度
+- **Risk Analysis**: 风险较低，主要是首页跑步卡片 CSS 排布变化。窄屏下跑步热力图会继续横向滚动，但现在是一行日历条而不是多行周视图，不影响跑步数据和进度计算。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
