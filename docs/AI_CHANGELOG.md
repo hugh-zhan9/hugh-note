@@ -34,3 +34,13 @@ content/crazy-talk/2026-04-01.md
 - `findings.md`
 - `progress.md`
 ----------------------------------------
+## [2026-04-08 14:40] [Bugfix]
+- **Change**: 修复首页主题切换、空月跑步热力图和疯言疯语下一条交互
+- **Risk Analysis**: 主要风险在于首页样式现在区分 light/dark 两套变量，并且首页脚本改为 DOMContentLoaded 后初始化；如果主题切换脚本后续改动存储键名或运行页资源结构继续变化，首页可能再次出现主题不同步或跑步数据降级。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `layouts/index.html`
+- `assets/css/homepage.css`
+- `static/js/homepage.js`
+- `tests/homepage_contract_test.sh`
+----------------------------------------

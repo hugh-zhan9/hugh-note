@@ -53,6 +53,11 @@
 				) }}
 			{{ end }}
 			{{ $initialCrazyTalk := index $crazyTalkItems 0 }}
+			{{ $now := now }}
+			{{ $currentYear := $now.Year }}
+			{{ $currentMonth := $now.Month }}
+			{{ $monthStart := time.AsTime (printf "%04d-%02d-01T00:00:00+08:00" $currentYear $currentMonth) }}
+			{{ $daysInMonth := ($monthStart.AddDate 0 1 -1) | dateFormat "2" | int }}
 
 			<main class="homepage" data-homepage="interactive">
 				<section class="homepage-hero">
@@ -124,7 +129,15 @@
 						<div class="homepage-progress">
 							<div class="homepage-progress-bar" id="homepage-running-progress"></div>
 						</div>
-						<div class="homepage-running-grid" id="homepage-running-grid" aria-live="polite"></div>
+						<div class="homepage-running-grid" id="homepage-running-grid" aria-live="polite">
+							{{ range seq 1 $daysInMonth }}
+								{{ $dayKey := printf "%04d-%02d-%02d" $currentYear $currentMonth . }}
+								<span
+									class="homepage-running-cell level-0"
+									title="{{ $dayKey }} · 当天暂无跑步记录"
+									aria-label="{{ $dayKey }} · 当天暂无跑步记录"></span>
+							{{ end }}
+						</div>
 						<div class="homepage-card-footer">
 							<span>每次打开首页都会请求最新跑步数据</span>
 							<a href="https://hugh-zhan9.github.io/running/">打开 Running 页面</a>
