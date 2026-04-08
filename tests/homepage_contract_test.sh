@@ -49,6 +49,8 @@ assert_contains "$ROOT_DIR/layouts/index.html" '^###\\s+'
 assert_contains "$ROOT_DIR/layouts/index.html" '统计区间'
 assert_contains "$ROOT_DIR/layouts/partials/head.html" 'replaceRE "/+$" ""'
 assert_contains "$ROOT_DIR/layouts/partials/head.html" '.RelPermalink'
+assert_contains "$ROOT_DIR/layouts/partials/head.html" '.IsHome'
+assert_contains "$ROOT_DIR/layouts/partials/head.html" 'if not .IsHome'
 
 assert_contains "$ROOT_DIR/layouts/blog/list.html" '.Site.RegularPages'
 assert_contains "$ROOT_DIR/layouts/blog/list.html" 'Read more ⟶'

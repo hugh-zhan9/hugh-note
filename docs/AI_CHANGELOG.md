@@ -136,3 +136,11 @@ content/crazy-talk/2026-04-01.md
 - `layouts/partials/head.html`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-08 17:35] [Bugfix]
+- **Change**: 首页头部仅保留颜色切换，隐藏 Blog、疯言疯语与 Tags 菜单项
+- **Risk Analysis**: 风险很低，主要在站点头部模板逻辑。首页导航现在不再渲染任何菜单项，仅保留主题切换；其他页面仍按当前页过滤菜单项，不影响既有链接结构。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `layouts/partials/head.html`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
