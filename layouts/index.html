@@ -121,11 +121,11 @@
 								<h2 class="homepage-card-title">本月跑量目标</h2>
 							</div>
 							<div class="homepage-card-meta">
-								<span id="homepage-running-month">正在读取</span>
+								<span id="homepage-running-month">{{ printf "%04d 年 %02d 月" $currentYear $currentMonth }}</span>
 							</div>
 						</div>
-						<div class="homepage-running-value" id="homepage-running-value">-- / 150 km</div>
-						<p class="homepage-running-status" id="homepage-running-status">正在同步最新跑步数据...</p>
+						<div class="homepage-running-value" id="homepage-running-value">0.0 / 150 km</div>
+						<p class="homepage-running-status" id="homepage-running-status">正在同步最新跑步数据，当前先按 0 公里显示。</p>
 						<div class="homepage-progress">
 							<div class="homepage-progress-bar" id="homepage-running-progress"></div>
 						</div>
@@ -163,7 +163,15 @@
 				</section>
 			</main>
 
-			<script id="homepage-crazy-talk-data" type="application/json">{{ $crazyTalkItems | jsonify | safeHTML }}</script>
+			<div id="homepage-crazy-talk-data" hidden>
+				{{ range $crazyTalkItems }}
+					<div
+						data-crazy-talk-item
+						data-text="{{ .text }}"
+						data-title="{{ .title }}"
+						data-url="{{ .url }}"></div>
+				{{ end }}
+			</div>
 			{{ partial "footer.html" . }}
 		</div>
 	</body>

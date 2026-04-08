@@ -234,14 +234,12 @@
         return;
       }
 
-      let items = [];
-
-      try {
-        items = JSON.parse(crazyTalkDataNode.textContent || "[]");
-      } catch (error) {
-        console.error(error);
-        return;
-      }
+      const itemNodes = crazyTalkDataNode.querySelectorAll("[data-crazy-talk-item]");
+      const items = Array.from(itemNodes).map((node) => ({
+        text: node.getAttribute("data-text") || "",
+        title: node.getAttribute("data-title") || "",
+        url: node.getAttribute("data-url") || "/crazy-talk/",
+      }));
 
       if (!Array.isArray(items) || items.length === 0) {
         return;

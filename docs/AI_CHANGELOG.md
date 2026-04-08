@@ -52,3 +52,12 @@ content/crazy-talk/2026-04-01.md
 - `layouts/index.html`
 - `static/js/homepage.js`
 ----------------------------------------
+## [2026-04-08 14:48] [Bugfix]
+- **Change**: 修复首页疯言疯语轮播数据源并调整跑步区默认显示
+- **Risk Analysis**: 主要风险在于疯言疯语数据源从 JSON script 改成 DOM data 属性，模板和脚本必须同步；但这个方案比依赖 Hugo JSON 转义更稳，回归风险主要在于字段名改动导致轮播初始化失效。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `layouts/index.html`
+- `static/js/homepage.js`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
