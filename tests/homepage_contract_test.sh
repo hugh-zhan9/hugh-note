@@ -25,6 +25,7 @@ assert_file_exists() {
 
 assert_file_exists "$ROOT_DIR/layouts/index.html"
 assert_file_exists "$ROOT_DIR/layouts/blog/list.html"
+assert_file_exists "$ROOT_DIR/layouts/partials/head.html"
 assert_file_exists "$ROOT_DIR/content/blog/_index.md"
 assert_file_exists "$ROOT_DIR/assets/css/homepage.css"
 assert_file_exists "$ROOT_DIR/static/js/homepage.js"
@@ -46,6 +47,8 @@ assert_contains "$ROOT_DIR/layouts/index.html" 'localStorage.getItem("theme-stor
 assert_contains "$ROOT_DIR/layouts/index.html" '.RawContent'
 assert_contains "$ROOT_DIR/layouts/index.html" '^###\\s+'
 assert_contains "$ROOT_DIR/layouts/index.html" '统计区间'
+assert_contains "$ROOT_DIR/layouts/partials/head.html" 'replaceRE "/+$" ""'
+assert_contains "$ROOT_DIR/layouts/partials/head.html" '.RelPermalink'
 
 assert_contains "$ROOT_DIR/layouts/blog/list.html" '.Site.RegularPages'
 assert_contains "$ROOT_DIR/layouts/blog/list.html" 'Read more ⟶'

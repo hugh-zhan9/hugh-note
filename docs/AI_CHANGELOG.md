@@ -128,3 +128,11 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-08 16:55] [Bugfix]
+- **Change**: 按当前页面过滤站点头部导航菜单，隐藏当前栏目对应按钮
+- **Risk Analysis**: 风险较低，主要在导航 URL 归一化逻辑。当前实现会去掉路径末尾斜杠后比较，因此 Home、Blog、疯言疯语和 Tags 页面都应正确隐藏自身菜单项；若后续新增带查询参数或锚点的菜单，需要单独处理。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `layouts/partials/head.html`
+- `tests/homepage_contract_test.sh`
+----------------------------------------

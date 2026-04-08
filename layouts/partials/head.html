@@ -1,0 +1,24 @@
+<header>
+	<div class="main">
+		<a href="{{ absURL "/" }}">{{ .Site.Title }}</a>
+	</div>
+	<nav>
+		{{ $currentPath := replaceRE "/+$" "" .RelPermalink }}
+		{{ if eq $currentPath "" }}
+			{{ $currentPath = "/" }}
+		{{ end }}
+		{{ range .Site.Menus.main }}
+			{{ $menuPath := replaceRE "/+$" "" .URL }}
+			{{ if eq $menuPath "" }}
+				{{ $menuPath = "/" }}
+			{{ end }}
+			{{ if ne $menuPath $currentPath }}
+				<a href="{{ .URL }}">{{ .Name }}</a>
+			{{ end }}
+		{{ end }}
+		{{ if eq .Site.Params.mode "toggle" -}}
+        | <span id="dark-mode-toggle" onclick="toggleTheme()"></span>
+		<script src="{{ absURL "js/themetoggle.js" }}"></script>
+		{{ end }}
+	</nav>
+</header>
