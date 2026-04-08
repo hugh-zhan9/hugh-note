@@ -43,6 +43,8 @@ assert_contains "$ROOT_DIR/layouts/index.html" 'homepage-running-cell level-0'
 assert_contains "$ROOT_DIR/layouts/index.html" '0.0 / 150 km'
 assert_contains "$ROOT_DIR/layouts/index.html" 'data-homepage-theme="light"'
 assert_contains "$ROOT_DIR/layouts/index.html" 'localStorage.getItem("theme-storage")'
+assert_contains "$ROOT_DIR/layouts/index.html" '.RawContent'
+assert_contains "$ROOT_DIR/layouts/index.html" '^###\\s+'
 
 assert_contains "$ROOT_DIR/layouts/blog/list.html" '.Site.RegularPages'
 assert_contains "$ROOT_DIR/layouts/blog/list.html" 'Read more ⟶'

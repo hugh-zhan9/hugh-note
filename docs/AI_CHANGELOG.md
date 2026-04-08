@@ -79,3 +79,11 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-08 15:21] [Bugfix]
+- **Change**: 修复首页疯言疯语轮播按整天聚合的问题，改为按单条时间分段展示
+- **Risk Analysis**: 风险主要在 Hugo 模板对 crazy-talk markdown 的分段规则假设为 ### 时间。如果未来该栏目格式变化，首页可能退化为取不到条目，但不会影响 crazy-talk 正文页本身。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `layouts/index.html`
+- `tests/homepage_contract_test.sh`
+----------------------------------------

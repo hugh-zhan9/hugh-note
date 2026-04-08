@@ -44,17 +44,31 @@
 			{{ $crazyTalkScratch := newScratch }}
 			{{ $crazyTalkScratch.Set "items" (slice) }}
 			{{ $crazyTalkPages := (where .Site.RegularPages "Section" "crazy-talk").ByDate.Reverse }}
-			{{ range first 8 $crazyTalkPages }}
-				{{ $plain := .Plain | replaceRE "\\s+" " " | strings.TrimSpace | truncate 140 }}
-				{{ $text := cond (ne $plain "") $plain .Title }}
-				{{ $item := dict
-					"text" $text
-					"title" .Title
-					"url" .RelPermalink
-				}}
-				{{ $crazyTalkScratch.Add "items" (slice $item) }}
+			{{ range first 12 $crazyTalkPages }}
+				{{ $page := . }}
+				{{ $rawContent := .RawContent | replaceRE "\r\n" "\n" | strings.TrimSpace }}
+				{{ $segmentedContent := replaceRE "(?m)^###\\s+" "@@ENTRY@@" $rawContent }}
+				{{ $entries := split $segmentedContent "@@ENTRY@@" }}
+				{{ range $entries }}
+					{{ $entry := . | strings.TrimSpace }}
+					{{ if ne $entry "" }}
+						{{ $timeLabel := index (split $entry "\n") 0 | strings.TrimSpace }}
+						{{ $entryText := replaceRE "(?s)^[^\n]+\n+" "" $entry | replaceRE "\\s+" " " | strings.TrimSpace | truncate 140 }}
+						{{ if ne $entryText "" }}
+							{{ $item := dict
+								"text" $entryText
+								"title" (printf "%s %s" $page.Title $timeLabel)
+								"url" $page.RelPermalink
+							}}
+							{{ $crazyTalkScratch.Add "items" (slice $item) }}
+						{{ end }}
+					{{ end }}
+				{{ end }}
 			{{ end }}
 			{{ $crazyTalkItems := $crazyTalkScratch.Get "items" }}
+			{{ if gt (len $crazyTalkItems) 8 }}
+				{{ $crazyTalkItems = first 8 $crazyTalkItems }}
+			{{ end }}
 			{{ if eq (len $crazyTalkItems) 0 }}
 				{{ $crazyTalkItems = slice (dict
 					"text" "这里暂时还没有新的疯言疯语。"
