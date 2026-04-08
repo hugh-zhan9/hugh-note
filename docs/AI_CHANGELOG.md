@@ -71,3 +71,11 @@ content/crazy-talk/2026-04-01.md
 - `static/js/homepage.js`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-08 15:15] [Bugfix]
+- **Change**: 弱化首页跑步模块进度条视觉，改为更轻的圆角胶囊样式
+- **Risk Analysis**: 风险较低，主要是首页 CSS 视觉调整。若个别浏览器对新样式支持差，最多退化为普通底色条，不影响跑步数据逻辑和热力图渲染。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------

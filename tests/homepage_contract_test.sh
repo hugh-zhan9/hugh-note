@@ -56,5 +56,7 @@ assert_contains "$ROOT_DIR/assets/css/homepage.css" '.homepage-grid'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" '[data-homepage-theme="light"]'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" 'grid-template-columns: repeat(7, 0.98rem)'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" 'border-radius: 0.85rem'
+assert_contains "$ROOT_DIR/assets/css/homepage.css" 'height: 0.46rem'
+assert_contains "$ROOT_DIR/assets/css/homepage.css" 'box-shadow: inset 0 0 0 1px'
 
 echo "homepage 改造契约检查通过"

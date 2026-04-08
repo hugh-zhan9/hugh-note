@@ -262,17 +262,20 @@ body.homepage-enabled .homepage-running-value {
 }
 
 body.homepage-enabled .homepage-progress {
-  height: 0.72rem;
-  border: 1px solid var(--homepage-cell-border);
+  width: min(100%, 13rem);
+  height: 0.46rem;
+  border: none;
   border-radius: 999px;
-  background: var(--homepage-progress-track);
+  background: color-mix(in srgb, var(--homepage-progress-track) 70%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--homepage-cell-border) 90%, transparent);
   overflow: hidden;
 }
 
 body.homepage-enabled .homepage-progress-bar {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #8a7347, #f0cc80);
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--homepage-accent), var(--homepage-accent-strong));
   transition: width 280ms ease;
 }
 
