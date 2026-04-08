@@ -91,7 +91,10 @@
         throw new Error("activities payload end marker not found");
       }
 
-      return JSON.parse(source.slice(payloadStart, payloadEnd));
+      const templateLiteralSource = source.slice(payloadStart - 1, payloadEnd + 1);
+      const decodedPayload = new Function(`return ${templateLiteralSource};`)();
+
+      return JSON.parse(decodedPayload);
     }
 
     async function resolveActivitiesAssetUrl() {

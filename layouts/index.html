@@ -163,7 +163,7 @@
 				</section>
 			</main>
 
-			<script id="homepage-crazy-talk-data" type="application/json">{{ $crazyTalkItems | jsonify }}</script>
+			<script id="homepage-crazy-talk-data" type="application/json">{{ $crazyTalkItems | jsonify | safeHTML }}</script>
 			{{ partial "footer.html" . }}
 		</div>
 	</body>

@@ -44,3 +44,11 @@ content/crazy-talk/2026-04-01.md
 - `static/js/homepage.js`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-08 14:45] [Bugfix]
+- **Change**: 修复首页疯言疯语数据注入和 running 数据解析
+- **Risk Analysis**: 主要风险在于 running 数据解析现在通过受控的 Function 只执行提取出的模板字面量，以换取对 /running/ 资源转义内容的兼容；如果对方产物结构再次变化，首页会降级但不应阻断其他模块。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `layouts/index.html`
+- `static/js/homepage.js`
+----------------------------------------
