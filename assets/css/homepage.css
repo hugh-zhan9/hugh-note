@@ -370,6 +370,23 @@ body.homepage-enabled .homepage-crazy-talk-section {
 }
 
 @media (max-width: 840px) {
+  body.homepage-enabled {
+    overflow-x: hidden;
+  }
+
+  body.homepage-enabled header {
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  body.homepage-enabled header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    width: 100%;
+    line-height: 1.8;
+  }
+
   body.homepage-enabled .homepage-grid {
     grid-template-columns: 1fr;
   }
@@ -386,9 +403,36 @@ body.homepage-enabled .homepage-crazy-talk-section {
 }
 
 @media (max-width: 560px) {
+  body.homepage-enabled .homepage {
+    gap: 1rem;
+    margin-top: 1.2rem;
+  }
+
   body.homepage-enabled .homepage-hero,
   body.homepage-enabled .homepage-card {
     padding: 1rem;
+  }
+
+  body.homepage-enabled .homepage-title {
+    font-size: clamp(1.7rem, 10vw, 2.45rem);
+    line-height: 1.08;
+  }
+
+  body.homepage-enabled .homepage-summary {
+    font-size: 0.95rem;
+  }
+
+  body.homepage-enabled .homepage-card-title {
+    font-size: 1.1rem;
+  }
+
+  body.homepage-enabled .homepage-running-value {
+    font-size: clamp(1.45rem, 8vw, 2rem);
+  }
+
+  body.homepage-enabled .homepage-crazy-talk {
+    min-height: 0;
+    font-size: 1rem;
   }
 
   body.homepage-enabled .homepage-links {
@@ -400,13 +444,21 @@ body.homepage-enabled .homepage-crazy-talk-section {
   }
 
   body.homepage-enabled .homepage-heatmap {
-    grid-template-columns: repeat(20, 0.62rem);
-    gap: 0.16rem;
+    grid-template-columns: repeat(20, 0.54rem);
+    gap: 0.12rem;
   }
 
   body.homepage-enabled .homepage-running-grid {
-    grid-template-rows: 0.86rem;
-    grid-auto-columns: 0.86rem;
-    gap: 0.18rem;
+    grid-template-rows: 0.62rem;
+    grid-auto-columns: 0.62rem;
+    gap: 0.1rem;
+  }
+
+  body.homepage-enabled .homepage-card-footer {
+    gap: 0.55rem;
+  }
+
+  body.homepage-enabled .homepage-card-footer span {
+    max-width: none;
   }
 }

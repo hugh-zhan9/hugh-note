@@ -112,3 +112,11 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-08 16:39] [Bugfix]
+- **Change**: 补齐首页移动端响应式样式，优化小屏导航、标题字号和热力图尺寸
+- **Risk Analysis**: 风险主要在首页 CSS 的断点调整。若个别尺寸设备的字重和间距仍显拥挤，需要再根据真机截图微调，但不会影响首页数据逻辑和交互脚本。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
