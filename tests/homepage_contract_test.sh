@@ -67,5 +67,7 @@ assert_contains "$ROOT_DIR/assets/css/homepage.css" 'scrollbar-width: none'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" 'font-size: clamp(1.7rem, 10vw, 2.45rem)'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" 'overflow-x: hidden'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" 'header nav {'
+assert_contains "$ROOT_DIR/assets/css/homepage.css" 'box-sizing: border-box'
+assert_contains "$ROOT_DIR/assets/css/homepage.css" 'min-width: 0'
 
 echo "homepage 改造契约检查通过"

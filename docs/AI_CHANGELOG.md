@@ -120,3 +120,11 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-08 16:47] [Bugfix]
+- **Change**: 修复首页 Hero 三个入口按钮在移动端因宽度模型导致的溢出问题
+- **Risk Analysis**: 风险很低，仅为首页按钮样式修正。调整为 border-box 并在移动端取消最小宽度后，按钮应始终落在容器内，不影响桌面端布局和跳转行为。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------

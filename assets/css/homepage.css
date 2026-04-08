@@ -150,9 +150,11 @@ body.homepage-enabled .homepage-links {
 
 body.homepage-enabled .homepage-link {
   display: inline-flex;
+  box-sizing: border-box;
   align-items: center;
   justify-content: center;
   min-width: 8rem;
+  max-width: 100%;
   padding: 0.8rem 1rem;
   border: 1px solid var(--homepage-border);
   border-radius: 0.85rem;
@@ -441,6 +443,7 @@ body.homepage-enabled .homepage-crazy-talk-section {
 
   body.homepage-enabled .homepage-link {
     width: 100%;
+    min-width: 0;
   }
 
   body.homepage-enabled .homepage-heatmap {
