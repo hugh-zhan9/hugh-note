@@ -7,9 +7,9 @@
 
 			<main class="list">
 				<div class="site-description">
-					<p>按时间顺序浏览最近的博客正文和疯言疯语。</p>
+					<p>按时间顺序浏览最近的博客正文。</p>
 				</div>
-				{{ $pages := where .Site.RegularPages "Type" "in" (.Site.Params.mainSections | default (slice "posts" "crazy-talk")) }}
+				{{ $pages := where .Site.RegularPages "Section" "posts" }}
 				{{ $paginator := .Paginate ((where $pages "Params.hidden" "ne" true).ByDate.Reverse) }}
 				{{ range $paginator.Pages }}
 				<section class="list-item">

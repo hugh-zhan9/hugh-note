@@ -67,7 +67,8 @@ assert_contains "$ROOT_DIR/layouts/partials/head.html" '.RelPermalink'
 assert_contains "$ROOT_DIR/layouts/partials/head.html" '.IsHome'
 assert_contains "$ROOT_DIR/layouts/partials/head.html" 'if not .IsHome'
 
-assert_contains "$ROOT_DIR/layouts/blog/list.html" '.Site.RegularPages'
+assert_contains "$ROOT_DIR/layouts/blog/list.html" 'where .Site.RegularPages "Section" "posts"'
+assert_contains "$ROOT_DIR/layouts/blog/list.html" '最近的博客正文'
 assert_contains "$ROOT_DIR/layouts/blog/list.html" 'Read more ⟶'
 
 assert_contains "$ROOT_DIR/static/js/homepage.js" '/running/'

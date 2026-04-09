@@ -224,3 +224,11 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-09 10:26] [Bugfix]
+- **Change**: 修正 blog 列表误包含疯言疯语内容
+- **Risk Analysis**: 风险较低，仅影响 /blog 列表页的数据筛选和说明文案。潜在风险是如果未来 posts 改 section 名称，这里需要同步调整，但当前行为更符合站点信息架构。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `layouts/blog/list.html`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
