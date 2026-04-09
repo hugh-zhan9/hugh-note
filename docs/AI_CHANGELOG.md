@@ -160,3 +160,12 @@ content/crazy-talk/2026-04-01.md
 - **Changed Files**:
 - `layouts/index.html`
 ----------------------------------------
+## [2026-04-09 09:46] [Refactor]
+- **Change**: 将首页数据卡片尾注和跑步状态提示改成更自然的中文表达
+- **Risk Analysis**: 风险很低，仅涉及首页模板和脚本文案，不改变页面结构、链接与数据逻辑。主要收益是减少工程说明感，让首页语气更统一。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `layouts/index.html`
+- `static/js/homepage.js`
+- `tests/homepage_contract_test.sh`
+----------------------------------------

@@ -196,8 +196,8 @@
       runningValue.textContent = `${safeTotalKm.toFixed(1)} / ${RUNNING_TARGET_KM} km`;
       runningStatus.textContent =
         safeTotalKm >= RUNNING_TARGET_KM
-          ? "本月目标已达成，继续把热力格点亮。"
-          : `距离本月 ${RUNNING_TARGET_KM} km 目标还差 ${Math.max(
+          ? "这个月的目标已经完成了，接下来继续把节奏跑稳。"
+          : `离这个月的 ${RUNNING_TARGET_KM} km 目标，还差 ${Math.max(
               RUNNING_TARGET_KM - safeTotalKm,
               0
             ).toFixed(1)} km。`;
@@ -230,7 +230,7 @@
         renderRunningStats(monthlyStats);
       } catch (error) {
         console.error(error);
-        renderRunningFallback("这个月暂时还没有跑步记录，或者暂时无法同步 Running 数据。");
+        renderRunningFallback("这个月还没有留下跑步记录，或者首页暂时没能取到 Running 数据。");
       }
     }
 
