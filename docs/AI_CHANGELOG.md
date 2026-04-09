@@ -179,3 +179,12 @@ content/crazy-talk/2026-04-01.md
 - `static/js/homepage.js`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-09 09:52] [Refactor]
+- **Change**: 基于 ui-ux-pro-max 重做首页 Hero 顶部识别条，将 Hugh Note / Index 改为更完整的站点身份展示
+- **Risk Analysis**: 风险很低，主要是首页 Hero 文案与样式层级优化。不会影响数据逻辑和交互脚本，但如果你后续想进一步强化个人品牌语气，这一块还可以继续微调词和标记形式。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `layouts/index.html`
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
