@@ -205,3 +205,12 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-09 10:02] [Refactor]
+- **Change**: 基于 ui-ux-pro-max 将首页 Hero 与 Running 模块的辅助信息从小矩形组件改为更轻的排版式元信息
+- **Risk Analysis**: 风险较低，主要是首页版式层级重排。数据逻辑和交互脚本未变，但如果你后续希望更极简，还可以继续减少 Hero 左侧的元信息数量。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `layouts/index.html`
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------

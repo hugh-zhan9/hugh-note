@@ -99,7 +99,11 @@
 										<p class="homepage-identity-subtitle">个人首页 / Writing, Running, Thinking</p>
 									</div>
 								</div>
-								<span class="homepage-identity-tag">Now</span>
+							</div>
+							<div class="homepage-identity-meta" aria-label="Homepage meta">
+								<span>持续书写</span>
+								<span>长期跑步</span>
+								<span>保留碎念</span>
 							</div>
 							<h1 class="homepage-title">
 								<span class="homepage-title-lead">写作、跑步和思考</span>
@@ -108,11 +112,11 @@
 							<p class="homepage-summary">
 								我用文章整理经验，用跑步校准节奏，也把那些尚未成形的念头留在疯言疯语里。这里展示的不是结果，而是持续发生的过程。
 							</p>
-							<div class="homepage-kicker-row" aria-label="Homepage overview">
+							<p class="homepage-kicker-row" aria-label="Homepage overview">
 								<span class="homepage-kicker">最近 {{ $blogHeatmapDays }} 天</span>
 								<span class="homepage-kicker">{{ $activeDays }} 天有内容更新</span>
 								<span class="homepage-kicker">本月跑量目标 150 km</span>
-							</div>
+							</p>
 							<nav class="homepage-links" aria-label="Homepage links">
 								<a class="homepage-link" href="/blog/">Blog</a>
 								<a class="homepage-link" href="/crazy-talk/">疯言疯语</a>
@@ -196,14 +200,14 @@
 								<div class="homepage-running-value" id="homepage-running-value">0.0 / 150 km</div>
 								<p class="homepage-running-status" id="homepage-running-status">正在同步最新跑步数据，当前先按 0 公里显示。</p>
 							</div>
-							<div class="homepage-running-overview-side">
-								<div class="homepage-running-pill">
-									<span class="homepage-running-pill-label">完成率</span>
-									<strong class="homepage-running-pill-value" id="homepage-running-percent">0%</strong>
+							<div class="homepage-running-metrics" aria-label="Running metrics">
+								<div class="homepage-running-metric">
+									<span class="homepage-running-metric-label">完成率</span>
+									<strong class="homepage-running-metric-value" id="homepage-running-percent">0%</strong>
 								</div>
-								<div class="homepage-running-pill">
-									<span class="homepage-running-pill-label">本月目标</span>
-									<strong class="homepage-running-pill-value">150 km</strong>
+								<div class="homepage-running-metric">
+									<span class="homepage-running-metric-label">本月目标</span>
+									<strong class="homepage-running-metric-value">150 km</strong>
 								</div>
 							</div>
 						</div>
