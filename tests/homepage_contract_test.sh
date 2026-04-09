@@ -97,5 +97,8 @@ assert_contains "$ROOT_DIR/assets/css/homepage.css" 'border-bottom: 1px solid va
 assert_contains "$ROOT_DIR/assets/css/homepage.css" '@media (prefers-reduced-motion: reduce)'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" 'grid-auto-flow: column'
 assert_contains "$ROOT_DIR/assets/css/homepage.css" '#9be9a8'
+assert_contains "$ROOT_DIR/assets/css/homepage.css" 'grid-template-columns: repeat(14, minmax(0, 1fr))'
+assert_contains "$ROOT_DIR/assets/css/homepage.css" 'grid-auto-flow: row'
+assert_contains "$ROOT_DIR/assets/css/homepage.css" 'grid-template-columns: repeat(12, minmax(0, 1fr))'
 
 echo "homepage 改造契约检查通过"

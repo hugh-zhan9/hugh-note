@@ -232,3 +232,11 @@ content/crazy-talk/2026-04-01.md
 - `layouts/blog/list.html`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-09 10:42] [Bugfix]
+- **Change**: 修正首页热力图在移动端展示不全的问题
+- **Risk Analysis**: 风险较低，仅影响首页小屏断点下的热力图布局。潜在风险是移动端热力图行数增加后卡片高度会变高，但可以换来完整展示，不影响桌面端样式和数据逻辑。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
