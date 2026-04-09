@@ -591,6 +591,8 @@ body.homepage-enabled .homepage-running-grid {
   grid-template-rows: 0.94rem;
   grid-auto-columns: 0.94rem;
   gap: 0.16rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--homepage-border);
   max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
@@ -788,6 +790,7 @@ body.homepage-enabled .homepage-crazy-talk-section {
     grid-template-rows: 0.72rem;
     grid-auto-columns: 0.72rem;
     gap: 0.12rem;
+    padding-bottom: 0.6rem;
   }
 
   body.homepage-enabled .homepage-running-legend {

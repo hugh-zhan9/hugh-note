@@ -214,3 +214,13 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-09 10:09] [Bugfix]
+- **Change**: 缩短跑步空数据提示并恢复热力图区底部分隔线
+- **Risk Analysis**: 风险较低，主要影响首页 Running 模块的提示文案和局部样式。潜在风险是分隔线在极窄屏幕上显得偏重，但不会影响数据渲染或交互。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `layouts/index.html`
+- `static/js/homepage.js`
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------

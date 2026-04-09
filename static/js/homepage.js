@@ -236,7 +236,7 @@
         renderRunningStats(monthlyStats);
       } catch (error) {
         console.error(error);
-        renderRunningFallback("这个月还没有留下跑步记录，或者首页暂时没能取到 Running 数据。");
+        renderRunningFallback("这个月暂时还没有跑步记录。");
       }
     }
 
