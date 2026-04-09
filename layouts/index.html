@@ -101,7 +101,10 @@
 								</div>
 								<span class="homepage-identity-tag">Now</span>
 							</div>
-							<h1 class="homepage-title">写作、跑步和思考，是我理解生活的三种方式。</h1>
+							<h1 class="homepage-title">
+								<span class="homepage-title-lead">写作、跑步和思考</span>
+								<span class="homepage-title-tail">是我理解生活的三种方式。</span>
+							</h1>
 							<p class="homepage-summary">
 								我用文章整理经验，用跑步校准节奏，也把那些尚未成形的念头留在疯言疯语里。这里展示的不是结果，而是持续发生的过程。
 							</p>
@@ -173,8 +176,8 @@
 							{{ end }}
 						</div>
 						<div class="homepage-card-footer">
-							<span>这里收的是 {{ $blogHeatmapStartLabel }} 到 {{ $blogHeatmapEndLabel }} 这一段时间里，博客留下的更新轨迹。</span>
-							<a href="/blog/">去文章页继续往下读</a>
+							<span>近 {{ $blogHeatmapDays }} 天的写作切片</span>
+							<a class="homepage-card-action" href="/blog/">文章归档</a>
 						</div>
 					</article>
 
@@ -225,8 +228,8 @@
 							{{ end }}
 						</div>
 						<div class="homepage-card-footer">
-							<span>首页看到的是这个月的即时进度，完整记录还在 Running 页面里。</span>
-							<a href="https://hugh-zhan9.github.io/running/">去看完整跑步记录</a>
+							<span>这里只看当月，完整轨迹在 Running</span>
+							<a class="homepage-card-action" href="https://hugh-zhan9.github.io/running/">Running 全记录</a>
 						</div>
 					</article>
 				</section>
@@ -242,8 +245,8 @@
 						</div>
 						<p class="homepage-crazy-talk" id="homepage-crazy-talk">{{ $initialCrazyTalk.text }}</p>
 						<div class="homepage-card-footer">
-							<a id="homepage-crazy-talk-link" href="{{ $initialCrazyTalk.url }}">{{ $initialCrazyTalk.title }}</a>
-							<a href="/crazy-talk/">去看更多碎念</a>
+							<a class="homepage-card-source" id="homepage-crazy-talk-link" href="{{ $initialCrazyTalk.url }}">{{ $initialCrazyTalk.title }}</a>
+							<a class="homepage-card-action" href="/crazy-talk/">碎念归档</a>
 						</div>
 					</div>
 				</section>

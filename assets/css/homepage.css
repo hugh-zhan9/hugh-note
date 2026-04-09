@@ -223,11 +223,24 @@ body.homepage-enabled .homepage-identity-tag {
 
 body.homepage-enabled .homepage-title {
   margin: 0;
-  max-width: 10ch;
+  max-width: 14ch;
   font-size: clamp(3rem, 7vw, 5rem);
   line-height: 0.94;
   letter-spacing: -0.06em;
-  text-wrap: balance;
+}
+
+body.homepage-enabled .homepage-title-lead,
+body.homepage-enabled .homepage-title-tail {
+  display: block;
+}
+
+body.homepage-enabled .homepage-title-lead {
+  white-space: nowrap;
+}
+
+body.homepage-enabled .homepage-title-tail {
+  margin-top: 0.18em;
+  max-width: 11ch;
 }
 
 body.homepage-enabled .homepage-title::before,
@@ -707,6 +720,14 @@ body.homepage-enabled .homepage-crazy-talk-section {
   body.homepage-enabled .homepage-title {
     max-width: none;
     font-size: clamp(2.2rem, 12vw, 3.2rem);
+  }
+
+  body.homepage-enabled .homepage-title-lead {
+    white-space: normal;
+  }
+
+  body.homepage-enabled .homepage-title-tail {
+    max-width: none;
   }
 
   body.homepage-enabled .homepage-identity {

@@ -196,3 +196,12 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-09 09:57] [Refactor]
+- **Change**: 优化首页主标题排版并同步收口卡片底部入口文案与展示方式
+- **Risk Analysis**: 风险较低，主要是首页模板和样式微调。不会影响数据逻辑和交互脚本，但如果你后续还想继续强化封面感，Hero 标题与底部入口仍可以进一步精简。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `layouts/index.html`
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
