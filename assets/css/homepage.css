@@ -100,7 +100,7 @@ body.homepage-enabled #dark-mode-toggle {
   width: 2.3rem;
   height: 2.3rem;
   border: 1px solid var(--homepage-border);
-  border-radius: 999px;
+  border-radius: 0.8rem;
   background: var(--homepage-interactive-bg);
 }
 
@@ -212,7 +212,7 @@ body.homepage-enabled .homepage-identity-tag {
   min-height: 2rem;
   padding: 0.35rem 0.75rem;
   border: 1px solid var(--homepage-border);
-  border-radius: 999px;
+  border-radius: 0.8rem;
   background: var(--homepage-interactive-bg);
   color: var(--homepage-muted);
   font-size: 0.72rem;
@@ -255,7 +255,7 @@ body.homepage-enabled .homepage-kicker {
   min-height: 2rem;
   padding: 0.35rem 0.7rem;
   border: 1px solid var(--homepage-border);
-  border-radius: 999px;
+  border-radius: 0.75rem;
   background: var(--homepage-interactive-bg);
   font-size: 0.74rem;
   font-family: 'Roboto Mono', monospace;
@@ -279,7 +279,7 @@ body.homepage-enabled .homepage-link {
   min-height: 3rem;
   padding: 0.8rem 1.05rem;
   border: 1px solid var(--homepage-border);
-  border-radius: 999px;
+  border-radius: 0.9rem;
   color: var(--homepage-text);
   background: var(--homepage-interactive-bg);
   transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease, transform 180ms ease;
@@ -491,7 +491,7 @@ body.homepage-enabled .homepage-running-pill {
   min-width: 6.75rem;
   padding: 0.72rem 0.8rem;
   border: 1px solid var(--homepage-border);
-  border-radius: 0.95rem;
+  border-radius: 0.9rem;
   background: var(--homepage-interactive-bg);
 }
 
@@ -512,7 +512,7 @@ body.homepage-enabled .homepage-running-pill-value {
 body.homepage-enabled .homepage-progress {
   width: 100%;
   height: 0.9rem;
-  border-radius: 999px;
+  border-radius: 0.45rem;
   background: var(--homepage-progress-track);
   box-shadow: inset 0 0 0 1px var(--homepage-cell-border);
   overflow: hidden;
@@ -604,7 +604,7 @@ body.homepage-enabled .homepage-crazy-talk {
 
 body.homepage-enabled .homepage-ticker-button {
   border: 1px solid var(--homepage-border);
-  border-radius: 999px;
+  border-radius: 0.9rem;
   background: var(--homepage-interactive-bg);
   color: var(--homepage-text);
   min-height: 2.7rem;

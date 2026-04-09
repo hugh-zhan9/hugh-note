@@ -188,3 +188,11 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-09 09:53] [Refactor]
+- **Change**: 收掉首页中明显的椭圆胶囊元素，统一改为更克制的圆角矩形
+- **Risk Analysis**: 风险很低，主要是首页视觉风格收敛。不会影响交互和数据逻辑，但如果你后续希望更偏硬朗的版式，还可以继续把圆角再收小一档。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
