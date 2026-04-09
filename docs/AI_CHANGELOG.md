@@ -144,3 +144,12 @@ content/crazy-talk/2026-04-01.md
 - `layouts/partials/head.html`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-09 09:37] [Feature]
+- **Change**: 基于 ui-ux-pro-max 设计系统重构首页视觉语言，改为编辑型双栏 Hero 与冷调数据面板
+- **Risk Analysis**: 风险主要在首页 CSS 大幅重写后的真实渲染效果。当前契约测试和脚本检查通过，但由于本地没有 hugo 无法直接预览最终页面，仍可能在实际构建后出现个别间距或主题细节需要微调。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `layouts/index.html`
+- `assets/css/homepage.css`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
