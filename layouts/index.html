@@ -92,9 +92,9 @@
 					<div class="homepage-hero-grid">
 						<div class="homepage-hero-copy">
 							<div class="homepage-eyebrow">Hugh Note / Index</div>
-							<h1 class="homepage-title">把写作、碎念和跑步，放在同一张首页上。</h1>
+							<h1 class="homepage-title">写作、跑步和思考，是我理解生活的三种方式。</h1>
 							<p class="homepage-summary">
-								这里不是文章归档页，而是一张个人封面。先看最近写了什么、跑了多少、脑子里又冒出了哪一句话。
+								我用文章整理经验，用跑步校准节奏，也把那些尚未成形的念头留在疯言疯语里。这里展示的不是结果，而是持续发生的过程。
 							</p>
 							<div class="homepage-kicker-row" aria-label="Homepage overview">
 								<span class="homepage-kicker">最近 {{ $blogHeatmapDays }} 天</span>
@@ -115,12 +115,12 @@
 								<span class="homepage-hero-stat-note">累计内容页 / {{ $activeDays }} 天活跃</span>
 							</div>
 							<div class="homepage-hero-stat">
-								<span class="homepage-hero-stat-label">当前关注</span>
+								<span class="homepage-hero-stat-label">长期工程</span>
 								<strong class="homepage-hero-stat-value">Run + Write</strong>
-								<span class="homepage-hero-stat-note">跑步数据实时同步，文字热力图静态生成</span>
+								<span class="homepage-hero-stat-note">写作是整理，跑步是校准，疯言疯语是那些还没长成文章的想法</span>
 							</div>
 							<div class="homepage-hero-note">
-								<p class="homepage-hero-note-label">最新一句疯言疯语</p>
+								<p class="homepage-hero-note-label">此刻脑海里的句子</p>
 								<p class="homepage-hero-note-text">{{ $initialCrazyTalk.text }}</p>
 								<a class="homepage-hero-note-link" href="{{ $initialCrazyTalk.url }}">{{ $initialCrazyTalk.title }}</a>
 							</div>
@@ -133,7 +133,7 @@
 						<div class="homepage-card-header">
 							<div>
 								<p class="homepage-label">Blog Heatmap</p>
-								<h2 class="homepage-card-title">最近在 `content/` 里留下的更新轨迹</h2>
+								<h2 class="homepage-card-title">最近一段时间，我把哪些内容认真写了下来</h2>
 							</div>
 							<div class="homepage-card-meta">
 								<span>{{ $activeDays }} 天活跃</span>
@@ -173,7 +173,7 @@
 						<div class="homepage-card-header">
 							<div>
 								<p class="homepage-label">Running Goal</p>
-								<h2 class="homepage-card-title">本月跑量目标</h2>
+								<h2 class="homepage-card-title">这个月，我正把跑步重新放回生活节奏里</h2>
 							</div>
 							<div class="homepage-card-meta">
 								<span id="homepage-running-month">{{ printf "%04d 年 %02d 月" $currentYear $currentMonth }}</span>
@@ -205,7 +205,7 @@
 						<div class="homepage-card-header">
 							<div>
 								<p class="homepage-label">Crazy Talk</p>
-								<h2 class="homepage-card-title">疯言疯语</h2>
+								<h2 class="homepage-card-title">那些来不及展开成文章的念头</h2>
 							</div>
 							<button class="homepage-ticker-button" id="homepage-crazy-talk-next" type="button">下一条</button>
 						</div>

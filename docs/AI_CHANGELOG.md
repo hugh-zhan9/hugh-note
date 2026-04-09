@@ -153,3 +153,10 @@ content/crazy-talk/2026-04-01.md
 - `assets/css/homepage.css`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-09 09:42] [Refactor]
+- **Change**: 将首页主文案改为更符合个人宣言型表达，并统一 Hero 与各模块标题语气
+- **Risk Analysis**: 风险很低，仅涉及首页模板文案替换，不改变数据逻辑、链接和交互行为。若后续仍觉得语气偏重或偏轻，可以继续在同一结构上细调。
+- **Risk Level**: S3（低级: 轻微行为偏差或日志/可观测性影响）
+- **Changed Files**:
+- `layouts/index.html`
+----------------------------------------
