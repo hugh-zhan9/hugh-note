@@ -11,6 +11,7 @@
     const runningValue = document.getElementById("homepage-running-value");
     const runningStatus = document.getElementById("homepage-running-status");
     const runningProgress = document.getElementById("homepage-running-progress");
+    const runningPercent = document.getElementById("homepage-running-percent");
     const runningGrid = document.getElementById("homepage-running-grid");
 
     const crazyTalkDataNode = document.getElementById("homepage-crazy-talk-data");
@@ -194,6 +195,11 @@
 
       runningMonth.textContent = stats.label;
       runningValue.textContent = `${safeTotalKm.toFixed(1)} / ${RUNNING_TARGET_KM} km`;
+      if (runningPercent) {
+        runningPercent.textContent = `${Math.round(
+          Math.min((safeTotalKm / RUNNING_TARGET_KM) * 100, 100)
+        )}%`;
+      }
       runningStatus.textContent =
         safeTotalKm >= RUNNING_TARGET_KM
           ? "这个月的目标已经完成了，接下来继续把节奏跑稳。"

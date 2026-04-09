@@ -169,3 +169,13 @@ content/crazy-talk/2026-04-01.md
 - `static/js/homepage.js`
 - `tests/homepage_contract_test.sh`
 ----------------------------------------
+## [2026-04-09 09:49] [Feature]
+- **Change**: 基于 ui-ux-pro-max 优化首页 Running Goal 模块，新增进度概览与热力图图例并重做进度条样式
+- **Risk Analysis**: 风险主要在首页 Running 模块的视觉结构调整。数据逻辑保持不变，但由于新增了完成率与图例区，若实际构建后卡片高度或移动端密度不理想，可能还需要继续微调间距。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `layouts/index.html`
+- `assets/css/homepage.css`
+- `static/js/homepage.js`
+- `tests/homepage_contract_test.sh`
+----------------------------------------
