@@ -21,7 +21,8 @@
 
     const RUNNING_TARGET_KM = Number(runningRoot?.dataset.targetKm || 150);
     const RUNNING_BASE = runningRoot?.dataset.runningBase || "/running/";
-    const CRAZY_TALK_INTERVAL_MS = 5000;
+    const CRAZY_TALK_INTERVAL_MS = 8000;
+    const CRAZY_TALK_FILE_LIMIT = 30;
     let crazyTalkTimer = null;
 
     function syncHomepageTheme() {
@@ -246,14 +247,48 @@
       }
 
       const itemNodes = crazyTalkDataNode.querySelectorAll("[data-crazy-talk-item]");
-      const items = Array.from(itemNodes).map((node) => ({
+      const allItems = Array.from(itemNodes).map((node) => ({
         text: node.getAttribute("data-text") || "",
         title: node.getAttribute("data-title") || "",
         url: node.getAttribute("data-url") || "/crazy-talk/",
+        sourceRank: Number(node.getAttribute("data-source-rank") || 0),
       }));
 
-      if (!Array.isArray(items) || items.length === 0) {
+      if (allItems.length === 0) {
         return;
+      }
+
+      const filesByUrl = new Map();
+
+      allItems.forEach((item) => {
+        if (!filesByUrl.has(item.url)) {
+          filesByUrl.set(item.url, {
+            sourceRank: item.sourceRank,
+            items: [],
+          });
+        }
+
+        filesByUrl.get(item.url).items.push(item);
+      });
+
+      const selectedFiles = Array.from(filesByUrl.values())
+        .map((file) => {
+          const recencyWeight = 1 / Math.sqrt(file.sourceRank + 1);
+          const randomValue = Math.max(Math.random(), Number.EPSILON);
+
+          return {
+            ...file,
+            selectionKey: -Math.log(randomValue) / recencyWeight,
+          };
+        })
+        .sort((left, right) => left.selectionKey - right.selectionKey)
+        .slice(0, CRAZY_TALK_FILE_LIMIT);
+
+      const items = selectedFiles.flatMap((file) => file.items);
+
+      for (let index = items.length - 1; index > 0; index -= 1) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        [items[index], items[randomIndex]] = [items[randomIndex], items[index]];
       }
 
       let currentIndex = 0;

@@ -48,8 +48,7 @@
 			{{ $crazyTalkScratch := newScratch }}
 			{{ $crazyTalkScratch.Set "items" (slice) }}
 			{{ $crazyTalkPages := (where .Site.RegularPages "Section" "crazy-talk").ByDate.Reverse }}
-			{{ range first 12 $crazyTalkPages }}
-				{{ $page := . }}
+			{{ range $pageRank, $page := $crazyTalkPages }}
 				{{ $rawContent := .RawContent | replaceRE "\r\n" "\n" | strings.TrimSpace }}
 				{{ $segmentedContent := replaceRE "(?m)^###\\s+" "@@ENTRY@@" $rawContent }}
 				{{ $entries := split $segmentedContent "@@ENTRY@@" }}
@@ -63,6 +62,7 @@
 								"text" $entryText
 								"title" (printf "%s %s" $page.Title $timeLabel)
 								"url" $page.RelPermalink
+								"sourceRank" $pageRank
 							}}
 							{{ $crazyTalkScratch.Add "items" (slice $item) }}
 						{{ end }}
@@ -70,14 +70,12 @@
 				{{ end }}
 			{{ end }}
 			{{ $crazyTalkItems := $crazyTalkScratch.Get "items" }}
-			{{ if gt (len $crazyTalkItems) 8 }}
-				{{ $crazyTalkItems = first 8 $crazyTalkItems }}
-			{{ end }}
 			{{ if eq (len $crazyTalkItems) 0 }}
 				{{ $crazyTalkItems = slice (dict
 					"text" "这里暂时还没有新的疯言疯语。"
 					"title" "疯言疯语"
 					"url" "/crazy-talk/"
+					"sourceRank" 0
 				) }}
 			{{ end }}
 			{{ $initialCrazyTalk := index $crazyTalkItems 0 }}
@@ -262,6 +260,7 @@
 						data-crazy-talk-item
 						data-text="{{ .text }}"
 						data-title="{{ .title }}"
+						data-source-rank="{{ .sourceRank }}"
 						data-url="{{ .url }}"></div>
 				{{ end }}
 			</div>
