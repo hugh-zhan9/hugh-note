@@ -22,6 +22,7 @@
     const routeOverview = document.getElementById("homepage-route-overview");
     const routeIndividual = document.getElementById("homepage-route-individual");
     const routeOverviewTab = document.getElementById("homepage-route-overview-tab");
+    const routeRegion = document.getElementById("homepage-route-region");
     const routeIndividualTab = document.getElementById("homepage-route-individual-tab");
 
     const crazyTalkDataNode = document.getElementById("homepage-crazy-talk-data");
@@ -233,7 +234,31 @@
           points.push([latitude / 1e5, longitude / 1e5]);
         }
       } catch (error) { return []; }
+      // Some activities contain two identical placeholder coordinates, not a route.
+      if (points.length < 2 || !points.some(([lat, lon]) => lat !== points[0][0] || lon !== points[0][1])) return [];
       return points;
+    }
+
+    function groupRoutesByArea(routes) {
+      const groups = [];
+      function distanceKm([lat1, lon1], [lat2, lon2]) {
+        const radians = Math.PI / 180;
+        const a = Math.sin((lat2 - lat1) * radians / 2) ** 2 +
+          Math.cos(lat1 * radians) * Math.cos(lat2 * radians) * Math.sin((lon2 - lon1) * radians / 2) ** 2;
+        return 6371 * 2 * Math.asin(Math.sqrt(Math.min(1, a)));
+      }
+      routes.forEach((route) => {
+        const origin = route.points[0];
+        const nearby = groups.find((group) => distanceKm(group.origin, origin) <= 30);
+        if (nearby) nearby.routes.push(route);
+        else {
+          const location = route.activity.location_country;
+          const city = typeof location === "object" && location !== null ? location.city :
+            String(location || "").match(/['"]city['"]\s*:\s*['"]([^'"]+)['"]/)?.[1];
+          groups.push({ origin, city, routes: [route] });
+        }
+      });
+      return groups.sort((left, right) => right.routes.length - left.routes.length);
     }
 
     function drawRoutes(svg, routes) {
@@ -275,11 +300,32 @@
       const routes = allRoutes.filter((route) => route.points.length > 1);
       if (routes.length === 0) runningRouteMap.setAttribute("hidden", "");
       else runningRouteMap.removeAttribute("hidden");
-      runningRouteMap.setAttribute("aria-label", `${stats.label}，${routes.length} 条跑步路线概览`);
       runningRoutesStatus.textContent = routes.length
         ? `${routes.length} 条路线${routes.length < stats.activities.length ? ` · ${stats.activities.length - routes.length} 次无轨迹` : ""}`
         : "该月跑步没有可用的 GPS 轨迹";
-      if (routes.length) drawRoutes(runningRouteMap, routes);
+      const groups = groupRoutesByArea(routes);
+      function showRegion(index) {
+        runningRouteMap.replaceChildren();
+        const group = groups[index];
+        if (!group) return;
+        runningRouteMap.setAttribute("aria-label", `${stats.label}，${group.city || `区域 ${index + 1}`}，${group.routes.length} 条跑步路线概览`);
+        drawRoutes(runningRouteMap, group.routes);
+      }
+      if (routeRegion) {
+        routeRegion.replaceChildren();
+        groups.forEach((group, index) => {
+          const option = document.createElement("option");
+          option.value = String(index);
+          const sameCityCount = groups.filter((item) => item.city === group.city).length;
+          const label = group.city ? `${group.city}${sameCityCount > 1 ? ` · 区域 ${index + 1}` : ""}` : `区域 ${index + 1}`;
+          option.textContent = `${label} · ${group.routes.length} 条路线`;
+          routeRegion.appendChild(option);
+        });
+        routeRegion.value = "0";
+        routeRegion.hidden = groups.length < 2;
+        routeRegion.onchange = () => showRegion(Number(routeRegion.value));
+      }
+      showRegion(0);
 
       if (!routeIndividual) return;
       allRoutes.forEach((route) => {
@@ -485,6 +531,7 @@
       function renderCurrentItem() {
         const current = items[currentIndex];
         crazyTalkText.textContent = current.text;
+        crazyTalkText.scrollTop = 0;
         crazyTalkLink.textContent = current.title;
         crazyTalkLink.href = current.url;
       }

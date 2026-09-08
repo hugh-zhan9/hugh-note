@@ -36,6 +36,7 @@ async function mount({ activities = [], memories = [], fail = false, storageBloc
     ids.set(`homepage-${name}`, new Element());
   }
   ids.set('dark-mode-toggle', new Element());
+  ids.set('homepage-route-region', new Element('select'));
   const get = name => ids.get(`homepage-${name}`);
   get('running-root').dataset = { targetKm: '150', runningBase: '/running/' };
   const notes = ['最新的一条', '另一条记录', '再一条记录'];
@@ -145,8 +146,10 @@ test('notes start with the latest, rotate every ten seconds, and support manual 
   assert.notEqual(text, '最新的一条');
   const rank = ['最新的一条', '另一条记录', '再一条记录'].indexOf(text);
   assert.equal(app.get('crazy-talk-link').href, `/crazy-talk/${rank}/`);
+  app.get('crazy-talk').scrollTop = 80;
   app.tick();
   assert.notEqual(app.get('crazy-talk').textContent, text);
+  assert.equal(app.get('crazy-talk').scrollTop, 0);
 });
 
 test('anniversary mixes prior-year note text and linked blog titles, newest year first', async () => {
@@ -228,7 +231,7 @@ const samplePolyline = '_p~iF~ps|U_ulLnnqC_mqNvxq`@';
 test('route overview and individual cards use only selected-month runs and tolerate missing GPS', async () => {
   const app = await mount({ activities: [
     { type: 'Run', start_date_local: '2026-09-08 18:00:00', distance: 6000, summary_polyline: samplePolyline },
-    { type: 'Run', start_date_local: '2026-09-05', distance: 4000, map: { summary_polyline: '??_ibE_ibE' } },
+    { type: 'Run', start_date_local: '2026-09-05', distance: 4000, map: { summary_polyline: samplePolyline } },
     { type: 'Run', start_date_local: '2026-09-04', distance: 3000, summary_polyline: 'invalid!' },
     { type: 'Run', start_date_local: '2026-08-01', distance: 5000, summary_polyline: samplePolyline },
     { type: 'Ride', start_date_local: '2026-09-02', distance: 12000, summary_polyline: samplePolyline },
@@ -271,4 +274,35 @@ test('route tabs support keyboard navigation and announce the active panel', asy
   app.get('route-individual-tab').events.keydown({ key: 'Home', preventDefault() {} });
   assert.equal(app.get('route-overview-tab').getAttribute('aria-selected'), 'true');
   assert.equal(app.get('route-overview').hidden, false);
+});
+
+test('overview fits each geographic area separately and excludes duplicate-coordinate placeholders', async () => {
+  const app = await mount({ activities: [
+    { type: 'Run', start_date_local: '2026-09-08', distance: 5000, summary_polyline: samplePolyline, location_country: "{'city': '地区甲'}" },
+    { type: 'Run', start_date_local: '2026-09-07', distance: 4000, summary_polyline: samplePolyline, location_country: "{'city': '地区甲'}" },
+    { type: 'Run', start_date_local: '2026-09-06', distance: 3000, summary_polyline: '??_ibE_ibE', location_country: { city: '地区乙' } },
+    { type: 'Run', start_date_local: '2026-09-05', distance: 2000, summary_polyline: '????' },
+  ] });
+  assert.equal(app.get('running-value').textContent, '14.0 / 150 km');
+  assert.equal(app.get('running-routes-status').textContent, '3 条路线 · 1 次无轨迹');
+  const region = app.get('route-region');
+  assert.equal(region.hidden, false);
+  assert.equal(region.children.length, 2);
+  assert.equal(region.children[0].textContent, '地区甲 · 2 条路线');
+  assert.equal(app.get('running-route-map').children.length, 2);
+  function assertReadableScale() {
+    const path = app.get('running-route-map').children[0].getAttribute('d');
+    const points = path.split(' ').map(point => point.slice(1).split(',').map(Number));
+    const width = Math.max(...points.map(p => p[0])) - Math.min(...points.map(p => p[0]));
+    const height = Math.max(...points.map(p => p[1])) - Math.min(...points.map(p => p[1]));
+    assert.ok(Math.max(width, height) >= 160);
+  }
+  assertReadableScale();
+  region.value = '1';
+  region.onchange();
+  assert.equal(app.get('running-route-map').children.length, 1);
+  assert.match(app.get('running-route-map').getAttribute('aria-label'), /地区乙/);
+  assertReadableScale();
+  assert.equal(app.get('route-individual').children.length, 4);
+  assert.equal(app.get('route-individual').children[3].children[1].textContent, '暂无 GPS 轨迹');
 });

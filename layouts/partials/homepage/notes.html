@@ -7,7 +7,7 @@
 	{{ with $items }}
 		{{ $initial := index . 0 }}
 		<div>
-			<p class="homepage-note-text" id="homepage-crazy-talk">{{ $initial.text | truncate 140 }}</p>
+			<p class="homepage-note-text" id="homepage-crazy-talk" tabindex="0" aria-label="当前碎念">{{ $initial.text | truncate 140 }}</p>
 			<a class="homepage-note-source" id="homepage-crazy-talk-link" href="{{ $initial.url }}">{{ $initial.title }}</a>
 		</div>
 		<div id="homepage-crazy-talk-data" hidden>
