@@ -1,5 +1,6 @@
 ---
 title: 'Golang框架选型'
+date: 2026-09-08T00:00:00+08:00
 sidebar_position: 0
 hide_title: true
 keywords:
