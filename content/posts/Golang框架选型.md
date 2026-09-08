@@ -1,32 +1,12 @@
 ---
-title: 'Golang框架选型'
-date: 2026-09-08T00:00:00+08:00
-sidebar_position: 0
-hide_title: true
-keywords:
-  [
-    GoFrame,
-    Beego,
-    Iris,
-    Gin,
-    Kratos,
-    Golang框架对比,
-    Web框架,
-    微服务框架,
-    框架选型,
-    技术选型,
-    模块化设计,
-    工程化,
-    易用性,
-    框架性能,
-    开发效率,
-  ]
-description: '基于最新正式发布版本，对比GoFrame、Beego、Iris、Gin和Kratos的定位、Web能力、基础组件、工程化与微服务支持，说明内置能力和外部集成的区别，并提供按业务场景选型的建议。原文团队迁移经历作为历史案例保留。'
+title: "Golang框架选型"
+draft: false
+date: 2026-09-08T18:14:17+08:00
+description: "基于最新正式发布版本，对比GoFrame、Beego、Iris、Gin和Kratos的定位、Web能力、基础组件、工程化与微服务支持，说明内置能力和外部集成的区别，并提供按业务场景选型的建议。原文团队迁移经历作为历史案例保留。"
+tags: [GoFrame, Beego, Iris, Gin, Kratos, Golang框架, Web框架, 微服务框架, 框架选型, 技术选型, 模块化设计, 工程化, 易用性, 框架性能, 开发效率]
 ---
 
-# Golang 框架选型
-
-**核对日期：2026-09-08。** 本文以各项目 GitHub Releases 标记的最新正式版为基线，排除预发布版和未发布的主分支功能；版本、发布日期、模块路径和 Go 版本声明均核对到对应发布标签。发布日期按 UTC 记录。CLI、数据库驱动和 contrib 扩展可能独立发版，不能仅凭核心框架版本推定它们的版本。
+本文以各项目 GitHub Releases 标记的最新正式版为基线，排除预发布版和未发布的主分支功能；版本、发布日期、模块路径和 Go 版本声明均核对到对应发布标签。发布日期按 UTC 记录。CLI、数据库驱动和 contrib 扩展可能独立发版，不能仅凭核心框架版本推定它们的版本。
 
 原文迁移自 [GoFrame 旧版官网社区贡献文章](https://wiki.goframe.org/pages/viewpage.action?pageId=3673375)（旧站本次访问失败，保留历史出处）。本次更新重做版本和能力比较，增加 Kratos。
 
