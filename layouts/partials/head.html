@@ -3,6 +3,11 @@
 		<a href="{{ absURL "/" }}">{{ .Site.Title }}</a>
 	</div>
 	<nav>
+		{{ if .IsHome }}
+			<a href="/blog/">文章</a>
+			<a href="/crazy-talk/">碎念</a>
+			<a href="{{ absURL "running/" }}">跑步</a>
+		{{ end }}
 		{{ if not .IsHome }}
 			{{ $currentPath := replaceRE "/+$" "" .RelPermalink }}
 			{{ if eq $currentPath "" }}
@@ -19,7 +24,7 @@
 			{{ end }}
 		{{ end }}
 		{{ if eq .Site.Params.mode "toggle" -}}
-		{{ if not .IsHome }} | {{ end }}<span id="dark-mode-toggle" onclick="toggleTheme()"></span>
+		{{ if not .IsHome }} | <span id="dark-mode-toggle" onclick="toggleTheme()"></span>{{ else }}<button id="dark-mode-toggle" type="button" aria-label="切换深色模式" onclick="toggleTheme()"></button>{{ end }}
 		<script src="{{ absURL "js/themetoggle.js" }}"></script>
 		{{ end }}
 	</nav>

@@ -1,0 +1,16 @@
+<section class="homepage-running" id="homepage-running-root" data-running-root data-running-base="/running/" data-target-km="150" aria-labelledby="homepage-running-title">
+	<div class="homepage-section-heading">
+		<h2 id="homepage-running-title"><a href="{{ absURL "running/" }}">跑步 <span aria-hidden="true">↗</span></a></h2>
+		<span class="homepage-meta" id="homepage-running-month">{{ now.Format "2006 年 1 月" }}</span>
+	</div>
+	<div class="homepage-running-overview">
+		<p class="homepage-running-value" id="homepage-running-value">— <span>/ 150 km</span></p>
+		<span class="homepage-meta" id="homepage-running-percent">—</span>
+	</div>
+	<div class="homepage-progress" role="progressbar" aria-label="本月跑量目标" aria-valuemin="0" aria-valuemax="150" aria-valuetext="正在读取" id="homepage-running-meter">
+		<div class="homepage-progress-bar" id="homepage-running-progress"></div>
+	</div>
+	<div class="homepage-running-grid" id="homepage-running-grid" aria-label="本月每日跑量"></div>
+	<p class="homepage-running-status" id="homepage-running-status" role="status">正在读取…</p>
+	<noscript><p class="homepage-empty">前往<a href="{{ absURL "running/" }}">跑步记录</a>查看跑量。</p></noscript>
+</section>

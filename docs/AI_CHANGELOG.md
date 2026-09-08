@@ -1,5 +1,16 @@
 # AI Change Log
 
+## 2026-09-08
+
+### Change
+重构首页为文章主栏与碎念、跑步侧栏，精简重复文案和卡片装饰，保留深浅主题与碎念每 8 秒自动轮播。新增“那年今日”：按访问当天的月日匹配往年内容，碎念显示正文，博客只显示可跳转的标题。拆分首页模板，修正 140 天更新统计范围及跑量读取失败时误报零记录的问题。
+
+### Verification
+首页 7 项行为测试、疯言疯语栏目检查和 diff 格式检查通过。完整 Hugo 构建因本机磁盘空间不足未完成，浏览器连接不可用，尚未完成实际页面视觉验收；未发布。
+
+### Changed Files
+`layouts/index.html`、`layouts/partials/head.html`、`layouts/partials/homepage/`、`assets/css/homepage.css`、`static/js/homepage.js`、`tests/homepage_contract_test.sh`、`tests/homepage_test.mjs`。此前删除的 `/blog/` 顶部说明继续保留删除状态。
+
 ## 2026-04-01
 
 ### Change

@@ -1,0 +1,17 @@
+{{ $items := slice }}
+{{ $pages := (where (where .Site.RegularPages "Section" "crazy-talk") "Params.hidden" "ne" true).ByDate.Reverse }}
+{{ range $pageRank, $page := $pages }}
+	{{ $raw := .RawContent | replaceRE "\r\n" "\n" | strings.TrimSpace }}
+	{{ $entries := split (replaceRE "(?m)^###\\s+" "@@ENTRY@@" $raw) "@@ENTRY@@" }}
+	{{ range $entries }}
+		{{ $entry := . | strings.TrimSpace }}
+		{{ if ne $entry "" }}
+			{{ $time := index (split $entry "\n") 0 | strings.TrimSpace }}
+			{{ $text := replaceRE "(?s)^[^\n]+\n+" "" $entry | markdownify | plainify | htmlUnescape | replaceRE "\\s+" " " | strings.TrimSpace }}
+			{{ if ne $text "" }}
+				{{ $items = $items | append (dict "text" $text "title" (printf "%s %s" $page.Title $time) "date" ($page.Date.Format "2006-01-02") "url" $page.RelPermalink "sourceRank" $pageRank) }}
+			{{ end }}
+		{{ end }}
+	{{ end }}
+{{ end }}
+{{ return $items }}

@@ -13,6 +13,7 @@
     const runningProgress = document.getElementById("homepage-running-progress");
     const runningPercent = document.getElementById("homepage-running-percent");
     const runningGrid = document.getElementById("homepage-running-grid");
+    const runningMeter = document.getElementById("homepage-running-meter");
 
     const crazyTalkDataNode = document.getElementById("homepage-crazy-talk-data");
     const crazyTalkText = document.getElementById("homepage-crazy-talk");
@@ -23,11 +24,16 @@
     const RUNNING_BASE = runningRoot?.dataset.runningBase || "/running/";
     const CRAZY_TALK_INTERVAL_MS = 8000;
     const CRAZY_TALK_FILE_LIMIT = 30;
-    let crazyTalkTimer = null;
 
     function syncHomepageTheme() {
-      const savedTheme = localStorage.getItem("theme-storage") || "light";
+      let savedTheme = "light";
+      try {
+        savedTheme = localStorage.getItem("theme-storage") || "light";
+      } catch (error) {}
       document.body.setAttribute("data-homepage-theme", savedTheme);
+      document.getElementById("dark-mode-toggle")?.setAttribute(
+        "aria-label", savedTheme === "dark" ? "切换浅色模式" : "切换深色模式"
+      );
     }
 
     function normalizeActivityType(type) {
@@ -195,7 +201,10 @@
       const safeTotalKm = Number.isFinite(stats.totalKm) ? stats.totalKm : 0;
 
       runningMonth.textContent = stats.label;
-      runningValue.textContent = `${safeTotalKm.toFixed(1)} / ${RUNNING_TARGET_KM} km`;
+      runningValue.textContent = `${safeTotalKm.toFixed(1)} `;
+      const targetLabel = document.createElement("span");
+      targetLabel.textContent = `/ ${RUNNING_TARGET_KM} km`;
+      runningValue.appendChild(targetLabel);
       if (runningPercent) {
         runningPercent.textContent = `${Math.round(
           Math.min((safeTotalKm / RUNNING_TARGET_KM) * 100, 100)
@@ -203,12 +212,14 @@
       }
       runningStatus.textContent =
         safeTotalKm >= RUNNING_TARGET_KM
-          ? "这个月的目标已经完成了，接下来继续把节奏跑稳。"
-          : `离这个月的 ${RUNNING_TARGET_KM} km 目标，还差 ${Math.max(
+          ? "本月目标已完成"
+          : safeTotalKm === 0 ? "本月暂无跑步记录" : `距目标还差 ${Math.max(
               RUNNING_TARGET_KM - safeTotalKm,
               0
-            ).toFixed(1)} km。`;
+            ).toFixed(1)} km`;
       runningProgress.style.width = `${Math.min((safeTotalKm / RUNNING_TARGET_KM) * 100, 100)}%`;
+      runningMeter?.setAttribute("aria-valuenow", String(Math.min(safeTotalKm, RUNNING_TARGET_KM)));
+      runningMeter?.setAttribute("aria-valuetext", `${safeTotalKm.toFixed(1)} / ${RUNNING_TARGET_KM} km`);
       runningGrid.innerHTML = "";
 
       stats.days.forEach((entry) => {
@@ -223,6 +234,11 @@
     function renderRunningFallback(message) {
       const fallbackStats = buildEmptyMonthlyStats(new Date());
       renderRunningStats(fallbackStats);
+      runningValue.textContent = "—";
+      runningPercent.textContent = "—";
+      runningGrid.innerHTML = "";
+      runningMeter?.removeAttribute("aria-valuenow");
+      runningMeter?.setAttribute("aria-valuetext", "跑量暂不可用");
       runningStatus.textContent = message;
     }
 
@@ -237,7 +253,7 @@
         renderRunningStats(monthlyStats);
       } catch (error) {
         console.error(error);
-        renderRunningFallback("这个月暂时还没有跑步记录。");
+        renderRunningFallback("跑量暂不可用，可前往跑步记录查看。");
       }
     }
 
@@ -291,7 +307,8 @@
         [items[index], items[randomIndex]] = [items[randomIndex], items[index]];
       }
 
-      let currentIndex = 0;
+      // Start with the latest note, then rotate through the sampled archive.
+      let currentIndex = -1;
 
       function renderCurrentItem() {
         const current = items[currentIndex];
@@ -302,30 +319,90 @@
 
       function advanceTicker() {
         currentIndex = (currentIndex + 1) % items.length;
+        if (items.length > 1 && items[currentIndex].text === crazyTalkText.textContent) {
+          currentIndex = (currentIndex + 1) % items.length;
+        }
         renderCurrentItem();
       }
 
+      let timer = null;
       function restartTicker() {
-        if (crazyTalkTimer) {
-          window.clearInterval(crazyTalkTimer);
-        }
-
-        if (items.length > 1) {
-          crazyTalkTimer = window.setInterval(advanceTicker, CRAZY_TALK_INTERVAL_MS);
+        window.clearInterval(timer);
+        if (items.length > 1 && !document.hidden) {
+          timer = window.setInterval(advanceTicker, CRAZY_TALK_INTERVAL_MS);
         }
       }
-
       crazyTalkNext.addEventListener("click", function () {
         advanceTicker();
         restartTicker();
       });
+      crazyTalkNext.hidden = items.length < 2;
+      document.addEventListener("visibilitychange", restartTicker);
+      restartTicker();
+    }
 
-      if (items.length === 1) {
-        crazyTalkNext.hidden = true;
+    function initMemories() {
+      const data = document.getElementById("homepage-memories-data");
+      const list = document.getElementById("homepage-memories-list");
+      const dateLabel = document.getElementById("homepage-memories-date");
+      if (!data || !list || !dateLabel) return;
+
+      const records = Array.from(data.querySelectorAll("[data-memory-item]"), (node) => ({
+        date: node.getAttribute("data-date"),
+        kind: node.getAttribute("data-kind"),
+        text: node.getAttribute("data-text"),
+        url: node.getAttribute("data-url"),
+      }));
+
+      function renderMemories() {
+        const today = new Date();
+        const year = String(today.getFullYear());
+        const anniversary = `${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+        dateLabel.textContent = anniversary.replace("-", ".");
+        dateLabel.setAttribute("datetime", `${year}-${anniversary}`);
+        const matches = records
+          .filter((item) => item.date.slice(5) === anniversary && item.date.slice(0, 4) < year)
+          .sort((left, right) => right.date.localeCompare(left.date));
+
+        list.replaceChildren();
+        matches.forEach((item) => {
+          const article = document.createElement("article");
+          article.className = "homepage-memory";
+          const date = document.createElement("time");
+          date.setAttribute("datetime", item.date);
+          date.textContent = `${item.date.slice(0, 4)} · ${item.kind === "blog" ? "文章" : "疯言疯语"}`;
+          article.appendChild(date);
+          if (item.kind === "blog") {
+            const title = document.createElement("h3");
+            const link = document.createElement("a");
+            link.href = item.url;
+            link.textContent = item.text;
+            const arrow = document.createElement("span");
+            arrow.setAttribute("aria-hidden", "true");
+            arrow.textContent = " ↗";
+            link.appendChild(arrow);
+            title.appendChild(link);
+            article.appendChild(title);
+          } else {
+            const text = document.createElement("p");
+            text.textContent = item.text;
+            article.appendChild(text);
+          }
+          list.appendChild(article);
+        });
+        if (matches.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "homepage-empty";
+          empty.textContent = "这一天，还没有往年的记录。";
+          list.appendChild(empty);
+        }
       }
 
-      renderCurrentItem();
-      restartTicker();
+      renderMemories();
+      window.addEventListener("pageshow", renderMemories);
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) renderMemories();
+      });
     }
 
     syncHomepageTheme();
@@ -345,6 +422,7 @@
 
     initRunningPanel();
     initCrazyTalkTicker();
+    initMemories();
   }
 
   if (document.readyState === "loading") {

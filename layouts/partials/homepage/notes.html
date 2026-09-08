@@ -1,0 +1,21 @@
+{{ $items := . }}
+<section class="homepage-notes" aria-labelledby="homepage-notes-title">
+	<div class="homepage-section-heading">
+		<h2 id="homepage-notes-title"><a href="/crazy-talk/">疯言疯语 <span aria-hidden="true">↗</span></a></h2>
+		{{ if gt (len $items) 1 }}<button class="homepage-next" id="homepage-crazy-talk-next" type="button" hidden>换一条 <span aria-hidden="true">↻</span></button>{{ end }}
+	</div>
+	{{ with $items }}
+		{{ $initial := index . 0 }}
+		<div>
+			<p class="homepage-note-text" id="homepage-crazy-talk">{{ $initial.text | truncate 140 }}</p>
+			<a class="homepage-note-source" id="homepage-crazy-talk-link" href="{{ $initial.url }}">{{ $initial.title }}</a>
+		</div>
+		<div id="homepage-crazy-talk-data" hidden>
+			{{ range . }}
+				<div data-crazy-talk-item data-text="{{ .text | truncate 140 }}" data-title="{{ .title }}" data-source-rank="{{ .sourceRank }}" data-url="{{ .url }}"></div>
+			{{ end }}
+		</div>
+	{{ else }}
+		<p class="homepage-empty">暂无碎念。</p>
+	{{ end }}
+</section>

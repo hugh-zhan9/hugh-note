@@ -1,0 +1,42 @@
+{{ $records := slice }}
+{{ range where (where .page.Site.RegularPages "Section" "posts") "Params.hidden" "ne" true }}
+	{{ $records = $records | append (dict "date" (.Date.Format "2006-01-02") "kind" "blog" "text" .Title "url" .RelPermalink) }}
+{{ end }}
+{{ range .notes }}
+	{{ $records = $records | append (dict "date" .date "kind" "note" "text" .text "url" .url) }}
+{{ end }}
+{{ $records = sort $records "date" "desc" }}
+{{ $today := now.Format "2006-01-02" }}
+{{ $year := now.Format "2006" }}
+{{ $anniversary := now.Format "01-02" }}
+{{ $matches := slice }}
+{{ range $records }}
+	{{ if and (eq (substr .date 5) $anniversary) (lt (substr .date 0 4) $year) }}
+		{{ $matches = $matches | append . }}
+	{{ end }}
+{{ end }}
+<section class="homepage-memories" aria-labelledby="homepage-memories-title">
+	<div class="homepage-section-heading">
+		<h2 id="homepage-memories-title">那年今日</h2>
+		<time class="homepage-meta" id="homepage-memories-date" datetime="{{ $today }}">{{ now.Format "01.02" }}</time>
+	</div>
+	<div class="homepage-memory-list" id="homepage-memories-list">
+		{{ range $matches }}
+			<article class="homepage-memory">
+				<time datetime="{{ .date }}">{{ substr .date 0 4 }} · {{ if eq .kind "blog" }}文章{{ else }}疯言疯语{{ end }}</time>
+				{{ if eq .kind "blog" }}
+					<h3><a href="{{ .url }}">{{ .text }} <span aria-hidden="true">↗</span></a></h3>
+				{{ else }}
+					<p>{{ .text }}</p>
+				{{ end }}
+			</article>
+		{{ else }}
+			<p class="homepage-empty">这一天，还没有往年的记录。</p>
+		{{ end }}
+	</div>
+	<div id="homepage-memories-data" hidden>
+		{{ range $records }}
+			<div data-memory-item data-date="{{ .date }}" data-kind="{{ .kind }}" data-text="{{ .text }}" data-url="{{ .url }}"></div>
+		{{ end }}
+	</div>
+</section>

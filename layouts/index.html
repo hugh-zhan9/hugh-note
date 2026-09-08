@@ -1,269 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ .Site.Language.Lang }}">
 	{{ partial "header.html" . }}
 	<body class="homepage-enabled" data-homepage-theme="light">
 		<script>
-			(function () {
-				try {
-					var savedTheme = localStorage.getItem("theme-storage") || "light";
-					document.body.setAttribute("data-homepage-theme", savedTheme);
-				} catch (error) {
-					document.body.setAttribute("data-homepage-theme", "light");
-				}
-			})();
+			try {
+				document.body.setAttribute("data-homepage-theme", localStorage.getItem("theme-storage") || "light");
+			} catch (error) {}
 		</script>
 		<div class="content">
 			{{ partial "head.html" . }}
-
-			{{ $heatmapScratch := newScratch }}
-			{{ $heatmapScratch.Set "counts" (dict) }}
-			{{ $contentPages := where .Site.RegularPages "File" "!=" nil }}
-			{{ range $contentPages }}
-				{{ $updatedAt := .Lastmod }}
-				{{ with .GitInfo }}
-					{{ $updatedAt = .AuthorDate }}
-				{{ end }}
-				{{ $dayKey := dateFormat "2006-01-02" $updatedAt }}
-				{{ $counts := $heatmapScratch.Get "counts" }}
-				{{ $current := 0 }}
-				{{ with index $counts $dayKey }}
-					{{ $current = . }}
-				{{ end }}
-				{{ $heatmapScratch.SetInMap "counts" $dayKey (add $current 1) }}
-			{{ end }}
-			{{ $heatmapCounts := $heatmapScratch.Get "counts" }}
-			{{ $activeDays := len $heatmapCounts }}
-			{{ $totalUpdates := len $contentPages }}
-			{{ $blogHeatmapDays := 140 }}
-			{{ $blogHeatmapStart := now.AddDate 0 0 (sub 1 $blogHeatmapDays) }}
-			{{ $blogHeatmapStartLabel := dateFormat "2006-01-02" $blogHeatmapStart }}
-			{{ $blogHeatmapEndLabel := dateFormat "2006-01-02" now }}
-			{{ $maxCount := 0 }}
-			{{ range $key, $value := $heatmapCounts }}
-				{{ if gt $value $maxCount }}
-					{{ $maxCount = $value }}
-				{{ end }}
-			{{ end }}
-
-			{{ $crazyTalkScratch := newScratch }}
-			{{ $crazyTalkScratch.Set "items" (slice) }}
-			{{ $crazyTalkPages := (where .Site.RegularPages "Section" "crazy-talk").ByDate.Reverse }}
-			{{ range $pageRank, $page := $crazyTalkPages }}
-				{{ $rawContent := .RawContent | replaceRE "\r\n" "\n" | strings.TrimSpace }}
-				{{ $segmentedContent := replaceRE "(?m)^###\\s+" "@@ENTRY@@" $rawContent }}
-				{{ $entries := split $segmentedContent "@@ENTRY@@" }}
-				{{ range $entries }}
-					{{ $entry := . | strings.TrimSpace }}
-					{{ if ne $entry "" }}
-						{{ $timeLabel := index (split $entry "\n") 0 | strings.TrimSpace }}
-						{{ $entryText := replaceRE "(?s)^[^\n]+\n+" "" $entry | replaceRE "\\s+" " " | strings.TrimSpace | truncate 140 }}
-						{{ if ne $entryText "" }}
-							{{ $item := dict
-								"text" $entryText
-								"title" (printf "%s %s" $page.Title $timeLabel)
-								"url" $page.RelPermalink
-								"sourceRank" $pageRank
-							}}
-							{{ $crazyTalkScratch.Add "items" (slice $item) }}
-						{{ end }}
-					{{ end }}
-				{{ end }}
-			{{ end }}
-			{{ $crazyTalkItems := $crazyTalkScratch.Get "items" }}
-			{{ if eq (len $crazyTalkItems) 0 }}
-				{{ $crazyTalkItems = slice (dict
-					"text" "这里暂时还没有新的疯言疯语。"
-					"title" "疯言疯语"
-					"url" "/crazy-talk/"
-					"sourceRank" 0
-				) }}
-			{{ end }}
-			{{ $initialCrazyTalk := index $crazyTalkItems 0 }}
-			{{ $now := now }}
-			{{ $currentYear := $now.Year }}
-			{{ $currentMonth := $now.Month }}
-			{{ $monthStart := time.AsTime (printf "%04d-%02d-01T00:00:00+08:00" $currentYear $currentMonth) }}
-			{{ $daysInMonth := ($monthStart.AddDate 0 1 -1) | dateFormat "2" | int }}
-
+			{{ $notes := partial "homepage/note-items.html" . }}
 			<main class="homepage" data-homepage="interactive">
-				<section class="homepage-hero">
-					<div class="homepage-hero-grid">
-						<div class="homepage-hero-copy">
-							<div class="homepage-identity" aria-label="Homepage identity">
-								<div class="homepage-identity-main">
-									<span class="homepage-identity-mark">HN</span>
-									<div class="homepage-identity-copy">
-										<p class="homepage-eyebrow">Hugh Note</p>
-										<p class="homepage-identity-subtitle">个人首页 / Writing, Running, Thinking</p>
-									</div>
+				<div class="homepage-columns">
+					<section class="homepage-posts" aria-labelledby="homepage-posts-title">
+						<div class="homepage-section-heading">
+							<h1 id="homepage-posts-title">最近文章</h1>
+							<a class="homepage-more" href="/blog/">全部文章 <span aria-hidden="true">↗</span></a>
+						</div>
+						{{ $posts := (where (where .Site.RegularPages "Section" "posts") "Params.hidden" "ne" true).ByDate.Reverse }}
+						{{ range first 5 $posts }}
+							<article class="homepage-post">
+								<div class="homepage-post-meta">
+									<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>
+									{{ with .Params.tags }}<span>{{ index . 0 }}</span>{{ end }}
 								</div>
-							</div>
-							<div class="homepage-identity-meta" aria-label="Homepage meta">
-								<span>持续书写</span>
-								<span>长期跑步</span>
-								<span>保留碎念</span>
-							</div>
-							<h1 class="homepage-title">
-								<span class="homepage-title-lead">写作、跑步和思考</span>
-								<span class="homepage-title-tail">是我理解生活的三种方式。</span>
-							</h1>
-							<p class="homepage-summary">
-								我用文章整理经验，用跑步校准节奏，也把那些尚未成形的念头留在疯言疯语里。这里展示的不是结果，而是持续发生的过程。
-							</p>
-							<p class="homepage-kicker-row" aria-label="Homepage overview">
-								<span class="homepage-kicker">最近 {{ $blogHeatmapDays }} 天</span>
-								<span class="homepage-kicker">{{ $activeDays }} 天有内容更新</span>
-								<span class="homepage-kicker">本月跑量目标 150 km</span>
-							</p>
-							<nav class="homepage-links" aria-label="Homepage links">
-								<a class="homepage-link" href="/blog/">Blog</a>
-								<a class="homepage-link" href="/crazy-talk/">疯言疯语</a>
-								<a class="homepage-link" href="https://hugh-zhan9.github.io/running/">Running</a>
-							</nav>
-						</div>
-
-						<aside class="homepage-hero-aside" aria-label="Homepage highlights">
-							<div class="homepage-hero-stat">
-								<span class="homepage-hero-stat-label">内容更新</span>
-								<strong class="homepage-hero-stat-value">{{ $totalUpdates }}</strong>
-								<span class="homepage-hero-stat-note">累计内容页 / {{ $activeDays }} 天活跃</span>
-							</div>
-							<div class="homepage-hero-stat">
-								<span class="homepage-hero-stat-label">长期工程</span>
-								<strong class="homepage-hero-stat-value">Run + Write</strong>
-								<span class="homepage-hero-stat-note">写作是整理，跑步是校准，疯言疯语是那些还没长成文章的想法</span>
-							</div>
-							<div class="homepage-hero-note">
-								<p class="homepage-hero-note-label">此刻脑海里的句子</p>
-								<p class="homepage-hero-note-text">{{ $initialCrazyTalk.text }}</p>
-								<a class="homepage-hero-note-link" href="{{ $initialCrazyTalk.url }}">{{ $initialCrazyTalk.title }}</a>
-							</div>
-						</aside>
-					</div>
-				</section>
-
-				<section class="homepage-grid">
-					<article class="homepage-card homepage-card-wide homepage-card-primary">
-						<div class="homepage-card-header">
-							<div>
-								<p class="homepage-label">Blog Heatmap</p>
-								<h2 class="homepage-card-title">最近一段时间，我把哪些内容认真写了下来</h2>
-							</div>
-							<div class="homepage-card-meta">
-								<span>{{ $activeDays }} 天活跃</span>
-								<span>{{ $totalUpdates }} 篇内容</span>
-							</div>
-						</div>
-						<div class="homepage-heatmap" role="img" aria-label="博客更新热力图">
-							{{ range seq 0 (sub $blogHeatmapDays 1) }}
-								{{ $offset := sub . (sub $blogHeatmapDays 1) }}
-								{{ $date := now.AddDate 0 0 $offset }}
-								{{ $dateKey := dateFormat "2006-01-02" $date }}
-								{{ $count := 0 }}
-								{{ with index $heatmapCounts $dateKey }}
-									{{ $count = . }}
-								{{ end }}
-								{{ $level := "level-0" }}
-								{{ if eq $count 1 }}
-									{{ $level = "level-1" }}
-								{{ else if eq $count 2 }}
-									{{ $level = "level-2" }}
-								{{ else if ge $count 3 }}
-									{{ $level = "level-3" }}
-								{{ end }}
-								<span
-									class="homepage-heatmap-cell {{ $level }}"
-									title="{{ $dateKey }} · {{ $count }} 次更新"
-									aria-label="{{ $dateKey }} · {{ $count }} 次更新"></span>
-							{{ end }}
-						</div>
-						<div class="homepage-card-footer">
-							<span>近 {{ $blogHeatmapDays }} 天的写作切片</span>
-							<a class="homepage-card-action" href="/blog/">文章归档</a>
-						</div>
-					</article>
-
-					<article class="homepage-card homepage-card-secondary" id="homepage-running-root" data-running-root data-running-base="/running/" data-target-km="150">
-						<div class="homepage-card-header">
-							<div>
-								<p class="homepage-label">Running Goal</p>
-								<h2 class="homepage-card-title">这个月，我正把跑步重新放回生活节奏里</h2>
-							</div>
-							<div class="homepage-card-meta">
-								<span id="homepage-running-month">{{ printf "%04d 年 %02d 月" $currentYear $currentMonth }}</span>
-							</div>
-						</div>
-						<div class="homepage-running-overview">
-							<div class="homepage-running-overview-main">
-								<div class="homepage-running-value" id="homepage-running-value">0.0 / 150 km</div>
-								<p class="homepage-running-status" id="homepage-running-status">正在读取本月跑量。</p>
-							</div>
-							<div class="homepage-running-metrics" aria-label="Running metrics">
-								<div class="homepage-running-metric">
-									<span class="homepage-running-metric-label">完成率</span>
-									<strong class="homepage-running-metric-value" id="homepage-running-percent">0%</strong>
-								</div>
-								<div class="homepage-running-metric">
-									<span class="homepage-running-metric-label">本月目标</span>
-									<strong class="homepage-running-metric-value">150 km</strong>
-								</div>
-							</div>
-						</div>
-						<div class="homepage-progress">
-							<div class="homepage-progress-bar" id="homepage-running-progress"></div>
-						</div>
-						<div class="homepage-running-legend" aria-label="Running heatmap legend">
-							<span class="homepage-running-legend-text">轻</span>
-							<span class="homepage-running-legend-cell level-0"></span>
-							<span class="homepage-running-legend-cell level-1"></span>
-							<span class="homepage-running-legend-cell level-2"></span>
-							<span class="homepage-running-legend-cell level-3"></span>
-							<span class="homepage-running-legend-text">强</span>
-						</div>
-						<div class="homepage-running-grid" id="homepage-running-grid" aria-live="polite">
-							{{ range seq 1 $daysInMonth }}
-								{{ $dayKey := printf "%04d-%02d-%02d" $currentYear $currentMonth . }}
-								<span
-									class="homepage-running-cell level-0"
-									title="{{ $dayKey }} · 当天暂无跑步记录"
-									aria-label="{{ $dayKey }} · 当天暂无跑步记录"></span>
-							{{ end }}
-						</div>
-						<div class="homepage-card-footer">
-							<span>这里只看当月，完整轨迹在 Running</span>
-							<a class="homepage-card-action" href="https://hugh-zhan9.github.io/running/">Running 全记录</a>
-						</div>
-					</article>
-				</section>
-
-				<section class="homepage-crazy-talk-section">
-					<div class="homepage-card homepage-crazy-talk-card">
-						<div class="homepage-card-header">
-							<div>
-								<p class="homepage-label">Crazy Talk</p>
-								<h2 class="homepage-card-title">那些来不及展开成文章的念头</h2>
-							</div>
-							<button class="homepage-ticker-button" id="homepage-crazy-talk-next" type="button">下一条</button>
-						</div>
-						<p class="homepage-crazy-talk" id="homepage-crazy-talk">{{ $initialCrazyTalk.text }}</p>
-						<div class="homepage-card-footer">
-							<a class="homepage-card-source" id="homepage-crazy-talk-link" href="{{ $initialCrazyTalk.url }}">{{ $initialCrazyTalk.title }}</a>
-							<a class="homepage-card-action" href="/crazy-talk/">碎念归档</a>
-						</div>
-					</div>
-				</section>
+								<h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+								{{ with .Description }}<p class="homepage-post-description">{{ . }}</p>{{ end }}
+							</article>
+						{{ else }}
+							<p class="homepage-empty">暂无文章。</p>
+						{{ end }}
+					</section>
+					<aside class="homepage-aside" aria-label="日常记录">
+						{{ partial "homepage/notes.html" $notes }}
+						{{ partial "homepage/running.html" . }}
+					</aside>
+				</div>
+				{{ partial "homepage/memories.html" (dict "page" . "notes" $notes) }}
+				{{ partial "homepage/activity.html" . }}
 			</main>
-
-			<div id="homepage-crazy-talk-data" hidden>
-				{{ range $crazyTalkItems }}
-					<div
-						data-crazy-talk-item
-						data-text="{{ .text }}"
-						data-title="{{ .title }}"
-						data-source-rank="{{ .sourceRank }}"
-						data-url="{{ .url }}"></div>
-				{{ end }}
-			</div>
 			{{ partial "footer.html" . }}
 		</div>
 	</body>

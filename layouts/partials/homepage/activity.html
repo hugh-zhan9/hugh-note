@@ -1,0 +1,38 @@
+{{ $counts := dict }}
+{{ $days := 140 }}
+{{ $today := now }}
+{{ $endKey := $today.Format "2006-01-02" }}
+{{ $start := $today.AddDate 0 0 (sub 1 $days) }}
+{{ $startKey := $start.Format "2006-01-02" }}
+{{ $activeDays := 0 }}
+{{ $updates := 0 }}
+{{ $pages := where (where .Site.RegularPages "Section" "in" (slice "posts" "crazy-talk")) "Params.hidden" "ne" true }}
+{{ range $pages }}
+	{{ $updatedAt := .Lastmod }}
+	{{ with .GitInfo }}{{ $updatedAt = .AuthorDate }}{{ end }}
+	{{ $key := $updatedAt.Format "2006-01-02" }}
+	{{ if and (ge $key $startKey) (le $key $endKey) }}
+		{{ $count := index $counts $key | default 0 }}
+		{{ if eq $count 0 }}{{ $activeDays = add $activeDays 1 }}{{ end }}
+		{{ $updates = add $updates 1 }}
+		{{ $counts = merge $counts (dict $key (add $count 1)) }}
+	{{ end }}
+{{ end }}
+<section class="homepage-activity" aria-labelledby="homepage-activity-title">
+	<div class="homepage-section-heading">
+		<h2 id="homepage-activity-title">更新记录</h2>
+		<span class="homepage-meta">近 {{ $days }} 天 · {{ $activeDays }} 天有更新</span>
+	</div>
+	<div class="homepage-heatmap" role="img" aria-label="近 {{ $days }} 天，{{ $activeDays }} 天有内容更新，共 {{ $updates }} 篇内容，按最近更新时间统计。">
+		{{ range seq 0 (sub $days 1) }}
+			{{ $date := $start.AddDate 0 0 . }}
+			{{ $key := $date.Format "2006-01-02" }}
+			{{ $count := index $counts $key | default 0 }}
+			<span class="homepage-heatmap-cell level-{{ math.Min $count 3 | int }}" title="{{ $key }} · {{ $count }} 篇内容更新"></span>
+		{{ end }}
+	</div>
+	<div class="homepage-activity-footer">
+		<span>{{ $start.Format "01.02" }} — {{ $today.Format "01.02" }}</span>
+		<div class="homepage-legend" aria-hidden="true"><span>少</span><i class="level-0"></i><i class="level-1"></i><i class="level-2"></i><i class="level-3"></i><span>多</span></div>
+	</div>
+</section>

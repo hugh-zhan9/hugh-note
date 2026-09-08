@@ -1,0 +1,179 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { test } from 'node:test';
+import vm from 'node:vm';
+
+const source = readFileSync(new URL('../static/js/homepage.js', import.meta.url), 'utf8');
+
+class Element {
+  constructor() {
+    this.children = [];
+    this.attributes = {};
+    this.events = {};
+    this.style = {};
+    this.dataset = {};
+    this.hidden = true;
+    this.text = '';
+  }
+  set textContent(value) { this.text = value; this.children = []; }
+  get textContent() { return this.text + this.children.map(child => child.textContent).join(''); }
+  set innerHTML(value) { this.text = value; this.children = []; }
+  appendChild(child) { this.children.push(child); }
+  replaceChildren(...children) { this.text = ''; this.children = children; }
+  setAttribute(name, value) { this.attributes[name] = String(value); }
+  getAttribute(name) { return this.attributes[name] ?? null; }
+  removeAttribute(name) { delete this.attributes[name]; }
+  addEventListener(name, callback) { this.events[name] = callback; }
+  querySelectorAll() { return this.children; }
+}
+
+async function mount({ activities = [], memories = [], fail = false, storageBlocked = false, theme = 'light', now = '2026-09-08T12:00:00+08:00' } = {}) {
+  const ids = new Map();
+  for (const name of ['running-root', 'running-month', 'running-value', 'running-status', 'running-progress', 'running-percent', 'running-grid', 'running-meter', 'crazy-talk-data', 'crazy-talk', 'crazy-talk-link', 'crazy-talk-next', 'memories-data', 'memories-list', 'memories-date']) {
+    ids.set(`homepage-${name}`, new Element());
+  }
+  ids.set('dark-mode-toggle', new Element());
+  const get = name => ids.get(`homepage-${name}`);
+  get('running-root').dataset = { targetKm: '150', runningBase: '/running/' };
+  const notes = ['最新的一条', '另一条记录', '再一条记录'];
+  for (const [rank, text] of notes.entries()) {
+    const item = new Element();
+    item.attributes = { 'data-text': text, 'data-title': `2026-09-0${3 - rank}`, 'data-url': `/crazy-talk/${rank}/`, 'data-source-rank': String(rank) };
+    get('crazy-talk-data').children.push(item);
+  }
+  get('crazy-talk').textContent = notes[0];
+  get('crazy-talk-link').href = '/crazy-talk/0/';
+  memories.forEach(record => {
+    const item = new Element();
+    item.attributes = Object.fromEntries(Object.entries(record).map(([key, value]) => [`data-${key}`, value]));
+    get('memories-data').children.push(item);
+  });
+  const body = new Element();
+  const calls = [];
+  let timers = 0;
+  let tick;
+  let delay;
+  class TestDate extends Date {
+    constructor(...args) { super(...(args.length ? args : [now])); }
+  }
+  vm.runInNewContext(source, {
+    document: {
+      body,
+      readyState: 'complete',
+      querySelector: selector => selector === '[data-running-root]' ? get('running-root') : new Element(),
+      getElementById: id => ids.get(id),
+      createElement: () => new Element(),
+      addEventListener() {},
+    },
+    window: {
+      location: { origin: 'https://example.com' },
+      addEventListener() {},
+      setTimeout(callback) { callback(); },
+      setInterval(callback, interval) { timers++; tick = callback; delay = interval; },
+      clearInterval() {},
+    },
+    localStorage: { getItem() { if (storageBlocked) throw new Error('unavailable'); return theme; } },
+    console: { error() {} },
+    URL,
+    Date: TestDate,
+    fetch: async url => {
+      calls.push(url);
+      if (fail) throw new Error('offline');
+      return {
+        ok: true,
+        text: async () => url === '/running/'
+          ? '<script src="/running/assets/activities-test.js"></script>'
+          : 'JSON.parse(`' + JSON.stringify(activities) + '`)',
+      };
+    },
+  });
+  await new Promise(resolve => setImmediate(resolve));
+  return { get, ids, body, calls, timers, tick, delay };
+}
+
+test('only current-month running contributes to the target and daily map', async () => {
+  const app = await mount({ activities: [
+    { type: 'Run', start_date_local: '2026-09-01T08:00:00', distance: 5000 },
+    { type: 'VirtualRun', start_date_local: '2026-09-01T18:00:00', distance: 1000 },
+    { type: 'running', start_date_local: '2026-09-08T08:00:00', distance: 4500 },
+    { type: 'Ride', start_date_local: '2026-09-02T08:00:00', distance: 20000 },
+    { type: 'Run', start_date_local: '2026-08-31T08:00:00', distance: 10000 },
+  ] });
+  assert.equal(app.get('running-value').textContent, '10.5 / 150 km');
+  assert.equal(app.get('running-percent').textContent, '7%');
+  assert.ok(Math.abs(parseFloat(app.get('running-progress').style.width) - 7) < 0.001);
+  assert.equal(app.get('running-meter').getAttribute('aria-valuenow'), '10.5');
+  assert.equal(app.get('running-grid').children.length, 30);
+  assert.match(app.get('running-grid').children[0].title, /6.0 km/);
+  assert.match(app.get('running-status').textContent, /139.5 km/);
+});
+
+test('completed target retains actual distance but caps the progress bar', async () => {
+  const app = await mount({ activities: [{ type: 'Run', start_date_local: '2026-09-01', distance: 160000 }] });
+  assert.equal(app.get('running-value').textContent, '160.0 / 150 km');
+  assert.equal(app.get('running-progress').style.width, '100%');
+  assert.equal(app.get('running-meter').getAttribute('aria-valuenow'), '150');
+});
+
+test('empty records and failed requests are different states', async () => {
+  const empty = await mount();
+  assert.equal(empty.get('running-value').textContent, '0.0 / 150 km');
+  assert.match(empty.get('running-status').textContent, /暂无跑步记录/);
+  const offline = await mount({ fail: true });
+  assert.equal(offline.get('running-value').textContent, '—');
+  assert.equal(offline.get('running-percent').textContent, '—');
+  assert.match(offline.get('running-status').textContent, /暂不可用/);
+  assert.equal(offline.get('running-meter').getAttribute('aria-valuenow'), null);
+  assert.equal(offline.get('running-grid').children.length, 0);
+});
+
+test('notes start with the latest, rotate every eight seconds, and support manual changes', async () => {
+  const app = await mount();
+  assert.equal(app.get('crazy-talk').textContent, '最新的一条');
+  assert.equal(app.timers, 1);
+  assert.equal(app.delay, 8000);
+  assert.equal(app.get('crazy-talk-next').hidden, false);
+  app.get('crazy-talk-next').events.click();
+  const text = app.get('crazy-talk').textContent;
+  assert.notEqual(text, '最新的一条');
+  const rank = ['最新的一条', '另一条记录', '再一条记录'].indexOf(text);
+  assert.equal(app.get('crazy-talk-link').href, `/crazy-talk/${rank}/`);
+  app.tick();
+  assert.notEqual(app.get('crazy-talk').textContent, text);
+});
+
+test('anniversary mixes prior-year note text and linked blog titles, newest year first', async () => {
+  const app = await mount({ memories: [
+    { date: '2023-09-08', kind: 'blog', text: '一篇旧文章', url: '/posts/old/' },
+    { date: '2025-09-08', kind: 'note', text: '那一天的碎念正文', url: '/crazy-talk/2025-09-08/' },
+    { date: '2026-09-08', kind: 'blog', text: '今年不算往年', url: '/posts/current/' },
+    { date: '2024-09-09', kind: 'note', text: '不是今天', url: '/crazy-talk/2024-09-09/' },
+    { date: '2027-09-08', kind: 'blog', text: '未来', url: '/posts/future/' },
+  ] });
+  assert.equal(app.get('memories-date').textContent, '09.08');
+  const records = app.get('memories-list').children;
+  assert.equal(records.length, 2);
+  assert.equal(records[0].children[0].textContent, '2025 · 疯言疯语');
+  assert.equal(records[0].children[1].textContent, '那一天的碎念正文');
+  assert.equal(records[1].children[1].children[0].href, '/posts/old/');
+  assert.equal(records[1].children[1].children[0].textContent, '一篇旧文章 ↗');
+});
+
+test('anniversary uses the visit date and has an honest empty state, including leap days', async () => {
+  const memories = [{ date: '2024-02-29', kind: 'note', text: '闰日', url: '/crazy-talk/leap/' }];
+  const leap = await mount({ memories, now: '2028-02-29T12:00:00+08:00' });
+  assert.equal(leap.get('memories-list').children[0].children[1].textContent, '闰日');
+  assert.equal(leap.get('memories-date').getAttribute('datetime'), '2028-02-29');
+  const ordinary = await mount({ memories, now: '2027-02-28T12:00:00+08:00' });
+  assert.match(ordinary.get('memories-list').textContent, /还没有往年的记录/);
+});
+
+test('theme has an accessible toggle label; blocked storage does not stop initialization', async () => {
+  const dark = await mount({ theme: 'dark' });
+  assert.equal(dark.body.getAttribute('data-homepage-theme'), 'dark');
+  assert.equal(dark.ids.get('dark-mode-toggle').getAttribute('aria-label'), '切换浅色模式');
+  const blocked = await mount({ storageBlocked: true });
+  assert.equal(blocked.body.getAttribute('data-homepage-theme'), 'light');
+  assert.equal(blocked.get('crazy-talk-next').hidden, false);
+  assert.equal(blocked.get('running-value').textContent, '0.0 / 150 km');
+});
