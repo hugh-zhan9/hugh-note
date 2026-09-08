@@ -1,0 +1,42 @@
+.article-table {
+  max-width: 100%;
+  margin: 1.5rem auto;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.article-table:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+
+.article-table table {
+  margin-inline: auto;
+}
+
+/* Wide comparison tables expand equally beyond the centered reading column. */
+.article-table-wide {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1400px, calc(100vw - 3rem));
+  max-width: none;
+}
+
+.article-table-wide table {
+  width: 100%;
+  min-width: calc(var(--table-columns) * 11rem);
+  overflow-wrap: anywhere;
+}
+
+@media print {
+  .article-table-wide {
+    left: auto;
+    transform: none;
+    width: 100%;
+  }
+
+  .article-table-wide table {
+    min-width: 0;
+  }
+}

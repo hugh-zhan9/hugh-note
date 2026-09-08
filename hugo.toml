@@ -7,7 +7,7 @@ enableGitInfo = true
 	mode="toggle"
 	useCDN=false
 	mainSections = ["posts", "crazy-talk"]
-	customCSS = ["css/homepage.css"]
+	customCSS = ["css/homepage.css", "css/article.css"]
 	customJS = ["js/homepage.js"]
 
 [[params.social]]
