@@ -1,7 +1,11 @@
 <section class="homepage-running" id="homepage-running-root" data-running-root data-running-base="/running/" data-target-km="150" aria-labelledby="homepage-running-title">
 	<div class="homepage-section-heading">
 		<h2 id="homepage-running-title"><a href="{{ absURL "running/" }}">跑步 <span aria-hidden="true">↗</span></a></h2>
-		<span class="homepage-meta" id="homepage-running-month">{{ now.Format "2006 年 1 月" }}</span>
+	</div>
+	<div class="homepage-running-month-nav" aria-label="选择跑步月份">
+		<button class="homepage-month-button" id="homepage-running-previous" type="button" aria-label="上个月" hidden disabled>‹</button>
+		<time class="homepage-meta" id="homepage-running-month" datetime="{{ now.Format "2006-01" }}" aria-live="polite">{{ now.Format "2006 年 1 月" }}</time>
+		<button class="homepage-month-button" id="homepage-running-next" type="button" aria-label="下个月" hidden disabled>›</button>
 	</div>
 	<div class="homepage-running-overview">
 		<p class="homepage-running-value" id="homepage-running-value">— <span>/ 150 km</span></p>
@@ -12,5 +16,16 @@
 	</div>
 	<div class="homepage-running-grid" id="homepage-running-grid" aria-label="本月每日跑量"></div>
 	<p class="homepage-running-status" id="homepage-running-status" role="status">正在读取…</p>
+	<div class="homepage-running-routes" id="homepage-running-routes" hidden>
+		<div class="homepage-route-tabs" role="tablist" aria-label="轨迹展示方式">
+			<button id="homepage-route-overview-tab" type="button" role="tab" aria-selected="true" aria-controls="homepage-route-overview">月度总览</button>
+			<button id="homepage-route-individual-tab" type="button" role="tab" aria-selected="false" aria-controls="homepage-route-individual" tabindex="-1">单次路线</button>
+		</div>
+		<div id="homepage-route-overview" role="tabpanel" aria-labelledby="homepage-route-overview-tab" tabindex="0">
+			<svg id="homepage-running-route-map" viewBox="0 0 320 200" role="img" aria-label="跑步路线概览"></svg>
+		</div>
+		<div class="homepage-route-list" id="homepage-route-individual" role="tabpanel" aria-labelledby="homepage-route-individual-tab" tabindex="0" hidden></div>
+		<p class="homepage-route-caption" id="homepage-running-routes-status"></p>
+	</div>
 	<noscript><p class="homepage-empty">前往<a href="{{ absURL "running/" }}">跑步记录</a>查看跑量。</p></noscript>
 </section>

@@ -6,13 +6,15 @@ import vm from 'node:vm';
 const source = readFileSync(new URL('../static/js/homepage.js', import.meta.url), 'utf8');
 
 class Element {
-  constructor() {
+  constructor(tagName = 'div') {
+    this.tagName = tagName;
     this.children = [];
     this.attributes = {};
     this.events = {};
     this.style = {};
     this.dataset = {};
     this.hidden = true;
+    this.disabled = true;
     this.text = '';
   }
   set textContent(value) { this.text = value; this.children = []; }
@@ -25,11 +27,12 @@ class Element {
   removeAttribute(name) { delete this.attributes[name]; }
   addEventListener(name, callback) { this.events[name] = callback; }
   querySelectorAll() { return this.children; }
+  focus() { this.focused = true; }
 }
 
 async function mount({ activities = [], memories = [], fail = false, storageBlocked = false, theme = 'light', now = '2026-09-08T12:00:00+08:00' } = {}) {
   const ids = new Map();
-  for (const name of ['running-root', 'running-month', 'running-value', 'running-status', 'running-progress', 'running-percent', 'running-grid', 'running-meter', 'crazy-talk-data', 'crazy-talk', 'crazy-talk-link', 'crazy-talk-next', 'memories-data', 'memories-list', 'memories-date']) {
+  for (const name of ['running-root', 'running-month', 'running-value', 'running-status', 'running-progress', 'running-percent', 'running-grid', 'running-meter', 'running-previous', 'running-next', 'running-routes', 'running-route-map', 'running-routes-status', 'route-overview', 'route-individual', 'route-overview-tab', 'route-individual-tab', 'crazy-talk-data', 'crazy-talk', 'crazy-talk-link', 'crazy-talk-next', 'memories-data', 'memories-list', 'memories-date']) {
     ids.set(`homepage-${name}`, new Element());
   }
   ids.set('dark-mode-toggle', new Element());
@@ -62,7 +65,8 @@ async function mount({ activities = [], memories = [], fail = false, storageBloc
       readyState: 'complete',
       querySelector: selector => selector === '[data-running-root]' ? get('running-root') : new Element(),
       getElementById: id => ids.get(id),
-      createElement: () => new Element(),
+      createElement: tagName => new Element(tagName),
+      createElementNS: (_namespace, tagName) => new Element(tagName),
       addEventListener() {},
     },
     window: {
@@ -79,11 +83,14 @@ async function mount({ activities = [], memories = [], fail = false, storageBloc
     fetch: async url => {
       calls.push(url);
       if (fail) throw new Error('offline');
+      const slash = String.fromCharCode(92);
+      const quote = String.fromCharCode(96);
+      const payload = JSON.stringify(activities).replaceAll(slash, slash + slash).replaceAll(quote, slash + quote).replaceAll('${', slash + '${');
       return {
         ok: true,
         text: async () => url === '/running/'
           ? '<script src="/running/assets/activities-test.js"></script>'
-          : 'JSON.parse(`' + JSON.stringify(activities) + '`)',
+          : 'JSON.parse(`' + payload + '`)',
       };
     },
   });
@@ -127,11 +134,11 @@ test('empty records and failed requests are different states', async () => {
   assert.equal(offline.get('running-grid').children.length, 0);
 });
 
-test('notes start with the latest, rotate every eight seconds, and support manual changes', async () => {
+test('notes start with the latest, rotate every ten seconds, and support manual changes', async () => {
   const app = await mount();
   assert.equal(app.get('crazy-talk').textContent, '最新的一条');
   assert.equal(app.timers, 1);
-  assert.equal(app.delay, 8000);
+  assert.equal(app.delay, 10000);
   assert.equal(app.get('crazy-talk-next').hidden, false);
   app.get('crazy-talk-next').events.click();
   const text = app.get('crazy-talk').textContent;
@@ -176,4 +183,92 @@ test('theme has an accessible toggle label; blocked storage does not stop initia
   assert.equal(blocked.body.getAttribute('data-homepage-theme'), 'light');
   assert.equal(blocked.get('crazy-talk-next').hidden, false);
   assert.equal(blocked.get('running-value').textContent, '0.0 / 150 km');
+});
+
+test('month navigation handles year boundaries, updates the data, and reuses the response', async () => {
+  const app = await mount({ now: '2026-01-31T12:00:00+08:00', activities: [
+    { type: 'Run', start_date_local: '2026-01-10', distance: 5000 },
+    { type: 'Run', start_date_local: '2025-12-10', distance: 12000 },
+  ] });
+  assert.equal(app.get('running-next').disabled, true);
+  assert.equal(app.get('running-previous').disabled, false);
+  app.get('running-previous').events.click();
+  assert.equal(app.get('running-month').textContent, '2025 年 12 月');
+  assert.equal(app.get('running-value').textContent, '12.0 / 150 km');
+  assert.equal(app.get('running-meter').getAttribute('aria-label'), '2025 年 12 月跑量目标');
+  assert.equal(app.get('running-previous').disabled, true);
+  assert.equal(app.get('running-next').disabled, false);
+  app.get('running-next').events.click();
+  assert.equal(app.get('running-value').textContent, '5.0 / 150 km');
+  app.get('running-next').events.click();
+  assert.equal(app.get('running-month').textContent, '2026 年 1 月');
+  assert.equal(app.calls.length, 2);
+});
+
+test('month navigation handles leap February, empty months and unavailable data', async () => {
+  const leap = await mount({ now: '2024-03-31T12:00:00+08:00', activities: [
+    { type: 'Run', start_date_local: '2024-02-29', distance: 5000 },
+  ] });
+  leap.get('running-previous').events.click();
+  assert.equal(leap.get('running-grid').children.length, 29);
+  assert.match(leap.get('running-grid').children[28].title, /5.0 km/);
+  const app = await mount({ activities: [{ type: 'Run', start_date_local: '2026-07-01', distance: 1000 }] });
+  app.get('running-previous').events.click();
+  assert.equal(app.get('running-month').textContent, '2026 年 8 月');
+  assert.equal(app.get('running-value').textContent, '0.0 / 150 km');
+  assert.equal(app.get('running-status').textContent, '该月暂无跑步记录');
+  assert.equal(app.get('running-routes').hidden, true);
+  const unavailable = await mount({ fail: true });
+  assert.equal(unavailable.get('running-previous').disabled, true);
+  assert.equal(unavailable.get('running-next').disabled, true);
+});
+
+const samplePolyline = '_p~iF~ps|U_ulLnnqC_mqNvxq`@';
+
+test('route overview and individual cards use only selected-month runs and tolerate missing GPS', async () => {
+  const app = await mount({ activities: [
+    { type: 'Run', start_date_local: '2026-09-08 18:00:00', distance: 6000, summary_polyline: samplePolyline },
+    { type: 'Run', start_date_local: '2026-09-05', distance: 4000, map: { summary_polyline: '??_ibE_ibE' } },
+    { type: 'Run', start_date_local: '2026-09-04', distance: 3000, summary_polyline: 'invalid!' },
+    { type: 'Run', start_date_local: '2026-08-01', distance: 5000, summary_polyline: samplePolyline },
+    { type: 'Ride', start_date_local: '2026-09-02', distance: 12000, summary_polyline: samplePolyline },
+  ] });
+  assert.equal(app.get('running-routes-status').textContent, '2 条路线 · 1 次无轨迹');
+  const paths = app.get('running-route-map').children;
+  assert.equal(paths.length, 2);
+  for (const path of paths) {
+    const d = path.getAttribute('d');
+    assert.doesNotMatch(d, /NaN|Infinity/);
+    for (const point of d.split(' ')) {
+      const [x, y] = point.slice(1).split(',').map(Number);
+      assert.ok(x >= 17.99 && x <= 302.01 && y >= 17.99 && y <= 182.01);
+    }
+  }
+  const cards = app.get('route-individual').children;
+  assert.equal(cards.length, 3);
+  assert.equal(cards[0].children[0].children[0].textContent, '09.08');
+  assert.equal(cards[0].children[1].tagName, 'svg');
+  assert.equal(cards[0].children[1].children.length, 1);
+  assert.equal(cards[2].children[1].textContent, '暂无 GPS 轨迹');
+  app.get('route-individual-tab').events.click();
+  assert.equal(app.get('route-overview').hidden, true);
+  assert.equal(app.get('route-individual').hidden, false);
+  app.get('running-previous').events.click();
+  assert.equal(app.get('running-route-map').children.length, 1);
+  assert.equal(app.get('route-individual').children.length, 1);
+  assert.equal(app.get('route-individual').hidden, false);
+  assert.equal(app.get('route-individual-tab').getAttribute('aria-selected'), 'true');
+});
+
+test('route tabs support keyboard navigation and announce the active panel', async () => {
+  const app = await mount();
+  let prevented = false;
+  app.get('route-overview-tab').events.keydown({ key: 'ArrowRight', preventDefault() { prevented = true; } });
+  assert.ok(prevented);
+  assert.equal(app.get('route-individual-tab').focused, true);
+  assert.equal(app.get('route-individual-tab').getAttribute('aria-selected'), 'true');
+  assert.equal(app.get('route-overview-tab').tabIndex, -1);
+  app.get('route-individual-tab').events.keydown({ key: 'Home', preventDefault() {} });
+  assert.equal(app.get('route-overview-tab').getAttribute('aria-selected'), 'true');
+  assert.equal(app.get('route-overview').hidden, false);
 });

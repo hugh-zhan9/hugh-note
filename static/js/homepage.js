@@ -14,6 +14,15 @@
     const runningPercent = document.getElementById("homepage-running-percent");
     const runningGrid = document.getElementById("homepage-running-grid");
     const runningMeter = document.getElementById("homepage-running-meter");
+    const runningPrevious = document.getElementById("homepage-running-previous");
+    const runningNext = document.getElementById("homepage-running-next");
+    const runningRoutes = document.getElementById("homepage-running-routes");
+    const runningRouteMap = document.getElementById("homepage-running-route-map");
+    const runningRoutesStatus = document.getElementById("homepage-running-routes-status");
+    const routeOverview = document.getElementById("homepage-route-overview");
+    const routeIndividual = document.getElementById("homepage-route-individual");
+    const routeOverviewTab = document.getElementById("homepage-route-overview-tab");
+    const routeIndividualTab = document.getElementById("homepage-route-individual-tab");
 
     const crazyTalkDataNode = document.getElementById("homepage-crazy-talk-data");
     const crazyTalkText = document.getElementById("homepage-crazy-talk");
@@ -22,7 +31,7 @@
 
     const RUNNING_TARGET_KM = Number(runningRoot?.dataset.targetKm || 150);
     const RUNNING_BASE = runningRoot?.dataset.runningBase || "/running/";
-    const CRAZY_TALK_INTERVAL_MS = 8000;
+    const CRAZY_TALK_INTERVAL_MS = 10000;
     const CRAZY_TALK_FILE_LIMIT = 30;
 
     function syncHomepageTheme() {
@@ -165,20 +174,16 @@
       const monthPrefix = `${year}-${String(month + 1).padStart(2, "0")}`;
       const perDay = new Map();
 
-      activities
-        .filter((activity) => normalizeActivityType(activity.type) === "running")
-        .forEach((activity) => {
-          const startDate = String(activity.start_date_local || "");
-
-          if (!startDate.startsWith(monthPrefix)) {
-            return;
-          }
-
-          const dayKey = startDate.slice(0, 10);
-          const distanceKm = Number(activity.distance || 0) / 1000;
-          const current = perDay.get(dayKey) || 0;
-          perDay.set(dayKey, current + distanceKm);
-        });
+      const monthlyActivities = activities.filter((activity) =>
+        normalizeActivityType(activity.type) === "running" &&
+        String(activity.start_date_local || "").startsWith(monthPrefix)
+      );
+      monthlyActivities.forEach((activity) => {
+        const dayKey = String(activity.start_date_local || "").slice(0, 10);
+        const distanceKm = Number(activity.distance || 0) / 1000;
+        const current = perDay.get(dayKey) || 0;
+        perDay.set(dayKey, current + distanceKm);
+      });
 
       let totalKm = 0;
       const days = [];
@@ -190,17 +195,154 @@
         days.push({ dayKey, distanceKm });
       }
 
+      const today = new Date();
       return {
         label: formatMonthLabel(referenceDate),
+        monthKey: monthPrefix,
+        isCurrentMonth: year === today.getFullYear() && month === today.getMonth(),
         totalKm: Number(totalKm.toFixed(1)),
         days,
+        activities: monthlyActivities,
       };
+    }
+
+    function decodeRoute(encoded) {
+      if (typeof encoded !== "string") return [];
+      const points = [];
+      let index = 0;
+      let latitude = 0;
+      let longitude = 0;
+      function readDelta() {
+        let result = 0;
+        let shift = 0;
+        let byte;
+        do {
+          if (index >= encoded.length || shift > 30) throw new Error("invalid route");
+          byte = encoded.charCodeAt(index++) - 63;
+          if (byte < 0 || byte > 63) throw new Error("invalid route");
+          result |= (byte & 31) << shift;
+          shift += 5;
+        } while (byte >= 32);
+        return result & 1 ? ~(result >> 1) : result >> 1;
+      }
+      try {
+        while (index < encoded.length) {
+          latitude += readDelta();
+          longitude += readDelta();
+          if (Math.abs(latitude) > 9000000 || Math.abs(longitude) > 18000000) return [];
+          points.push([latitude / 1e5, longitude / 1e5]);
+        }
+      } catch (error) { return []; }
+      return points;
+    }
+
+    function drawRoutes(svg, routes) {
+      // Project all routes together so their relative locations are retained.
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      const projected = routes.map((route) => ({
+        activity: route.activity,
+        points: route.points.map(([lat, lon]) => {
+          const x = lon * Math.PI / 180;
+          const y = -Math.log(Math.tan(Math.PI / 4 + Math.max(-85, Math.min(85, lat)) * Math.PI / 360));
+          minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+          minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+          return [x, y];
+        }),
+      }));
+      const scale = Math.min(284 / Math.max(maxX - minX, 1e-9), 164 / Math.max(maxY - minY, 1e-9));
+      const centerX = (minX + maxX) / 2;
+      const centerY = (minY + maxY) / 2;
+      projected.forEach((route) => {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", route.points.map(([x, y], index) => `${index ? "L" : "M"}${(160 + (x - centerX) * scale).toFixed(2)},${(100 + (y - centerY) * scale).toFixed(2)}`).join(" "));
+        path.setAttribute("vector-effect", "non-scaling-stroke");
+        const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+        title.textContent = `${String(route.activity.start_date_local).slice(0, 10)} · ${formatKm(Number(route.activity.distance || 0) / 1000)}`;
+        path.appendChild(title);
+        svg.appendChild(path);
+      });
+    }
+
+    function renderRunningRoutes(stats) {
+      if (!runningRoutes || !runningRouteMap || !runningRoutesStatus) return;
+      runningRoutes.hidden = stats.activities.length === 0;
+      runningRouteMap.replaceChildren();
+      routeIndividual?.replaceChildren();
+      const allRoutes = stats.activities.map((activity) => ({
+        activity,
+        points: decodeRoute(activity.summary_polyline || activity.map?.summary_polyline),
+      })).sort((left, right) => String(right.activity.start_date_local).localeCompare(String(left.activity.start_date_local)));
+      const routes = allRoutes.filter((route) => route.points.length > 1);
+      if (routes.length === 0) runningRouteMap.setAttribute("hidden", "");
+      else runningRouteMap.removeAttribute("hidden");
+      runningRouteMap.setAttribute("aria-label", `${stats.label}，${routes.length} 条跑步路线概览`);
+      runningRoutesStatus.textContent = routes.length
+        ? `${routes.length} 条路线${routes.length < stats.activities.length ? ` · ${stats.activities.length - routes.length} 次无轨迹` : ""}`
+        : "该月跑步没有可用的 GPS 轨迹";
+      if (routes.length) drawRoutes(runningRouteMap, routes);
+
+      if (!routeIndividual) return;
+      allRoutes.forEach((route) => {
+        const card = document.createElement("article");
+        card.className = "homepage-route-card";
+        const heading = document.createElement("div");
+        heading.className = "homepage-route-card-heading";
+        const date = document.createElement("time");
+        const startDate = String(route.activity.start_date_local);
+        date.setAttribute("datetime", startDate.replace(" ", "T"));
+        date.title = startDate;
+        date.textContent = startDate.slice(5, 10).replace("-", ".");
+        const distance = document.createElement("span");
+        distance.textContent = formatKm(Number(route.activity.distance || 0) / 1000);
+        heading.appendChild(date);
+        heading.appendChild(distance);
+        card.appendChild(heading);
+        if (route.points.length > 1) {
+          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("viewBox", "0 0 320 200");
+          svg.setAttribute("role", "img");
+          svg.setAttribute("aria-label", `${startDate}，${distance.textContent} 跑步路线`);
+          drawRoutes(svg, [route]);
+          card.appendChild(svg);
+        } else {
+          const empty = document.createElement("p");
+          empty.className = "homepage-route-missing";
+          empty.textContent = "暂无 GPS 轨迹";
+          card.appendChild(empty);
+        }
+        routeIndividual.appendChild(card);
+      });
+    }
+
+    function initRouteTabs() {
+      if (!routeOverview || !routeIndividual || !routeOverviewTab || !routeIndividualTab) return;
+      const tabs = [routeOverviewTab, routeIndividualTab];
+      function selectTab(index) {
+        routeOverview.hidden = index !== 0;
+        routeIndividual.hidden = index !== 1;
+        tabs.forEach((tab, i) => {
+          tab.setAttribute("aria-selected", String(i === index));
+          tab.tabIndex = i === index ? 0 : -1;
+        });
+      }
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => selectTab(index));
+        tab.addEventListener("keydown", (event) => {
+          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+          event.preventDefault();
+          const next = event.key === "Home" ? 0 : event.key === "End" ? 1 : 1 - index;
+          selectTab(next);
+          tabs[next].focus();
+        });
+      });
+      selectTab(0);
     }
 
     function renderRunningStats(stats) {
       const safeTotalKm = Number.isFinite(stats.totalKm) ? stats.totalKm : 0;
 
       runningMonth.textContent = stats.label;
+      runningMonth.setAttribute("datetime", stats.monthKey);
       runningValue.textContent = `${safeTotalKm.toFixed(1)} `;
       const targetLabel = document.createElement("span");
       targetLabel.textContent = `/ ${RUNNING_TARGET_KM} km`;
@@ -212,14 +354,16 @@
       }
       runningStatus.textContent =
         safeTotalKm >= RUNNING_TARGET_KM
-          ? "本月目标已完成"
-          : safeTotalKm === 0 ? "本月暂无跑步记录" : `距目标还差 ${Math.max(
+          ? `${stats.isCurrentMonth ? "本月" : "该月"}目标已完成`
+          : safeTotalKm === 0 ? `${stats.isCurrentMonth ? "本月" : "该月"}暂无跑步记录` : `距目标还差 ${Math.max(
               RUNNING_TARGET_KM - safeTotalKm,
               0
             ).toFixed(1)} km`;
       runningProgress.style.width = `${Math.min((safeTotalKm / RUNNING_TARGET_KM) * 100, 100)}%`;
       runningMeter?.setAttribute("aria-valuenow", String(Math.min(safeTotalKm, RUNNING_TARGET_KM)));
       runningMeter?.setAttribute("aria-valuetext", `${safeTotalKm.toFixed(1)} / ${RUNNING_TARGET_KM} km`);
+      runningMeter?.setAttribute("aria-label", `${stats.label}跑量目标`);
+      runningGrid.setAttribute("aria-label", `${stats.label}每日跑量`);
       runningGrid.innerHTML = "";
 
       stats.days.forEach((entry) => {
@@ -229,6 +373,7 @@
             : `${entry.dayKey} · 当天暂无跑步记录`;
         runningGrid.appendChild(createRunningDayCell(entry.distanceKm, title));
       });
+      renderRunningRoutes(stats);
     }
 
     function renderRunningFallback(message) {
@@ -249,8 +394,35 @@
 
       try {
         const activities = await fetchRunningActivities();
-        const monthlyStats = buildMonthlyRunningStats(activities, new Date());
-        renderRunningStats(monthlyStats);
+        const now = new Date();
+        const latestMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        let selectedMonth = latestMonth;
+        const monthKeys = activities
+          .filter((activity) => normalizeActivityType(activity.type) === "running")
+          .map((activity) => String(activity.start_date_local || "").slice(0, 7))
+          .filter((key) => /^\d{4}-(0[1-9]|1[0-2])$/.test(key))
+          .sort();
+        const firstKey = monthKeys[0];
+        const earliestMonth = firstKey
+          ? new Date(Number(firstKey.slice(0, 4)), Number(firstKey.slice(5)) - 1, 1)
+          : latestMonth;
+
+        function renderSelectedMonth() {
+          renderRunningStats(buildMonthlyRunningStats(activities, selectedMonth));
+          if (runningPrevious) runningPrevious.disabled = selectedMonth <= earliestMonth;
+          if (runningNext) runningNext.disabled = selectedMonth >= latestMonth;
+        }
+        function changeMonth(offset) {
+          const nextMonth = new Date(selectedMonth.getFullYear(), selectedMonth.getMonth() + offset, 1);
+          if (nextMonth < earliestMonth || nextMonth > latestMonth) return;
+          selectedMonth = nextMonth;
+          renderSelectedMonth();
+        }
+        runningPrevious?.addEventListener("click", () => changeMonth(-1));
+        runningNext?.addEventListener("click", () => changeMonth(1));
+        if (runningPrevious) runningPrevious.hidden = false;
+        if (runningNext) runningNext.hidden = false;
+        renderSelectedMonth();
       } catch (error) {
         console.error(error);
         renderRunningFallback("跑量暂不可用，可前往跑步记录查看。");
@@ -420,6 +592,7 @@
       }
     });
 
+    initRouteTabs();
     initRunningPanel();
     initCrazyTalkTicker();
     initMemories();
