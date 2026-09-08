@@ -121,7 +121,16 @@ body.homepage-enabled .homepage-running-grid { display: grid; grid-template-colu
 body.homepage-enabled .homepage-running-cell { aspect-ratio: 1; border-radius: 2px; }
 body.homepage-enabled .homepage-running-status { margin: 12px 0 0; font-size: 12px; line-height: 1.6; color: var(--homepage-muted); }
 body.homepage-enabled .homepage-running-routes { display: block; margin: 20px 0 0; padding: 0; width: 100%; }
-body.homepage-enabled .homepage-running-routes svg { display: block; width: 100%; height: auto; border-radius: 4px; background: var(--homepage-surface); }
+/* Archie caps SVG icons at 15px; route charts need their full viewBox ratio. */
+body.homepage-enabled .homepage-running-routes svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  aspect-ratio: 8 / 5;
+  border-radius: 4px;
+  background: var(--homepage-surface);
+}
 body.homepage-enabled .homepage-running-routes path { fill: none; stroke: var(--homepage-accent); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0.6; }
 body.homepage-enabled .homepage-running-routes path:hover { opacity: 1; stroke-width: 2.5; }
 body.homepage-enabled .homepage-route-caption { margin: 8px 0 0; color: var(--homepage-muted); font-size: 11px; }
