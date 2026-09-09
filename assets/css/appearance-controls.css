@@ -1,0 +1,74 @@
+:root[data-skin="custom"] .skin-panel {
+  --site-text: var(--site-surface-ink);
+  --site-muted: var(--site-surface-ink);
+  --site-accent: var(--site-surface-ink);
+}
+.skin-settings { position: relative; font: inherit; }
+.skin-settings[hidden] { display: none; }
+.skin-settings summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--site-muted);
+  font: inherit;
+  list-style: none;
+  cursor: pointer;
+}
+.skin-settings summary::-webkit-details-marker { display: none; }
+.skin-settings summary svg { display: block; flex-shrink: 0; }
+.skin-settings summary:hover,
+.skin-settings[open] summary { color: var(--site-text); }
+.skin-panel button {
+  cursor: pointer;
+  border: 1px solid var(--site-border);
+  border-radius: 6px;
+  padding: 0.55rem 0.9rem;
+  color: var(--site-text);
+  background: transparent;
+  font: inherit;
+}
+.skin-panel button:hover { background: var(--site-accent-soft); }
+.skin-panel {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 0.6rem);
+  right: 0;
+  width: min(18rem, calc(100vw - 4rem));
+  box-sizing: border-box;
+  padding: 1rem;
+  border: 1px solid var(--site-border);
+  border-radius: 12px;
+  line-height: 1.5;
+  background: var(--site-panel);
+  color: var(--site-text);
+  box-shadow: 0 4px 16px var(--site-shadow);
+}
+.skin-panel label { display: block; margin-bottom: 0.4rem; }
+.skin-panel select, .skin-panel input {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--site-border);
+  border-radius: 6px;
+  background: var(--site-panel);
+  color: var(--site-text);
+  font: inherit;
+  padding: 0.4rem;
+}
+.skin-panel select { width: 100%; margin-bottom: 1rem; cursor: pointer; }
+.skin-color-row { display: flex; gap: 0.5rem; }
+.skin-color-row input[type="color"] { width: 3rem; flex-shrink: 0; cursor: pointer; }
+.skin-color-row input[type="text"] { width: 100%; }
+.skin-panel p { font-size: 0.85rem; color: var(--site-muted); }
+.skin-panel button { width: 100%; }
+:focus-visible { outline: 2px solid var(--site-accent); outline-offset: 3px; }
+@media (max-width: 920px) {
+  header { position: relative; }
+  .skin-settings { position: static; }
+  .skin-panel { top: 100%; right: 0; }
+}

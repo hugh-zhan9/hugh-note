@@ -4,10 +4,11 @@ const { readFileSync } = require('node:fs');
 const { runInNewContext } = require('node:vm');
 const source = readFileSync(`${__dirname}/../static/js/themetoggle.js`, 'utf8');
 
-function page(saved, blocked = false) {
+function page(saved, blocked = false, legacy) {
   const nodes = new Map();
   const events = {};
   const storage = new Map(saved === undefined ? [] : [['theme-storage', saved]]);
+  if (legacy) storage.set('theme', legacy);
   const properties = new Map();
   function node(id) {
     if (!nodes.has(id)) nodes.set(id, {
@@ -15,19 +16,22 @@ function page(saved, blocked = false) {
       addEventListener(type, listener) { this.listeners[type] = listener; },
       setAttribute(key, value) { this.attributes[key] = value; },
       removeAttribute(key) { delete this.attributes[key]; },
-      querySelector() { return { focus() {} }; },
+      querySelector(selector) { return selector.startsWith("#") ? node(selector.slice(1)) : { focus() {} }; },
+      removeEventListener(type, listener) { if (this.listeners[type] === listener) delete this.listeners[type]; },
       contains(target) { return target === this; },
     });
     return nodes.get(id);
   }
-  const root = { dataset: {}, style: {
+  const root = { dataset: {}, classList: { toggle() {} }, style: {
     setProperty: (key, value) => properties.set(key, value),
     removeProperty: (key) => properties.delete(key),
   } };
+  const runtimeWindow = { addEventListener: (type, listener) => { events[type] = listener; } };
   runInNewContext(source, {
     document: { documentElement: root, getElementById: node,
-      addEventListener: (type, listener) => { events[type] = listener; } },
-    window: { addEventListener: (type, listener) => { events[type] = listener; } },
+      addEventListener: (type, listener) => { events[type] = listener; },
+      removeEventListener: (type, listener) => { if (events[type] === listener) delete events[type]; } },
+    window: runtimeWindow,
     localStorage: {
       getItem(key) { if (blocked) throw Error('denied'); return storage.get(key) ?? null; },
       setItem(key, value) { if (blocked) throw Error('denied'); storage.set(key, value); },
@@ -35,7 +39,7 @@ function page(saved, blocked = false) {
   });
   const initial = { ...root.dataset };
   events.DOMContentLoaded();
-  return { root, initial, node, events, storage, properties,
+  return { root, initial, node, events, storage, properties, api: runtimeWindow.siteAppearance,
     input(id, value, event = 'input') { node(id).value = value; node(id).listeners[event](); } };
 }
 
@@ -116,4 +120,28 @@ test('Escape and an outside click close the appearance panel', () => {
   p.node('skin-settings').open = true;
   p.events.click({ target: {} });
   assert.equal(p.node('skin-settings').open, false);
+});
+
+test('legacy running choice migrates only when there is no site preference', () => {
+  assert.equal(page(undefined, false, 'dark').storage.get('theme-storage'), 'dark');
+  assert.equal(page('sage', false, 'dark').initial.skin, 'sage');
+  assert.equal(page(undefined, false, 'invalid').initial.skin, 'light');
+});
+test('React adapter subscriptions and control mounts are disposable', () => {
+  const p = page();
+  let changes = 0;
+  const unsubscribe = p.api.subscribe(() => changes++);
+  p.api.choose('paper');
+  assert.ok(changes > 0);
+  unsubscribe();
+  const previous = changes;
+  p.api.choose('sage');
+  assert.equal(changes, previous);
+  const cleanup = p.api.mount(p.node('skin-settings'));
+  cleanup();
+  assert.equal(p.node('skin-preset').listeners.change, undefined);
+  const cleanupAgain = p.api.mount(p.node('skin-settings'));
+  p.input('skin-preset', 'dark', 'change');
+  assert.equal(p.api.getPreference(), 'dark');
+  cleanupAgain();
 });

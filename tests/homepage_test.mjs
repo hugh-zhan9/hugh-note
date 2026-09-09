@@ -84,15 +84,8 @@ async function mount({ activities = [], memories = [], fail = false, storageBloc
     fetch: async url => {
       calls.push(url);
       if (fail) throw new Error('offline');
-      const slash = String.fromCharCode(92);
-      const quote = String.fromCharCode(96);
-      const payload = JSON.stringify(activities).replaceAll(slash, slash + slash).replaceAll(quote, slash + quote).replaceAll('${', slash + '${');
-      return {
-        ok: true,
-        text: async () => url === '/running/'
-          ? '<script src="/running/assets/activities-test.js"></script>'
-          : 'JSON.parse(`' + payload + '`)',
-      };
+      assert.equal(url, '/running/data/activities.json');
+      return { ok: true, json: async () => activities };
     },
   });
   await new Promise(resolve => setImmediate(resolve));
@@ -133,6 +126,12 @@ test('empty records and failed requests are different states', async () => {
   assert.match(offline.get('running-status').textContent, /暂不可用/);
   assert.equal(offline.get('running-meter').getAttribute('aria-valuenow'), null);
   assert.equal(offline.get('running-grid').children.length, 0);
+});
+
+test('invalid activity responses are reported as unavailable', async () => {
+  const app = await mount({ activities: { error: 'bad response' } });
+  assert.equal(app.get('running-value').textContent, '—');
+  assert.match(app.get('running-status').textContent, /暂不可用/);
 });
 
 test('notes start with the latest, rotate every ten seconds, and support manual changes', async () => {
@@ -201,7 +200,7 @@ test('month navigation handles year boundaries, updates the data, and reuses the
   assert.equal(app.get('running-value').textContent, '5.0 / 150 km');
   app.get('running-next').events.click();
   assert.equal(app.get('running-month').textContent, '2026 年 1 月');
-  assert.equal(app.calls.length, 2);
+  assert.equal(app.calls.length, 1);
 });
 
 test('month navigation handles leap February, empty months and unavailable data', async () => {

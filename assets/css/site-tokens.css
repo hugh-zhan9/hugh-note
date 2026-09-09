@@ -1,0 +1,73 @@
+:root {
+  color-scheme: light;
+  --site-bg: #faf9f6;
+  --site-surface: #f1f0e9;
+  --site-border: #dedfd5;
+  --site-text: #292e29;
+  --site-muted: #697168;
+  --site-accent: #3e674c;
+  --site-cell-0: #e7e9df;
+  --site-cell-1: #b7ccb1;
+  --site-cell-2: #7ca075;
+  --site-cell-3: #466e4c;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --site-bg: #191d1a;
+  --site-surface: #222923;
+  --site-border: #364037;
+  --site-text: #e3e8df;
+  --site-muted: #a0ada0;
+  --site-accent: #b4cfa7;
+  --site-cell-0: #2b342c;
+  --site-cell-1: #435b42;
+  --site-cell-2: #78966b;
+  --site-cell-3: #b4cfa7;
+}
+
+:root {
+  --site-panel: var(--site-surface);
+  --site-accent-strong: #3e674c;
+  --site-accent-soft: #3e674c18;
+  --site-shadow: #292e2914;
+  /* Keep Archie components on the shared palette. */
+  --maincolor: var(--site-accent);
+  --darkMaincolor: var(--site-accent);
+  --bordercl: var(--site-border);
+  --hovercolor: var(--site-accent-strong);
+  --callouctcolor: var(--site-accent-strong);
+}
+
+:root[data-skin="paper"] {
+  --site-bg: #f5efe3;
+  --site-surface: #ede3d2;
+  --site-panel: #fffaf1;
+  --site-border: #d9cebc;
+  --site-text: #30291f;
+  --site-muted: #6b5e4b;
+  --site-accent: #94602b;
+  --site-accent-strong: #7d4d20;
+  --site-accent-soft: #94602b18;
+}
+
+:root[data-skin="sage"] {
+  --site-bg: #eaf1eb;
+  --site-surface: #dce8df;
+  --site-panel: #f8fcf7;
+  --site-border: #c8d8cc;
+  --site-text: #1b3025;
+  --site-muted: #506859;
+  --site-accent: #316748;
+  --site-accent-strong: #255238;
+  --site-accent-soft: #31674818;
+}
+
+/* Custom colors may be anywhere on the spectrum. Keep reading text at 4.5:1+. */
+:root[data-skin="custom"] {
+  --site-text: var(--site-custom-ink);
+  --site-muted: var(--site-custom-ink);
+  --site-accent: var(--site-custom-ink);
+  --maincolor: var(--site-custom-ink);
+  --darkMaincolor: var(--site-custom-ink);
+}

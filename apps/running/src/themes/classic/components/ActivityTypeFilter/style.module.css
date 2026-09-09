@@ -1,0 +1,62 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.label {
+  color: var(--color-run-table-thead);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-run-table-thead);
+  border-radius: 999px;
+  color: var(--color-run-table-thead);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.optionText {
+  line-height: 1;
+}
+
+.option input {
+  margin: 0;
+}
+
+.optionActive {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.optionPinned {
+  cursor: default;
+  border-style: dashed;
+}
+
+.optionHint {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  color: var(--color-primary);
+  font-size: 12px;
+  line-height: 1;
+}

@@ -14,10 +14,8 @@ const assert = require('node:assert/strict');
       summary_polyline: '??_ibE_ibE',
     });
     const activities = [activity(today, 5000), activity(new Date(today.getFullYear(), today.getMonth() - 1, 1), 10000)];
-    await page.route('**/running/**', route => route.fulfill({status: 200, contentType: 'text/javascript',
-      body: route.request().url().endsWith('/running/')
-        ? '<script src="/running/assets/activities-test.js"></script>'
-        : 'JSON.parse(`' + JSON.stringify(activities) + '`)',
+    await page.route('**/running/data/activities.json', route => route.fulfill({
+      status: 200, contentType: 'application/json', body: JSON.stringify(activities),
     }));
     const base = process.env.SKIN_TEST_URL || 'http://localhost:1313';
     const screenshots = require('node:fs').mkdtempSync(require('node:path').join(require('node:os').tmpdir(), 'hugh-note-skins-'));
@@ -29,7 +27,7 @@ const assert = require('node:assert/strict');
       overflow: document.documentElement.scrollWidth > innerWidth,
     }));
     await page.goto(base);
-    await page.getByText('外观', {exact: true}).click();
+    await page.getByLabel('外观设置', {exact: true}).click();
     assert.equal((await appearance()).skin, 'light');
     const defaultBackground = (await appearance()).background;
     const defaultColor = (await appearance()).backgroundColor;
@@ -38,18 +36,17 @@ const assert = require('node:assert/strict');
     assert.equal(await page.getByRole('heading', {name: '那年今日'}).count(), 1);
     assert.equal(await page.locator('.homepage-hero').count(), 0);
     for (const preset of ['paper', 'sage', 'dark', 'light']) {
-      await page.getByLabel('预设皮肤').selectOption(preset);
+      await page.getByLabel('预设主题').selectOption(preset);
       const home = await appearance();
       await page.goto(base + '/blog/');
       assert.equal((await appearance()).skin, preset);
       assert.equal((await appearance()).background, home.background);
       assert.equal((await appearance()).backgroundColor, home.backgroundColor);
       assert.equal((await appearance()).color, home.color);
-      await page.getByText('外观', {exact: true}).click();
-      await page.getByLabel('预设皮肤').selectOption(preset);
+      assert.equal(await page.locator('#skin-settings').count(), 0);
       await page.screenshot({path: `${screenshots}/${preset}-blog.png`});
       await page.goto(base);
-      await page.getByText('外观', {exact: true}).click();
+      await page.getByLabel('外观设置', {exact: true}).click();
     }
     await page.getByLabel('背景色十六进制色值').fill('#123abc');
     await page.getByLabel('背景色十六进制色值').fill('#bad');
@@ -67,27 +64,39 @@ const assert = require('node:assert/strict');
     await Promise.all([page.waitForURL('**/posts/**'), page.locator('.readmore').first().click()]);
     await page.waitForLoadState();
     assert.equal((await appearance()).skin, 'custom');
-    await page.getByText('外观', {exact: true}).click();
+    assert.equal(await page.locator('#skin-settings').count(), 0);
+    await page.screenshot({path: `${screenshots}/article.png`, fullPage: false});
+    await page.goto(base);
+    await page.getByLabel('外观设置', {exact: true}).click();
     await page.getByRole('button', {name: '恢复默认'}).click();
     assert.equal((await appearance()).background, defaultBackground);
     assert.equal((await appearance()).backgroundColor, defaultColor);
-    await page.screenshot({path: `${screenshots}/article.png`, fullPage: false});
-    await page.getByLabel('预设皮肤').press('Escape');
+    await page.getByLabel('预设主题').press('Escape');
     assert.equal(await page.locator('.skin-settings').getAttribute('open'), null);
     const peer = await context.newPage();
     await peer.goto(base + '/blog/');
-    await page.getByText('外观', {exact: true}).click();
-    await page.getByLabel('预设皮肤').selectOption('sage');
+    await page.getByLabel('外观设置', {exact: true}).click();
+    await page.getByLabel('预设主题').selectOption('sage');
     await peer.waitForFunction(() => document.documentElement.dataset.skin === 'sage');
     await peer.close();
     for (const width of [320, 375, 768, 920, 1024, 1440]) {
       await page.setViewportSize({width, height: 900});
       for (const path of ['/', '/blog/']) {
         await page.goto(base + path);
-        await page.getByText('外观', {exact: true}).click();
+        if (path === '/') {
+          const trigger = page.getByLabel('外观设置', {exact: true});
+          assert.equal(await trigger.locator('svg').count(), 1);
+          const target = await trigger.boundingBox();
+          assert.ok(target.width >= 44 && target.height >= 44);
+          await trigger.press('Enter');
+          const panel = await page.locator('.skin-panel').boundingBox();
+          assert.ok(panel.x >= 0 && panel.x + panel.width <= width, `panel clipped at ${width}`);
+          await page.getByLabel('预设主题').press('Escape');
+          assert.ok(await trigger.evaluate(e => e === document.activeElement));
+        } else {
+          assert.equal(await page.locator('#skin-settings').count(), 0);
+        }
         assert.equal((await appearance()).overflow, false, `${path} overflow at ${width}`);
-        const panel = await page.locator('.skin-panel').boundingBox();
-        assert.ok(panel.x >= 0 && panel.x + panel.width <= width, `panel clipped at ${width}`);
         await page.screenshot({path: `${screenshots}/${width}-${path === '/' ? 'home' : 'blog'}.png`});
       }
     }

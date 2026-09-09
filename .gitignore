@@ -1,1 +1,14 @@
 content/.DS_Store
+
+.DS_Store
+.worktrees/
+/public/
+/resources/
+node_modules/
+.hugo_build.lock
+__pycache__/
+.pytest_cache/
+
+.site-build-*/
+.site-build.lock/
+/dist/

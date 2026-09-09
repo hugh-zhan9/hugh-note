@@ -1,0 +1,53 @@
+name: Sync running data
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: running-data-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    # Enable after migrating secrets and disabling the old running publisher/scheduler.
+    if: vars.RUNNING_SYNC_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      commit: ${{ steps.sync.outputs.commit }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: apps/running/requirements.txt
+      - run: pip install -r apps/running/requirements.txt
+      - name: Sync and save only generated running data
+        id: sync
+        env:
+          KEEP_MOBILE: ${{ secrets.KEEP_MOBILE }}
+          KEEP_PASSWORD: ${{ secrets.KEEP_PASSWORD }}
+          ATHLETE: 牧己
+          TITLE: 牧己 Running
+          MIN_GRID_DISTANCE: 1
+          TITLE_GRID: Just Running
+          IGNORE_START_END_RANGE: 1
+          IGNORE_POLYLINE: ktjrFoemeU~IorGq}DeB
+          IGNORE_RANGE: 1
+          BIRTHDAY_MONTH: 1989-03
+        run: bash scripts/sync-running.sh
+
+  publish:
+    needs: sync
+    uses: ./.github/workflows/depoly.yml
+    with:
+      ref: ${{ needs.sync.outputs.commit }}
+    secrets: inherit

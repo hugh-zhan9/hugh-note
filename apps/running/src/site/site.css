@@ -1,0 +1,125 @@
+@import '../../../../assets/css/site-tokens.css';
+
+/* Each application owns its layout; only the palette crosses the boundary. */
+:root[data-theme] {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Microsoft YaHei', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-brand: var(--site-text);
+  --color-primary: var(--site-text);
+  --color-secondary: var(--site-muted);
+  --color-bg: var(--site-bg);
+  --color-background: var(--site-bg);
+  --color-tx: var(--site-text);
+  --color-text: var(--site-text);
+  --color-text-primary: var(--site-text);
+  --color-muted: var(--site-muted);
+  --color-hr: var(--site-border);
+  --color-hr-primary: var(--site-border);
+  --color-border: var(--site-border);
+  --color-card: var(--site-surface);
+  --color-selected: var(--site-accent);
+  --color-accent: var(--site-accent);
+  --color-run-date: var(--site-muted);
+  --color-run-table-thead: var(--site-muted);
+  --color-run-row-hover-background: var(--site-surface);
+  --color-activity-card: var(--site-border);
+  --svg-color-inactive-cell: var(--site-cell-0);
+  --svg-color-active-cell: var(--site-cell-2);
+  --svg-special-color: var(--site-cell-3);
+  --svg-special-color2: var(--site-accent);
+}
+html[data-theme] body.running-site {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--site-bg);
+  color: var(--site-text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.running-site [data-filter] {
+  --color-accent: var(--site-accent);
+}
+.running-site .site-header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1312px;
+  margin: 0 auto;
+  padding: 30px 0;
+  border-bottom: 1px solid var(--site-border);
+  color: var(--site-text);
+}
+.site-header .site-brand {
+  color: var(--site-text);
+  font-family: 'Songti SC', 'STSong', serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.site-header nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-size: 13px;
+}
+.site-header nav > a,
+.site-header nav > button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--site-muted);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.site-header nav > a:hover,
+.site-header nav > button:hover {
+  color: var(--site-text);
+}
+.running-site .running-content {
+  padding-top: 32px;
+}
+.running-content h1 {
+  font-size: 26px;
+  font-style: normal;
+  font-weight: 600;
+}
+@media (max-width: 1408px) {
+  .running-site .site-header {
+    margin-inline: 48px;
+  }
+}
+@media (max-width: 640px) {
+  .running-site .site-header {
+    margin-inline: 20px;
+    padding: 20px 0;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .site-header nav {
+    justify-content: flex-end;
+    gap: 4px 14px;
+    max-width: 230px;
+  }
+  .site-header .site-brand {
+    font-size: 26px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme],
+  html[data-theme] body.running-site {
+    transition: none;
+  }
+}

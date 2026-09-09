@@ -4,10 +4,11 @@ title = '牧己'
 theme = 'archie'
 enableGitInfo = true
 [params]
+	favicon="/favicon.png"
 	mode="toggle"
 	useCDN=false
 	mainSections = ["posts", "crazy-talk"]
-	customCSS = ["css/skin.css", "css/homepage.css", "css/article.css"]
+	customCSS = ["css/site-tokens.css", "css/appearance-controls.css", "css/skin.css", "css/homepage.css", "css/article.css"]
 	customJS = ["js/themetoggle.js", "js/homepage.js"]
 
 [[params.social]]

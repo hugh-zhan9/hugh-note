@@ -87,74 +87,14 @@
       return cell;
     }
 
-    function parseActivitiesPayload(source) {
-      const signature = "JSON.parse(`";
-      const start = source.indexOf(signature);
-
-      if (start === -1) {
-        throw new Error("activities payload signature not found");
-      }
-
-      const payloadStart = start + signature.length;
-      const payloadEnd = source.indexOf("`)", payloadStart);
-
-      if (payloadEnd === -1) {
-        throw new Error("activities payload end marker not found");
-      }
-
-      const templateLiteralSource = source.slice(payloadStart - 1, payloadEnd + 1);
-      const decodedPayload = new Function(`return ${templateLiteralSource};`)();
-
-      return JSON.parse(decodedPayload);
-    }
-
-    async function resolveActivitiesAssetUrl() {
-      const homepageResponse = await fetch(RUNNING_BASE, { credentials: "omit" });
-
-      if (!homepageResponse.ok) {
-        throw new Error(`running homepage request failed: ${homepageResponse.status}`);
-      }
-
-      const homepageHtml = await homepageResponse.text();
-      const directMatch = homepageHtml.match(/\/running\/assets\/activities-[^"' )]+\.js/);
-
-      if (directMatch) {
-        return new URL(directMatch[0], window.location.origin).toString();
-      }
-
-      const indexScriptMatch = homepageHtml.match(/src="([^"]*index-[^"]+\.js)"/);
-
-      if (!indexScriptMatch) {
-        throw new Error("running index bundle not found");
-      }
-
-      const indexScriptUrl = new URL(indexScriptMatch[1], window.location.origin).toString();
-      const indexScriptResponse = await fetch(indexScriptUrl, { credentials: "omit" });
-
-      if (!indexScriptResponse.ok) {
-        throw new Error(`running index bundle request failed: ${indexScriptResponse.status}`);
-      }
-
-      const indexScriptText = await indexScriptResponse.text();
-      const activitiesPathMatch = indexScriptText.match(/assets\/activities-[^"' )]+\.js/);
-
-      if (!activitiesPathMatch) {
-        throw new Error("running activities bundle not found");
-      }
-
-      return new URL(`${RUNNING_BASE}${activitiesPathMatch[0]}`, window.location.origin).toString();
-    }
-
     async function fetchRunningActivities() {
-      const activitiesAssetUrl = await resolveActivitiesAssetUrl();
-      const activitiesResponse = await fetch(activitiesAssetUrl, { credentials: "omit" });
-
-      if (!activitiesResponse.ok) {
-        throw new Error(`running activities request failed: ${activitiesResponse.status}`);
-      }
-
-      const activitiesScript = await activitiesResponse.text();
-      return parseActivitiesPayload(activitiesScript);
+      const response = await fetch(`${RUNNING_BASE}data/activities.json`, {
+        credentials: "omit", cache: "no-cache"
+      });
+      if (!response.ok) throw new Error(`running activities request failed: ${response.status}`);
+      const activities = await response.json();
+      if (!Array.isArray(activities)) throw new Error("invalid running activities response");
+      return activities;
     }
 
     function buildMonthlyRunningStats(activities, referenceDate) {

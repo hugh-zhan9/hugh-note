@@ -1,12 +1,12 @@
 <header>
 	<div class="main">
-		<a href="{{ absURL "/" }}">{{ .Site.Title }}</a>
+		<a href="{{ relURL "/" }}">{{ .Site.Title }}</a>
 	</div>
 	<nav>
 		{{ if .IsHome }}
 			<a href="/blog/">文章</a>
 			<a href="/crazy-talk/">碎念</a>
-			<a href="{{ absURL "running/" }}">跑步</a>
+			<a href="{{ relURL "running/" }}">跑步</a>
 		{{ end }}
 		{{ if not .IsHome }}
 			{{ $currentPath := replaceRE "/+$" "" .RelPermalink }}
@@ -23,25 +23,8 @@
 				{{ end }}
 			{{ end }}
 		{{ end }}
-		<details class="skin-settings" id="skin-settings" hidden>
-			<summary>外观</summary>
-			<div class="skin-panel">
-				<label for="skin-preset">预设皮肤</label>
-				<select id="skin-preset">
-					<option value="light">素纸 · 默认</option>
-					<option value="paper">暖纸</option>
-					<option value="sage">鼠尾草</option>
-					<option value="dark">夜幕</option>
-					<option value="custom">自定义</option>
-				</select>
-				<label for="skin-color">自定义背景色</label>
-				<div class="skin-color-row">
-					<input id="skin-color" type="color" value="#faf9f6">
-					<input id="skin-hex" type="text" value="#faf9f6" aria-label="背景色十六进制色值" aria-describedby="skin-status" maxlength="7" pattern="#[0-9a-fA-F]{6}" spellcheck="false" autocomplete="off">
-				</div>
-				<p id="skin-status" role="status">选择自动保存在此浏览器，应用于全站。</p>
-				<button id="skin-reset" type="button">恢复默认</button>
-			</div>
-		</details>
+		{{ if .IsHome }}
+			{{ partial "appearance.html" . }}
+		{{ end }}
 	</nav>
 </header>

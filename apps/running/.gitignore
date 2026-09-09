@@ -1,0 +1,29 @@
+# Project dependencies
+.yarn
+.cache
+*.pyc
+node_modules
+yarn-error.log
+
+# Build directory
+/build
+/dist
+.DS_Store
+.sass-cache/
+_posts/
+_site/
+
+.mypy_cache
+
+/.vscode
+.idea
+.worktrees/
+
+config.yaml
+.venv/
+.pdm-python
+
+route.png
+route.svg
+
+.env

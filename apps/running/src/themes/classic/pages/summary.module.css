@@ -1,0 +1,699 @@
+.root {
+  /* The annual story keeps its original appearance independently of site skins. */
+  --font-sans: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  --summary-bg: #0e0a07;
+  --summary-bg-soft: rgba(58, 41, 18, 0.28);
+  --summary-grid: rgba(255, 255, 255, 0.04);
+  --summary-grid-strong: rgba(255, 255, 255, 0.08);
+  --summary-text: #f4eee7;
+  --summary-muted: rgba(244, 238, 231, 0.58);
+  --summary-faint: rgba(244, 238, 231, 0.25);
+  --summary-accent: #ff6a00;
+  --summary-card: rgba(255, 255, 255, 0.05);
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: var(--summary-text);
+  background:
+    linear-gradient(90deg, var(--summary-bg-soft), transparent 48%),
+    radial-gradient(circle at 20% 30%, rgba(122, 84, 21, 0.2), transparent 35%),
+    radial-gradient(
+      circle at 70% 70%,
+      rgba(122, 84, 21, 0.12),
+      transparent 28%
+    ),
+    linear-gradient(180deg, #17110c 0%, var(--summary-bg) 100%);
+}
+
+.root::before,
+.root::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.root::before {
+  background-image:
+    linear-gradient(var(--summary-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--summary-grid) 1px, transparent 1px);
+  background-size:
+    100% calc(100vh / 4),
+    calc(100vw / 8) 100%;
+  opacity: 0.85;
+}
+
+.root::after {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.18),
+    transparent 30%,
+    transparent 70%,
+    rgba(0, 0, 0, 0.12)
+  );
+}
+
+.yearSwitch {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 3;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-family: var(--font-mono);
+}
+
+.yearLink,
+.latestLink {
+  color: var(--summary-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+
+.yearLinkActive,
+.latestLink:hover,
+.yearLink:hover {
+  color: var(--summary-text);
+}
+
+.pageFrame {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 4.5rem 4rem 6rem;
+  animation: pageEnter 560ms ease both;
+}
+
+.coverPage,
+.twoColumnPage,
+.chartPage,
+.highlightsPage,
+.monthlyPage,
+.recapPage {
+  min-height: calc(100vh - 10.5rem);
+}
+
+.coverPage,
+.highlightsPage {
+  display: flex;
+  align-items: flex-start;
+}
+
+.twoColumnPage,
+.chartPage,
+.monthlyPage {
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) 1fr;
+  gap: 3rem;
+}
+
+.copyBlock {
+  max-width: 34rem;
+  padding-top: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  color: var(--summary-muted);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+}
+
+.headline,
+.sectionTitle {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.headline {
+  font-size: clamp(2.8rem, 5vw, 5.5rem);
+}
+
+.sectionTitle {
+  font-size: clamp(2rem, 3vw, 3rem);
+}
+
+.lead,
+.leadSmall,
+.supporting,
+.unit {
+  margin: 0;
+  color: var(--summary-muted);
+}
+
+.lead {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.leadSmall {
+  margin-top: 0.9rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.megaValue {
+  margin-top: 2rem;
+  font-size: clamp(4rem, 8vw, 7rem);
+  line-height: 1;
+  font-weight: 700;
+}
+
+.unit {
+  margin-top: 1rem;
+  font-size: 1.6rem;
+}
+
+.supporting {
+  margin-top: 0.75rem;
+  font-size: 1.15rem;
+}
+
+.weekGrid {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+  align-content: center;
+  padding-top: 2rem;
+}
+
+.weekCell {
+  min-height: 4.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: rgba(244, 238, 231, 0.3);
+}
+
+.weekCellActive {
+  color: var(--summary-text);
+}
+
+.weekLabel,
+.weekValue,
+.metricLabel,
+.highlightLabel,
+.highlightMeta,
+.monthName,
+.scatterYAxis,
+.scatterMonths,
+.footerHint,
+.pageIndicator {
+  font-family: var(--font-mono);
+}
+
+.weekLabel,
+.weekValue {
+  font-size: 0.95rem;
+}
+
+.scatterWrapper {
+  display: grid;
+  grid-template-columns: 1.75rem 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 1rem;
+  min-height: 35rem;
+  align-self: center;
+}
+
+.scatterYAxis {
+  display: grid;
+  align-items: space-between;
+  font-size: 0.72rem;
+  color: var(--summary-faint);
+}
+
+.scatterPlot {
+  position: relative;
+  min-height: 35rem;
+}
+
+.scatterRow,
+.scatterColumn {
+  position: absolute;
+  background: var(--summary-grid);
+}
+
+.scatterRow {
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.scatterColumn {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+.scatterPoint {
+  position: absolute;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-left: -0.225rem;
+  margin-top: -0.225rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+  opacity: 0;
+  animation: pointReveal 420ms ease forwards;
+}
+
+.scatterMonths {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  color: var(--summary-muted);
+  font-size: 0.8rem;
+}
+
+.highlightsList {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: min(34rem, 100%);
+  padding-top: 5rem;
+}
+
+.highlightRow {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: start;
+}
+
+.highlightIndex {
+  color: var(--summary-muted);
+  font-family: var(--font-mono);
+}
+
+.highlightContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.highlightValue {
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  font-weight: 700;
+}
+
+.highlightValue span {
+  font-size: 1.6rem;
+  color: var(--summary-muted);
+}
+
+.highlightMeta {
+  padding-top: 0.5rem;
+  color: var(--summary-muted);
+}
+
+.metricRow {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.metricBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metricLabel {
+  color: var(--summary-muted);
+  font-size: 0.9rem;
+}
+
+.metricValue {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.monthColumns {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.2rem;
+  align-items: start;
+  padding-top: 3rem;
+}
+
+.monthColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.monthName {
+  color: var(--summary-muted);
+  font-size: 0.8rem;
+}
+
+.monthDots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.38rem;
+}
+
+.dayDot,
+.recapDot {
+  width: 0.52rem;
+  height: 0.52rem;
+  border-radius: 999px;
+  transition: transform 120ms ease;
+}
+
+.dayDot:hover {
+  transform: scale(1.25);
+}
+
+.dayDotEmpty {
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.dayDotLight {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.dayDotMid {
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.dayDotStrong {
+  background: #fff8f0;
+}
+
+.dayDotAccent {
+  background: var(--summary-accent);
+  box-shadow: 0 0 12px rgba(255, 106, 0, 0.35);
+}
+
+.recapPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.recapCard {
+  width: min(100%, 36rem);
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 1.5rem;
+  padding: 1.8rem;
+  border: 1px solid var(--summary-grid-strong);
+  border-radius: 1.6rem;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.recapStats {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.recapMetaGroup,
+.recapBuckets div,
+.recapMetrics div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.recapMetaGroup,
+.recapBuckets,
+.recapMetrics,
+.recapSite {
+  font-family: var(--font-mono);
+}
+
+.recapMetaGroup,
+.recapBuckets span,
+.recapMetrics span,
+.recapSite,
+.emptyState {
+  color: var(--summary-muted);
+}
+
+.recapMetaGroup strong,
+.recapBuckets strong,
+.recapMetrics strong {
+  color: var(--summary-text);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.recapBuckets {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recapBuckets em {
+  color: var(--summary-muted);
+  font-style: normal;
+  width: 1rem;
+}
+
+.recapMetrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1.2rem;
+}
+
+.recapSite {
+  margin-top: auto;
+  font-size: 0.8rem;
+}
+
+.recapGrid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0.35rem;
+  align-content: start;
+}
+
+.recapDot {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.recapActions {
+  display: flex;
+  gap: 0.9rem;
+}
+
+.primaryButton,
+.secondaryButton {
+  border-radius: 999px;
+  padding: 0.85rem 1.35rem;
+  border: 1px solid var(--summary-grid-strong);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.primaryButton {
+  background: #f4eee7;
+  color: #17110c;
+}
+
+.secondaryButton {
+  background: transparent;
+  color: var(--summary-text);
+}
+
+.footerHint {
+  position: fixed;
+  left: 2.75rem;
+  bottom: 1.35rem;
+  z-index: 2;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  color: var(--summary-muted);
+  font-size: 0.82rem;
+}
+
+.keycap {
+  padding: 0.18rem 0.4rem;
+  border: 1px solid var(--summary-grid-strong);
+  border-radius: 0.35rem;
+}
+
+.dot {
+  color: var(--summary-faint);
+}
+
+.pageIndicator {
+  position: fixed;
+  right: 2.2rem;
+  bottom: 1.35rem;
+  z-index: 2;
+  color: var(--summary-muted);
+  font-size: 0.85rem;
+}
+
+.mobilePager {
+  display: none;
+}
+
+.emptyState {
+  position: relative;
+  z-index: 1;
+  padding: 8rem 2rem;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pointReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 960px) {
+  .pageFrame {
+    padding: 4.5rem 1.5rem 5rem;
+  }
+
+  .twoColumnPage,
+  .chartPage,
+  .monthlyPage,
+  .recapCard {
+    grid-template-columns: 1fr;
+  }
+
+  .weekGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .monthColumns {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .scatterWrapper {
+    min-height: 24rem;
+  }
+
+  .scatterPlot {
+    min-height: 24rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .yearSwitch {
+    top: 0.75rem;
+    right: 0.75rem;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: 60vw;
+  }
+
+  .footerHint {
+    display: none;
+  }
+
+  .pageIndicator {
+    display: none;
+  }
+
+  .mobilePager {
+    position: fixed;
+    left: 50%;
+    bottom: 0.85rem;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transform: translateX(-50%);
+    padding: 0.32rem 0.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 999px;
+    background: rgba(14, 10, 7, 0.66);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16);
+  }
+
+  .mobilePagerButton,
+  .mobilePagerTrigger,
+  .mobilePagerText {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .mobilePagerButton {
+    width: 1.9rem;
+    height: 1.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 999px;
+    color: var(--summary-text);
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .mobilePagerTrigger {
+    min-width: 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 999px;
+    padding: 0.42rem 0.68rem;
+    color: var(--summary-muted);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .mobilePagerButton:disabled {
+    opacity: 0.28;
+  }
+
+  .mobilePagerText {
+    min-width: 3rem;
+    text-align: center;
+    color: var(--summary-muted);
+  }
+
+  .weekGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .monthColumns {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .recapMetrics {
+    grid-template-columns: 1fr;
+  }
+}

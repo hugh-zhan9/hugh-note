@@ -1,33 +1,84 @@
-name: github pages # 名字自取
+name: Build and publish site
 
 on:
   push:
-    branches:
-      - main  # 这里的意思是当 main分支发生push的时候，运行下面的jobs，这里先改为github-actions
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+# All site publishers share this group. Pending older runs fail the main-head gate.
+concurrency:
+  group: site-publish
+  cancel-in-progress: false
 
 jobs:
-  deploy: # 任务名自取
-    runs-on: ubuntu-latest	# 在什么环境运行任务
+  build:
+    needs: python-tests
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2	# 引用actions/checkout这个action，与所在的github仓库同名
+      - uses: actions/checkout@v4
         with:
-          submodules: true  # Fetch Hugo themes (true OR recursive) 获取submodule主题
-          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
-
-      - name: Setup Hugo	# 步骤名自取
-        uses: peaceiris/actions-hugo@v2	# hugo官方提供的action，用于在任务环境中获取hugo
+          ref: ${{ inputs.ref || github.sha }}
+          submodules: true
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
         with:
-          hugo-version: 'latest'	# 获取最新版本的hugo
-          # extended: true
-
-      - name: Build
-        run: hugo --minify	# 使用hugo构建静态网页
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3	# 一个自动发布github pages的action
+          version: 8.9.0
+      - uses: actions/setup-node@v4
         with:
-          # github_token: ${{ secrets.GITHUB_TOKEN }} 该项适用于发布到源码相同repo的情况，不能用于发布到其他repo
-          external_repository: hugh-zhan9/hugh-zhan9.github.io	# 发布到哪个repo
-          personal_token: ${{ secrets.ACCESS_TOKEN }}	# 发布到其他repo需要提供上面生成的personal access token
-          publish_dir: ./public	# 注意这里指的是要发布哪个文件夹的内容，而不是指发布到目的仓库的什么位置，因为hugo默认生成静态网页到public文件夹，所以这里发布public文件夹里的内容
-          publish_branch: main	# 发布到哪个branch
+          node-version: '24'
+          cache: pnpm
+          cache-dependency-path: apps/running/pnpm-lock.yaml
+      - uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.165.0'
+          extended: true
+      - name: Install running dependencies
+        run: pnpm --dir apps/running install --frozen-lockfile
+      - name: Verify
+        run: |
+          bash tests/homepage_contract_test.sh
+          bash tests/crazy_talk_section_test.sh
+          node --test tests/skin_test.cjs tests/site_build_test.mjs tests/running_route_test.cjs tests/site_workflow_test.mjs
+          pnpm --dir apps/running test
+          pnpm --dir apps/running exec tsc --noEmit
+      - name: Build both applications
+        env:
+          VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+        run: node scripts/build.mjs
+      - name: Check current main before publishing
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        id: head
+        run: bash scripts/check-publish-head.sh >> "$GITHUB_OUTPUT"
+      - name: Publish complete site
+        if: steps.head.outputs.current == 'true'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          external_repository: hugh-zhan9/hugh-zhan9.github.io
+          personal_token: ${{ secrets.ACCESS_TOKEN }}
+          publish_dir: ./dist/site
+          publish_branch: main
+
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: apps/running/requirements-dev.txt
+      - run: pip install -r requirements-dev.txt pytest textual
+        working-directory: apps/running
+      - run: python -m pytest test_tui_app.py run_page/test_keep_sync.py run_page/test_generator.py run_page/gpxtrackposter/test_track.py -q
+        working-directory: apps/running
