@@ -77,7 +77,7 @@ SKIN_TEST_URL=http://127.0.0.1:1313 node tests/skin_browser_test.cjs
 4. 发布组合站点，确认 `/running/data/activities.json`、主页月份/路线、`/running/summary/2025` 刷新和跨页外观。
 5. 开启 `RUNNING_SYNC_ENABLED`，手动运行一次新任务并确认数据提交、统一发布成功。
 
-切回旧站时先关闭新同步，再恢复旧任务/Pages；保留新产生的活动，不能用旧数据库覆盖新数据。
+切回旧站时先关闭新同步，再恢复旧任务/Pages，并显式执行旧站部署和验收；保留新产生的活动，不能用旧数据库覆盖新数据。仅恢复旧项目站会再次遮蔽 `/running/data/activities.json`，使新主页的跑步区域失效。健康回滚必须同时使用接口匹配的主页与跑步版本。
 
 ### GitHub 配置迁移状态（2026-09-09）
 
@@ -85,7 +85,7 @@ SKIN_TEST_URL=http://127.0.0.1:1313 node tests/skin_browser_test.cjs
 
 目标已有 `ACCESS_TOKEN`，保留原值；本次仅确认存在，未执行发布验证。源仓库有 `KEEP_MOBILE`、`KEEP_PASSWORD`、`COROS_ACCOUNT`、`COROS_PASSWORD`，目标初次核对时缺 Keep 两项凭据；用户自行配置后，提交前已通过 API 确认 `KEEP_MOBILE` 与 `KEEP_PASSWORD` 均已存在（未验证登录）。GitHub API 不返回 Secret 值，当前进程环境及源项目根目录的配置文件也未提供 Keep 凭据，需要从用户提供的本机凭据文件写入，或由用户在目标仓库的 Actions Secrets 页面补填。当前同步方式为 Keep，未使用 COROS；源仓库也没有 `MAPBOX_TOKEN`。
 
-源仓库的 `github-pages`、`Preview`、`Production` environments 均没有 secrets 或 variables。组合站点沿用既有跨仓库发布流程，不复制这些环境。旧仓库的同步与 Pages 保持运行；同步开关已提前开启，本次未手动触发同步。工作流随本次提交推送至 main；运行和发布结果以 GitHub Actions 为准。凭据名称已确认，Keep 登录及旧站切换尚未验证。
+源仓库的 `github-pages`、`Preview`、`Production` environments 均没有 secrets 或 variables。组合站点沿用既有跨仓库发布流程，不复制这些环境。目标同步开关已开启，Keep 凭据名称已确认，尚未手动验证 Keep 登录。组合站点已通过 Actions 构建并发布；旧站切换记录见下。
 
 ## 后续同步上游
 
@@ -98,3 +98,11 @@ SKIN_TEST_URL=http://127.0.0.1:1313 node tests/skin_browser_test.cjs
 77 项自动化测试通过（主页 13、皮肤/路由/构建/工作流 19、跑步 27、Python 18），类型检查、组合构建与独立代码复审通过。两套浏览器回归验证了跨页/跨标签外观、真实数据月份和路线、年度总结及 320–1440px 布局；Dashboard 使用真实活动数据、测试 Mapbox 底图做补充检查。原始受保护文件 2419 个逐字节一致，完整导入 2566 个版本控制文件。测试不调用真实 Keep 同步，不操作生产发布。
 
 本次外观修订验证：恢复年度总结入口及独立样式，移除主页之外的外观控件；77 项测试、类型检查、组合构建及两套浏览器回归通过。浏览器检查新增图标可访问名称/键盘开关/44px 点击区域、年度入口导航、六页翻页、原渐变和字体、跨皮肤及跨标签视觉不变、直接访问与刷新、移动端翻页。
+
+## 旧项目站切换（2026-09-09）
+
+组合站点发布后，旧 `hugh-zhan9/running` project Pages 仍占用 `/running/`，导致已存在于发布仓库的 `/running/data/activities.json` 返回 404；主页按数据加载失败处理，月份和路线按钮未显示。定位时浏览器已复现。
+
+已禁用旧仓库 `run_data_sync.yml` 和 `gh-pages.yml`，确认所有未完成任务（含 queued/waiting）为空后移除旧 Pages 配置；仓库、代码和数据均保留。重新核对旧 master 相比导入基线只多 9 个派生 SVG 改动，DB、GPX 与原始 JSON 无新增差异。随后请求主站 Pages 重建以刷新路由；数据接口已返回 200、2415 条记录，年度总结直接入口可用。旧站配置备份位于执行机器 `/tmp/hugh-note-running-pages-cutover`；恢复旧 workflow 型 Pages 需要重新部署，且不能单独作为新主页的健康回滚。
+
+线上验收：`SITE_TEST_URL=https://hugh-zhan9.github.io node tests/site_browser_test.cjs` 全部通过，覆盖真实活动数据、月份/路线/地区、跨页配色、年度翻页和 320–1440px 布局。另直接操作主页，确认 2026 年 8 月显示 13.0 / 150 km，月份与两种路线视图均可切换。
