@@ -8,7 +8,7 @@ assert_contains() {
   local file="$1"
   local pattern="$2"
 
-  if ! rg -F -q -- "$pattern" "$file"; then
+  if ! grep -F -q -- "$pattern" "$file"; then
     echo "断言失败: $file 不包含: $pattern" >&2
     exit 1
   fi
@@ -33,7 +33,7 @@ assert_file_exists "$ROOT_DIR/layouts/crazy-talk/list.html"
 assert_contains "$ROOT_DIR/layouts/crazy-talk/list.html" '.Content'
 assert_contains "$ROOT_DIR/layouts/crazy-talk/list.html" '疯言疯语'
 
-if rg -F -q -- '.RelPermalink' "$ROOT_DIR/layouts/crazy-talk/list.html"; then
+if grep -F -q -- '.RelPermalink' "$ROOT_DIR/layouts/crazy-talk/list.html"; then
   echo "断言失败: crazy-talk 列表页不应依赖标题跳转入口" >&2
   exit 1
 fi

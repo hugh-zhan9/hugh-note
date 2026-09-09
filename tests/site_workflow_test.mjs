@@ -1,10 +1,23 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {mkdtemp,readFile,writeFile,chmod,mkdir,rm,copyFile} from 'node:fs/promises';
+import {mkdtemp,readFile,writeFile,chmod,mkdir,rm,copyFile,symlink} from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';
 import path from 'node:path';
 import {tmpdir} from 'node:os';
 const repository = path.resolve(import.meta.dirname, '..');
+test('section contract runs with standard shell tools and no ripgrep',async()=>{
+  const bin=await mkdtemp(path.join(tmpdir(),'site-contract-bin-'));
+  try {
+    for(const name of ['dirname','basename','awk','grep']) {
+      await symlink(`/usr/bin/${name}`,path.join(bin,name));
+    }
+    const result=spawnSync('/bin/bash',[path.join(repository,'tests/crazy_talk_section_test.sh')],{
+      encoding:'utf8',env:{...process.env,PATH:bin},
+    });
+    assert.equal(result.status,0,result.stderr);
+    assert.match(result.stdout,/crazy-talk 栏目契约检查通过/);
+  } finally {await rm(bin,{recursive:true,force:true});}
+});
 async function fixture() {
   const root=await mkdtemp(path.join(tmpdir(),'site-workflow-test-'));
   await mkdir(path.join(root,'bin')); await mkdir(path.join(root,'scripts'));
