@@ -1,12 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ .Site.Language.Lang }}">
 	{{ partial "header.html" . }}
-	<body class="homepage-enabled" data-homepage-theme="light">
-		<script>
-			try {
-				document.body.setAttribute("data-homepage-theme", localStorage.getItem("theme-storage") || "light");
-			} catch (error) {}
-		</script>
+	<body class="homepage-enabled">
 		<div class="content">
 			{{ partial "head.html" . }}
 			{{ $notes := partial "homepage/note-items.html" . }}

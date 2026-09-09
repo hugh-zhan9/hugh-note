@@ -35,17 +35,6 @@
     const CRAZY_TALK_INTERVAL_MS = 10000;
     const CRAZY_TALK_FILE_LIMIT = 30;
 
-    function syncHomepageTheme() {
-      let savedTheme = "light";
-      try {
-        savedTheme = localStorage.getItem("theme-storage") || "light";
-      } catch (error) {}
-      document.body.setAttribute("data-homepage-theme", savedTheme);
-      document.getElementById("dark-mode-toggle")?.setAttribute(
-        "aria-label", savedTheme === "dark" ? "切换浅色模式" : "切换深色模式"
-      );
-    }
-
     function normalizeActivityType(type) {
       const normalized = {
         Run: "running",
@@ -623,21 +612,6 @@
         if (!document.hidden) renderMemories();
       });
     }
-
-    syncHomepageTheme();
-    const themeToggle = document.getElementById("dark-mode-toggle");
-
-    if (themeToggle) {
-      themeToggle.addEventListener("click", function () {
-        window.setTimeout(syncHomepageTheme, 0);
-      });
-    }
-
-    window.addEventListener("storage", function (event) {
-      if (event.key === "theme-storage") {
-        syncHomepageTheme();
-      }
-    });
 
     initRouteTabs();
     initRunningPanel();

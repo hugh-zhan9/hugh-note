@@ -1,14 +1,14 @@
 body.homepage-enabled {
-  --homepage-bg: #faf9f6;
-  --homepage-surface: #f1f0e9;
-  --homepage-border: #dedfd5;
-  --homepage-text: #292e29;
-  --homepage-muted: #697168;
-  --homepage-accent: #3e674c;
-  --homepage-cell-0: #e7e9df;
-  --homepage-cell-1: #b7ccb1;
-  --homepage-cell-2: #7ca075;
-  --homepage-cell-3: #466e4c;
+  --homepage-bg: var(--site-bg);
+  --homepage-surface: var(--site-surface);
+  --homepage-border: var(--site-border);
+  --homepage-text: var(--site-text);
+  --homepage-muted: var(--site-muted);
+  --homepage-accent: var(--site-accent);
+  --homepage-cell-0: var(--site-cell-0);
+  --homepage-cell-1: var(--site-cell-1);
+  --homepage-cell-2: var(--site-cell-2);
+  --homepage-cell-3: var(--site-cell-3);
   margin: 0;
   background: var(--homepage-bg);
   color: var(--homepage-text);
@@ -16,19 +16,6 @@ body.homepage-enabled {
   font-size: 15px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-}
-
-body.homepage-enabled[data-homepage-theme="dark"] {
-  --homepage-bg: #191d1a;
-  --homepage-surface: #222923;
-  --homepage-border: #364037;
-  --homepage-text: #e3e8df;
-  --homepage-muted: #a0ada0;
-  --homepage-accent: #b4cfa7;
-  --homepage-cell-0: #2b342c;
-  --homepage-cell-1: #435b42;
-  --homepage-cell-2: #78966b;
-  --homepage-cell-3: #b4cfa7;
 }
 
 body.homepage-enabled * { box-sizing: border-box; }
@@ -57,20 +44,6 @@ body.homepage-enabled header .main a { font-family: "Songti SC", "STSong", serif
 body.homepage-enabled header nav { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; font-size: 13px; }
 body.homepage-enabled header nav a { color: var(--homepage-muted); }
 body.homepage-enabled header nav a:hover { color: var(--homepage-text); }
-body.homepage-enabled #dark-mode-toggle {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  width: 36px;
-  height: 36px;
-  padding: 8px;
-  border: 1px solid var(--homepage-border);
-  border-radius: 50%;
-  background: transparent;
-  color: var(--homepage-muted);
-  cursor: pointer;
-}
-body.homepage-enabled #dark-mode-toggle svg { width: 17px; height: 17px; }
 body.homepage-enabled .homepage { padding: 44px 0 0; }
 body.homepage-enabled .homepage-columns { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 54px; }
 body.homepage-enabled .homepage-section-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 26px; }

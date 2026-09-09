@@ -178,12 +178,8 @@ test('anniversary uses the visit date and has an honest empty state, including l
   assert.match(ordinary.get('memories-list').textContent, /还没有往年的记录/);
 });
 
-test('theme has an accessible toggle label; blocked storage does not stop initialization', async () => {
-  const dark = await mount({ theme: 'dark' });
-  assert.equal(dark.body.getAttribute('data-homepage-theme'), 'dark');
-  assert.equal(dark.ids.get('dark-mode-toggle').getAttribute('aria-label'), '切换浅色模式');
+test('blocked storage does not stop homepage initialization', async () => {
   const blocked = await mount({ storageBlocked: true });
-  assert.equal(blocked.body.getAttribute('data-homepage-theme'), 'light');
   assert.equal(blocked.get('crazy-talk-next').hidden, false);
   assert.equal(blocked.get('running-value').textContent, '0.0 / 150 km');
 });

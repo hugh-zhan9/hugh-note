@@ -7,8 +7,8 @@ enableGitInfo = true
 	mode="toggle"
 	useCDN=false
 	mainSections = ["posts", "crazy-talk"]
-	customCSS = ["css/homepage.css", "css/article.css"]
-	customJS = ["js/homepage.js"]
+	customCSS = ["css/skin.css", "css/homepage.css", "css/article.css"]
+	customJS = ["js/themetoggle.js", "js/homepage.js"]
 
 [[params.social]]
 name = "Running"
