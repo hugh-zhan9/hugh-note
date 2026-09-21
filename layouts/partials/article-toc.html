@@ -1,0 +1,10 @@
+{{- if and (ne .Params.toc false) (findRE `<a href=` .TableOfContents) -}}
+<aside class="article-toc" aria-label="文章目录">
+  <nav class="article-toc-rail" aria-label="章节快捷导航" hidden></nav>
+  <div class="article-toc-panel" id="article-toc-panel">
+    <div class="article-toc-label">本文目录</div>
+    {{ .TableOfContents }}
+  </div>
+</aside>
+<script src="{{ "js/article-toc.js" | relURL }}" defer></script>
+{{- end -}}

@@ -6,6 +6,12 @@
 
 选择保存在当前浏览器的 `localStorage["theme-storage"]`，跨页和同源标签页同步。原有 `light`、`dark` 选择继续生效。自定义颜色保存为六位十六进制色值；无效输入不改变当前外观。浏览器拒绝存储时，面板会说明选择无法保存。
 
+博客文章自动从二、三级标题生成左侧目录，保持 800px 正文宽度。浏览器宽度达到 1400px 时常驻显示；1000–1399px 时显示短横线入口，支持鼠标悬停或键盘聚焦展开，Escape、点击目录链接或外部区域可收起；低于 1000px 以及打印时隐藏。当前章节随正文滚动高亮，长目录独立滚动。宽表格进入目录所在区域时临时隐藏目录，离开后恢复，避免遮挡表格。没有小标题或设置了 `toc: false` 的文章不生成目录。配色沿用全站外观。
+
+收起态的短横线与目录标题按顺序一一对应，长度按标题文字数量相对缩放，最短保留最长横线的 20%，当前章节对应的横线同步高亮。每条横线都是对应标题的锚点链接，点击或按 Enter 可直接跳转。标题较多时横线区域可独立滚动，并随阅读位置显示当前横线。
+
+目录由 `layouts/posts/single.html`、`layouts/partials/article-toc.html`、`assets/css/article.css` 和 `static/js/article-toc.js` 维护，不修改 Archie 子模块。可用 `node tests/article_toc_browser_test.cjs` 验证；需要 Hugo、Playwright 和 Chromium，支持通过 `HUGO_BIN`、`CHROMIUM_EXECUTABLE_PATH` 指定可执行文件。测试在临时目录构建真实文章与边界样本，覆盖响应式、锚点、高亮、键盘、配色及宽表格，并输出截图。
+
 实现沿用 Hugo 的 `customCSS` / `customJS` 和项目模板覆盖机制：
 
 - `assets/css/site-tokens.css` 管理全站颜色变量；`homepage.css` 保留原有组件布局，通过颜色变量引用共享配色。
