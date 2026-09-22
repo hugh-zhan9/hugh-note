@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="gpx.py -- https://github.com/tkrajina/gpxpy">
+  <trk>
+    <name>gpx from keep</name>
+    <type>Walk</type>
+    <trkseg>
+      <trkpt lat="28.19912273266547" lon="112.98576741828946">
+        <ele>47.409191856384275</ele>
+        <time>2026-09-19T01:10:26.200000Z</time>
+      </trkpt>
+      <trkpt lat="28.19890788303869" lon="112.98569395244691">
+        <ele>47.40925193786621</ele>
+        <time>2026-09-19T01:11:07.700000Z</time>
+      </trkpt>
+      <trkpt lat="28.199134744604923" lon="112.98577208357052">
+        <ele>47.4091756439209</ele>
+        <time>2026-09-19T01:12:09.800000Z</time>
+      </trkpt>
+      <trkpt lat="28.197498349749665" lon="113.00441562442865">
+        <ele>42.848518316821306</ele>
+        <time>2026-09-19T01:20:57.400000Z</time>
+      </trkpt>
+      <trkpt lat="28.197648977900737" lon="113.00445524161167">
+        <ele>42.84045219421387</ele>
+        <time>2026-09-19T01:21:18Z</time>
+      </trkpt>
+      <trkpt lat="28.197722210774987" lon="113.0047523330693">
+        <ele>41.08992620930076</ele>
+        <time>2026-09-19T01:21:54Z</time>
+      </trkpt>
+      <trkpt lat="28.19776963957952" lon="113.00505580637076">
+        <ele>40.717509388923645</ele>
+        <time>2026-09-19T01:22:23Z</time>
+      </trkpt>
+      <trkpt lat="28.197987518050844" lon="113.00524673373675">
+        <ele>37.817170861177146</ele>
+        <time>2026-09-19T01:23:04Z</time>
+      </trkpt>
+      <trkpt lat="28.19826564356731" lon="113.00525908717991">
+        <ele>39.82325529959053</ele>
+        <time>2026-09-19T01:23:33.900000Z</time>
+      </trkpt>
+      <trkpt lat="28.198535407198584" lon="113.00519335203826">
+        <ele>38.847391398623586</ele>
+        <time>2026-09-19T01:24:05Z</time>
+      </trkpt>
+      <trkpt lat="28.198811289151617" lon="113.005254798227">
+        <ele>42.86303568165749</ele>
+        <time>2026-09-19T01:24:32Z</time>
+      </trkpt>
+      <trkpt lat="28.199076490640177" lon="113.00535565495515">
+        <ele>43.49190866108984</ele>
+        <time>2026-09-19T01:24:59Z</time>
+      </trkpt>
+      <trkpt lat="28.199351482442836" lon="113.00535423606203">
+        <ele>45.09195548482239</ele>
+        <time>2026-09-19T01:25:32Z</time>
+      </trkpt>
+      <trkpt lat="28.19961719620805" lon="113.00542407409702">
+        <ele>46.12992171570659</ele>
+        <time>2026-09-19T01:25:57Z</time>
+      </trkpt>
+      <trkpt lat="28.19988828601447" lon="113.00543305971219">
+        <ele>42.955265934579074</ele>
+        <time>2026-09-19T01:26:24Z</time>
+      </trkpt>
+      <trkpt lat="28.200160258078704" lon="113.00543770373973">
+        <ele>42.87211883254349</ele>
+        <time>2026-09-19T01:26:52Z</time>
+      </trkpt>
+      <trkpt lat="28.200426150581425" lon="113.00536056820077">
+        <ele>43.214458032511175</ele>
+        <time>2026-09-19T01:27:45Z</time>
+      </trkpt>
+      <trkpt lat="28.200666244149062" lon="113.00551037592392">
+        <ele>41.290146857500076</ele>
+        <time>2026-09-19T01:28:23Z</time>
+      </trkpt>
+      <trkpt lat="28.200910623802038" lon="113.00564419063421">
+        <ele>41.32725809607655</ele>
+        <time>2026-09-19T01:30:29Z</time>
+      </trkpt>
+      <trkpt lat="28.201108232527563" lon="113.00542717146273">
+        <ele>41.77306009363383</ele>
+        <time>2026-09-19T01:31:22Z</time>
+      </trkpt>
+      <trkpt lat="28.201327272610296" lon="113.00524299318329">
+        <ele>42.25632278621197</ele>
+        <time>2026-09-19T01:32:05.900000Z</time>
+      </trkpt>
+      <trkpt lat="28.20151854287817" lon="113.00502003018156">
+        <ele>43.9627337064594</ele>
+        <time>2026-09-19T01:32:44Z</time>
+      </trkpt>
+      <trkpt lat="28.201783465191763" lon="113.00495705817701">
+        <ele>42.977231154218316</ele>
+        <time>2026-09-19T01:33:23Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
