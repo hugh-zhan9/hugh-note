@@ -82,14 +82,24 @@
 }
 
 .article-toc a:hover,
+.article-toc a.is-preview,
 .article-toc a[aria-current="location"] {
   background: var(--site-accent-soft);
   color: var(--site-accent);
 }
 
-.article-toc a[aria-current="location"] {
+.article-toc a[aria-current="location"],
+.article-toc a.is-preview {
   border-left-color: currentColor;
   font-weight: 600;
+}
+
+/* A shortcut previews its title without changing the article's reading location. */
+.article-toc-panel.has-preview a[aria-current="location"]:not(.is-preview) {
+  background: transparent;
+  color: inherit;
+  border-left-color: transparent;
+  font-weight: inherit;
 }
 
 .article-toc-rail {

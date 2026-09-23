@@ -26,23 +26,34 @@
   const visible = matchMedia('(min-width: 1000px)');
   let compact = false;
   let current = -1;
+  let preview = -1;
   let scheduled = false;
 
-  function revealCurrent() {
-    if (current < 0) return;
-    for (const [container, item] of [[rail, marks[current]], [panel, links[current]]]) {
-      if (container.hidden) continue;
-      const bounds = item.getBoundingClientRect();
-      const viewport = container.getBoundingClientRect();
-      if (bounds.top < viewport.top || bounds.bottom > viewport.bottom) {
-        container.scrollTop += bounds.top - viewport.top - container.clientHeight / 2;
-      }
+  function revealItem(container, item) {
+    if (container.hidden || !item) return;
+    const bounds = item.getBoundingClientRect();
+    const viewport = container.getBoundingClientRect();
+    if (bounds.top < viewport.top || bounds.bottom > viewport.bottom) {
+      container.scrollTop += bounds.top - viewport.top - container.clientHeight / 2;
     }
+  }
+
+  function revealCurrent() {
+    if (preview < 0) revealItem(rail, marks[current]);
+    revealItem(panel, links[preview >= 0 ? preview : current]);
+  }
+
+  function setPreview(index) {
+    if (preview >= 0) links[preview].classList.remove('is-preview');
+    preview = index;
+    if (preview >= 0) links[preview].classList.add('is-preview');
+    panel.classList.toggle('has-preview', preview >= 0);
   }
 
   function setOpen(open) {
     panel.hidden = !open;
-    if (open) revealCurrent();
+    if (open) revealItem(panel, links[preview >= 0 ? preview : current]);
+    else setPreview(-1);
   }
 
   function close() {
@@ -71,6 +82,7 @@
       toc.dataset.compact = String(compact);
       rail.hidden = !compact;
       if (compact && panel.contains(document.activeElement)) marks[Math.max(current, 0)].parentElement.focus({ preventScroll: true });
+      setPreview(-1);
       setOpen(!compact);
     }
     toc.dataset.ready = '';
@@ -104,9 +116,22 @@
     }
   }
 
-  rail.addEventListener('focusin', () => {
-    if (compact) setOpen(true);
+  function previewShortcut(event) {
+    if (!compact) return;
+    const shortcut = event.target.closest('a');
+    if (!shortcut) return;
+    setPreview(marks.indexOf(shortcut.firstElementChild));
+    setOpen(true);
+  }
+
+  rail.addEventListener('focusin', previewShortcut);
+  rail.addEventListener('pointerover', event => {
+    if (event.pointerType === 'mouse') previewShortcut(event);
   });
+  panel.addEventListener('pointerover', event => {
+    if (event.pointerType === 'mouse' && event.target.closest('a')) setPreview(-1);
+  });
+  panel.addEventListener('focusin', () => setPreview(-1));
   toc.addEventListener('pointerenter', event => {
     if (compact && event.pointerType === 'mouse') setOpen(true);
   });

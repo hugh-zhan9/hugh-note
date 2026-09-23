@@ -104,19 +104,40 @@ const { execFileSync } = require('node:child_process');
       assert.ok(bounds.width >= 44 && bounds.height >= 44);
       const shortcutBounds = await shortcuts.first().boundingBox();
       assert.ok(shortcutBounds.width >= 44 && shortcutBounds.height >= 24);
+      const readingPosition = await page.evaluate(() => ({ y: scrollY, hash: location.hash }));
+      const currentHash = await current.getAttribute('href');
+      const currentBackground = await current.evaluate(e => getComputedStyle(e).backgroundColor);
       await rail.hover();
       assert.ok(await panel.isVisible());
+      for (const index of [10, 6]) {
+        await shortcuts.nth(index).hover();
+        assert.equal(await links.nth(index).evaluate(e => getComputedStyle(e).backgroundColor), currentBackground,
+          'hovering a bar must highlight its matching panel title');
+        assert.equal(await current.evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)',
+          'the reading location must not compete with the hovered title');
+        assert.equal(await current.getAttribute('href'), currentHash, 'hover must preserve the reading location');
+        assert.deepEqual(await page.evaluate(() => ({ y: scrollY, hash: location.hash })), readingPosition);
+      }
+      if (width === 1024) await page.screenshot({ path: path.join(temp, 'compact-hover-matched.png') });
+      await page.mouse.move(width - 10, 10);
+      await rail.hover();
       await links.first().hover();
       assert.ok(await panel.isVisible(), 'moving from bars to panel must keep it open');
+      assert.equal(await current.evaluate(e => getComputedStyle(e).backgroundColor), currentBackground,
+        'interacting with panel links must clear the shortcut preview');
       if (width === 1024) await page.screenshot({ path: path.join(temp, 'compact-expanded.png') });
       await page.mouse.move(width - 10, 10);
       assert.equal(await panel.isVisible(), false);
-      await shortcuts.first().focus();
+      await shortcuts.nth(3).focus();
       assert.ok(await panel.isVisible());
+      assert.equal(await links.nth(3).evaluate(e => getComputedStyle(e).backgroundColor), currentBackground,
+        'keyboard focus must reveal the matching title');
       await links.first().focus();
       await page.keyboard.press('Escape');
       assert.equal(await panel.isVisible(), false);
       assert.ok(await shortcuts.first().evaluate(e => e === document.activeElement));
+      assert.equal(await current.evaluate(e => getComputedStyle(e).backgroundColor), currentBackground,
+        'closing the panel must restore the reading location highlight');
       const shortcutHash = await shortcuts.nth(3).getAttribute('href');
       assert.equal(shortcutHash, await links.nth(3).getAttribute('href'));
       await shortcuts.nth(3).click();
@@ -172,7 +193,19 @@ const { execFileSync } = require('node:child_process');
     assert.ok(railBounds.y + railBounds.height <= 700);
     assert.ok(barBounds.y >= railBounds.y && barBounds.y + barBounds.height <= railBounds.y + railBounds.height);
     await page.screenshot({ path: path.join(temp, 'long-collapsed.png') });
+    await shortcuts.nth(100).hover();
+    const hoveredBounds = await links.nth(100).boundingBox();
+    const expandedBounds = await panel.boundingBox();
+    assert.ok(hoveredBounds.y >= expandedBounds.y && hoveredBounds.y + hoveredBounds.height <= expandedBounds.y + expandedBounds.height,
+      'a hovered title in a long directory must scroll into the panel viewport');
+    assert.equal(await current.getAttribute('href'), finalHash);
+    const hoveredBarBounds = await shortcuts.nth(100).boundingBox();
+    assert.ok(hoveredBarBounds.y >= railBounds.y && hoveredBarBounds.y + hoveredBarBounds.height <= railBounds.y + railBounds.height,
+      'previewing a title must not scroll the bar away from the pointer');
     await page.setViewportSize({ width: 1440, height: 900 });
+    await page.waitForFunction(() => document.querySelector('.article-toc').dataset.compact === 'false');
+    assert.equal(await links.nth(100).evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)',
+      'expanding to the desktop directory must clear the shortcut preview');
 
     await go('wide');
     await page.locator('.article-table-wide').first().evaluate(e => e.scrollIntoView());
