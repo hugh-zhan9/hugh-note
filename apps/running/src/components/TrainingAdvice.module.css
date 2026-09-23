@@ -1,0 +1,228 @@
+.card {
+  color: var(--site-text);
+  background: var(--site-surface);
+  border: 1px solid var(--site-border);
+  border-radius: 16px;
+  margin: 24px 0;
+  padding: 24px;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.card h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+}
+.card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+.card h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+.card p {
+  margin: 8px 0;
+  white-space: pre-wrap;
+}
+.heading,
+.planHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.eyebrow {
+  color: var(--site-muted);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+}
+.tag {
+  border: 1px solid var(--site-border);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11px;
+}
+.muted,
+.caption {
+  color: var(--site-muted);
+}
+.caption {
+  font-size: 12px;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0 12px;
+}
+.metrics dt {
+  font-size: 12px;
+  color: var(--site-muted);
+}
+.metrics dd {
+  margin: 4px 0 0;
+  font-size: 23px;
+  font-variant-numeric: tabular-nums;
+}
+.metrics small {
+  font-size: 11px;
+  color: var(--site-muted);
+}
+.overview {
+  font-size: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--site-border);
+}
+.notes {
+  padding-left: 20px;
+  margin: 12px 0 20px;
+  list-style: disc;
+}
+.notes li {
+  margin: 6px 0;
+}
+.planHeader {
+  margin-top: 24px;
+}
+.planHeader > span {
+  color: var(--site-muted);
+  font-size: 12px;
+}
+.plan {
+  padding: 0;
+  margin: 12px 0 24px;
+  list-style: none;
+}
+.plan > li {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--site-border);
+}
+.plan p {
+  margin: 2px 0;
+}
+.dayLabel {
+  display: flex;
+  flex-direction: column;
+  font-variant-numeric: tabular-nums;
+}
+.dayLabel > span {
+  font-size: 12px;
+  color: var(--site-accent);
+}
+.plan [data-kind='rest'] .dayLabel > span {
+  color: var(--site-muted);
+}
+.details {
+  padding: 8px 0;
+}
+.details summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.details summary::before {
+  content: '+';
+  color: var(--site-accent);
+}
+.details[open] summary::before {
+  content: '−';
+}
+.weekTable {
+  overflow-x: auto;
+}
+.weekTable table {
+  width: 100%;
+  font-size: 12px;
+  border-collapse: collapse;
+  text-align: left;
+}
+.weekTable th,
+.weekTable td {
+  padding: 6px 8px 6px 0;
+  border-bottom: 1px solid var(--site-border);
+  white-space: nowrap;
+}
+.weekTable caption {
+  text-align: left;
+  color: var(--site-muted);
+}
+.notice {
+  padding: 12px;
+  border-left: 3px solid var(--site-accent);
+}
+.private {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--site-border);
+}
+.privateSection {
+  margin-top: 18px;
+}
+.unlock {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 14px 0;
+}
+.passwordLabel {
+  flex: 1;
+  min-width: 130px;
+  font-size: 12px;
+}
+.card input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  background: var(--site-bg);
+  color: var(--site-text);
+  border: 1px solid var(--site-border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-top: 4px;
+  font-size: 16px;
+}
+.card button {
+  min-height: 44px;
+  border: 1px solid var(--site-border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: var(--site-bg);
+  color: var(--site-text);
+  cursor: pointer;
+  font: inherit;
+}
+.card button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.card :is(button, input, summary):focus-visible {
+  outline: 2px solid var(--site-accent);
+  outline-offset: 3px;
+}
+@media (max-width: 640px) {
+  .card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .metrics dd {
+    font-size: 22px;
+  }
+  .plan > li {
+    grid-template-columns: 65px minmax(0, 1fr);
+    gap: 10px;
+  }
+}

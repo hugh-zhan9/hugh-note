@@ -83,3 +83,14 @@ test('all publishers use the serialized workflow and its current-main gate',asyn
   assert.match(sync,/vars.RUNNING_SYNC_ENABLED == 'true'/);
   assert.doesNotMatch(sync,/continue-on-error|actions-gh-pages|actions\/deploy-pages/);
 });
+test('training secrets are gated to main non-PR builds and never exposed as Vite variables',async()=>{
+  const deploy=await readFile(path.join(repository,'.github/workflows/depoly.yml'),'utf8');
+  for(const secret of ['RUNNING_AI_API_KEY','RUNNING_REPORT_PASSWORD','RUNNING_AI_PRIVATE_CONTEXT']) {
+    const line=deploy.split('\n').find(line=>line.trimStart().startsWith(secret+':'));
+    assert.ok(line);
+    assert.ok(line.includes("github.event_name != 'pull_request' && github.ref == 'refs/heads/main'"));
+    assert.ok(line.includes('secrets.'+secret));
+    assert.ok(!deploy.includes('VITE_'+secret));
+  }
+  assert.match(deploy,/vars.RUNNING_AI_ENABLED == 'true'/);
+});
