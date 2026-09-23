@@ -693,4 +693,3 @@ Agent.prompt()
 - [ ] lab4 跑通，我能默写出 `prompt()` 的事件顺序
 - [ ] 我知道 `content` 和 `details` 的区别
 - [ ] 我知道工具失败为什么要 throw 而不是返回错误文本
-
