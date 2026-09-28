@@ -269,13 +269,9 @@ function App() {
           <div>
             <p className="eyebrow">A PLACE FOR YOUR IMAGES</p>
             <h1>为文字，留一幅画面。</h1>
-            <p className="lead">
-              上传、收藏、引用。让每张图片，都有一个自己的地址。
-            </p>
+            <p className="lead">上传、收藏、引用。</p>
+            <p className="lead">让每张图片，都有一个自己的地址。</p>
           </div>
-          <span className="edition">
-            牧己的工具箱 <span aria-hidden="true">↗</span>
-          </span>
         </section>
         <div className="workspace">
           <aside className="settings-panel">
@@ -328,24 +324,6 @@ function App() {
                 </button>
               </fieldset>
             </form>
-            <details className="setup-help">
-              <summary>第一次使用？</summary>
-              <ol>
-                <li>确认图片仓库已添加 README，完成分支初始化。</li>
-                <li>
-                  <a
-                    href="https://github.com/settings/personal-access-tokens/new"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    创建细粒度 Token ↗
-                  </a>
-                  ，只选择 hugh-image 仓库，授予 Contents 读写权限。
-                </li>
-                <li>输入 Token 并连接，Token 不保存。</li>
-              </ol>
-              <p>本工具只新增图片，不修改或删除已有文件。</p>
-            </details>
           </aside>
           <section className="content-panel" aria-label="图片工作区">
             <div className="tabs" aria-label="切换工作区">
