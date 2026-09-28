@@ -281,7 +281,6 @@ function App() {
                 {connected ? "已连接" : "未连接"}
               </span>
             </div>
-            <p className="muted">输入 Token 即可连接。</p>
             <form onSubmit={connect}>
               <fieldset disabled={busy}>
                 <label>
@@ -304,23 +303,12 @@ function App() {
                     placeholder="github_pat_…"
                   />
                 </label>
-                <p className="field-help">
-                  仅当前页面有效，刷新后清除。Token 只发送给 GitHub。
-                </p>
                 <button className="primary connect" type="submit">
                   {busy && !connected
                     ? "正在连接…"
                     : connected
                       ? "重新连接"
                       : "连接仓库"}
-                </button>
-                <button
-                  className="text-button"
-                  type="button"
-                  disabled={!token}
-                  onClick={disconnect}
-                >
-                  清除 Token
                 </button>
               </fieldset>
             </form>
@@ -425,9 +413,6 @@ function App() {
                     </button>
                   </div>
                 </div>
-                {!connected && (
-                  <p className="muted">先连接图片仓库，再开始上传。</p>
-                )}
                 {!items.length && (
                   <div className="empty-state">
                     <span className="empty-number">01 —</span>
