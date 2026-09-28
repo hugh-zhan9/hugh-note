@@ -1,5 +1,4 @@
 import sys
-import types
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
@@ -14,18 +13,12 @@ class KeepSyncTimestampTest(unittest.TestCase):
         global KEEP_SYNC_IMPORTS
         if KEEP_SYNC_IMPORTS is None:
             sys.path.insert(0, str(Path(__file__).resolve().parent))
-            with patch.dict(
-                sys.modules,
-                {
-                    "eviltransform": types.SimpleNamespace(
-                        gcj2wgs=lambda lat, lng: (lat, lng)
-                    )
-                },
-            ):
-                from keep_sync import (
-                    normalize_keep_point_timestamp_seconds,
-                    parse_points_to_gpx,
-                )
+            # Import normally: restoring a patched sys.modules would evict
+            # dependencies loaded here, including SQLAlchemy's Python modules.
+            from keep_sync import (
+                normalize_keep_point_timestamp_seconds,
+                parse_points_to_gpx,
+            )
 
             KEEP_SYNC_IMPORTS = (
                 normalize_keep_point_timestamp_seconds,
@@ -59,17 +52,20 @@ class KeepSyncTimestampTest(unittest.TestCase):
     def test_parse_points_to_gpx_uses_normalized_timestamp(self):
         start_time = 1743082166493
         _, parse_points_to_gpx = self.import_keep_sync()
-        gpx = parse_points_to_gpx(
-            [
-                {
-                    "latitude": 28.0,
-                    "longitude": 113.0,
-                    "timestamp": 174308216649300,
-                }
-            ],
-            start_time,
-            "Run",
-        )
+        with patch(
+            "keep_sync.eviltransform.gcj2wgs", side_effect=lambda lat, lng: (lat, lng)
+        ):
+            gpx = parse_points_to_gpx(
+                [
+                    {
+                        "latitude": 28.0,
+                        "longitude": 113.0,
+                        "timestamp": 174308216649300,
+                    }
+                ],
+                start_time,
+                "Run",
+            )
 
         point_time = gpx.tracks[0].segments[0].points[0].time
         self.assertEqual(point_time.year, 2025)
