@@ -1,6 +1,5 @@
 {{ define "main" }}
-<main class="list">
-	<h1 class="page-title">疯言疯语</h1>
+<main class="list crazy-talk-feed" aria-label="疯言疯语">
 	{{ with .Content }}
 	<section class="site-description">
 		{{ . }}
@@ -14,7 +13,7 @@
 	<article class="post">
 		<div class="title">
 			<h2 class="title">{{ .Title }}</h2>
-			<div class="meta">{{ dateFormat ":date_medium" .Date }}{{ if .Draft }} <span class="draft-label">DRAFT</span> {{ end }}</div>
+			{{ if .Draft }}<span class="draft-label">DRAFT</span>{{ end }}
 		</div>
 		<section class="body">
 			{{ .Content }}

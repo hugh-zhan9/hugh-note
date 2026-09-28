@@ -1,6 +1,14 @@
-<header>
+<header{{ if eq .Section "crazy-talk" }} class="crazy-talk-header"{{ end }}>
 	<div class="main">
+		{{ if eq .Section "crazy-talk" }}
+			{{ if .IsSection }}
+				<h1><a href="{{ relURL "crazy-talk/" }}">疯言疯语</a></h1>
+			{{ else }}
+				<a href="{{ relURL "crazy-talk/" }}">疯言疯语</a>
+			{{ end }}
+		{{ else }}
 		<a href="{{ relURL "/" }}">{{ .Site.Title }}</a>
+		{{ end }}
 	</div>
 	<nav aria-label="站点导航">
 		{{ if .IsHome }}
@@ -13,12 +21,17 @@
 			{{ if eq $currentPath "" }}
 				{{ $currentPath = "/" }}
 			{{ end }}
+			{{ if in (slice "blog" "posts") .Section }}
+				{{ $currentPath = "/blog" }}
+			{{ else if eq .Section "crazy-talk" }}
+				{{ $currentPath = "/crazy-talk" }}
+			{{ end }}
 			{{ range .Site.Menus.main }}
 				{{ $menuPath := replaceRE "/+$" "" .URL }}
 				{{ if eq $menuPath "" }}
 					{{ $menuPath = "/" }}
 				{{ end }}
-				{{ if and (ne $menuPath $currentPath) (not (in (slice "/blog" "/crazy-talk" "/running" "/images") $menuPath)) }}
+				{{ if and (ne $menuPath $currentPath) (not (in (slice "/running" "/images") $menuPath)) }}
 					{{ $localLinks = $localLinks | append . }}
 				{{ end }}
 			{{ end }}

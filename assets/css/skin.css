@@ -32,3 +32,54 @@ pre code { background-color: transparent; color: inherit; }
 header nav { display: flex; align-items: center; flex-wrap: wrap; gap: 0.8rem; }
 header nav .page-nav-links { display: inline-flex; align-items: center; gap: 0.8rem; white-space: nowrap; }
 header nav .nav-divider { color: var(--site-muted); user-select: none; }
+
+.blog-list .readmore {
+  display: block;
+  width: fit-content;
+  margin: .6rem 0 0 auto;
+}
+.blog-list > .pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0;
+  margin: 2rem 0 0;
+}
+.blog-list > .pagination .page-next { margin-left: auto; }
+
+.crazy-talk-header {
+  align-items: center;
+  gap: 1rem;
+  padding-block: 20px;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--site-border);
+}
+.crazy-talk-header .main {
+  font-family: "Songti SC", "STSong", serif;
+  font-size: clamp(30px, 4vw, 40px);
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 1.2;
+}
+.crazy-talk-header .main h1 { margin: 0; font: inherit; }
+.crazy-talk-header .main a { border: 0; }
+.crazy-talk-header h1::before,
+.crazy-talk-feed h2::before,
+.crazy-talk-feed h3::before { content: none; }
+.crazy-talk-feed > .post > .title h2 {
+  margin: 0 0 .35rem;
+  font-size: 1.6rem;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
+.crazy-talk-feed > .post > .body h3 {
+  margin: 1.8rem 0 .7rem;
+  font-size: 1.15rem;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+.crazy-talk-feed > hr {
+  margin: 2.5rem 0;
+  border: 0;
+  border-top: 1px solid var(--site-border);
+}

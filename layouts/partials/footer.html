@@ -1,0 +1,17 @@
+{{ $showSocial := not (in (slice "blog" "posts" "crazy-talk" "tags") .Section) }}
+{{ if and $showSocial .Site.Params.Social }}
+<footer>
+  <div style="display:flex">
+    {{- range .Site.Params.Social -}}
+    <a class="soc" href="{{ .url }}" rel="me" title="{{ .name }}"><i data-feather="{{ .icon }}"></i></a>
+    <a class="border"></a>
+    {{- end -}}
+  </div>
+</footer>
+{{ end }}
+{{ if not hugo.IsServer }}
+{{ template "_internal/google_analytics.html" . }}
+{{ end }}
+{{ if isset .Site.Params "social" }}
+<script>feather.replace()</script>
+{{ end }}
