@@ -36,13 +36,22 @@ jobs:
         with:
           node-version: '24'
           cache: pnpm
-          cache-dependency-path: apps/running/pnpm-lock.yaml
+          cache-dependency-path: |
+            apps/running/pnpm-lock.yaml
+            apps/images/pnpm-lock.yaml
       - uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: '0.165.0'
           extended: true
       - name: Install running dependencies
         run: pnpm --dir apps/running install --frozen-lockfile
+      - name: Install images dependencies
+        run: pnpm --dir apps/images install --frozen-lockfile
+      - name: Verify images
+        run: |
+          pnpm --dir apps/images test
+          pnpm --dir apps/images typecheck
+          pnpm --dir apps/images check
       - name: Verify
         run: |
           bash tests/homepage_contract_test.sh
@@ -50,7 +59,7 @@ jobs:
           node --test tests/skin_test.cjs tests/site_build_test.mjs tests/running_route_test.cjs tests/site_workflow_test.mjs
           pnpm --dir apps/running test
           pnpm --dir apps/running exec tsc --noEmit
-      - name: Build both applications
+      - name: Build all applications
         env:
           VITE_MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
         run: node scripts/build.mjs

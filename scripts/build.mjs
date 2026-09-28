@@ -21,6 +21,8 @@ export async function buildSite({ root = siteRoot, run = runCommand } = {}) {
     if (process.env.SITE_BASE_URL) args.push('--baseURL', process.env.SITE_BASE_URL);
     await run(process.env.HUGO_BIN || 'hugo', args, root);
     await run(process.env.PNPM_BIN || 'pnpm', ['exec', 'vite', 'build', '--outDir', path.join(output, 'running')], path.join(root, 'apps/running'));
+    await run(process.env.PNPM_BIN || 'pnpm', ['exec', 'vite', 'build', '--outDir', path.join(output, 'images')], path.join(root, 'apps/images'));
+    await access(path.join(output, 'images/index.html'));
     const activities = JSON.parse(await readFile(path.join(output, 'running/data/activities.json'), 'utf8'));
     if (!Array.isArray(activities)) throw new Error('Missing valid running data export');
     const index = await readFile(path.join(output, 'running/index.html'), 'utf8');

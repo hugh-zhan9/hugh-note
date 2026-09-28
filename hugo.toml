@@ -24,7 +24,7 @@ url = "https://ipv4.zhangyk.space:8096"
 [[params.social]]
 name = "Image"
 icon = "image"
-url = "https://ipv4.zhangyk.space:9089"
+url = "/images/"
 
 [[params.social]]
 name = "PengYouQuan"
@@ -50,3 +50,8 @@ weight = 3
 name = "Tags"
 url = "/tags"
 weight = 4
+
+[[menu.main]]
+name = "图床"
+url = "/images/"
+weight = 5

@@ -10,6 +10,7 @@ export function SiteHeader({ children }: PropsWithChildren) {
         <a href="/blog/">文章</a>
         <a href="/crazy-talk/">碎念</a>
         <a href="/running/">跑步</a>
+        <a href="/images/">图床</a>
         {children}
       </nav>
     </header>

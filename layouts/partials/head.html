@@ -7,6 +7,7 @@
 			<a href="/blog/">文章</a>
 			<a href="/crazy-talk/">碎念</a>
 			<a href="{{ relURL "running/" }}">跑步</a>
+			<a href="{{ relURL "images/" }}">图床</a>
 		{{ end }}
 		{{ if not .IsHome }}
 			{{ $currentPath := replaceRE "/+$" "" .RelPermalink }}

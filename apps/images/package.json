@@ -1,0 +1,29 @@
+{
+  "name": "hugh-images",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "pnpm@8.9.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "node --import tsx --test src/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "check": "prettier --check src vite.config.ts tests package.json tsconfig.json index.html"
+  },
+  "dependencies": {
+    "react": "19.2.5",
+    "react-dom": "19.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "25.6.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.1",
+    "playwright": "1.61.1",
+    "prettier": "3.8.3",
+    "tsx": "4.20.5",
+    "typescript": "6.0.3",
+    "vite": "8.0.10"
+  }
+}

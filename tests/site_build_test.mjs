@@ -11,19 +11,20 @@ async function fixture() {
   await writeFile(path.join(root, 'dist/site/index.html'), 'previous valid site');
   return root;
 }
-const buildCommand = (failure) => async (_command, args) => {
+const buildCommand = (failure) => async (_command, args, cwd) => {
   const isHugo = args.includes('--destination');
+  const app = isHugo ? 'hugo' : path.basename(cwd);
   const out = args[args.indexOf(isHugo ? '--destination' : '--outDir') + 1];
   await mkdir(out, {recursive: true});
-  await writeFile(path.join(out, 'index.html'), isHugo ? 'blog' : 'running app');
-  if (failure === (isHugo ? 'hugo' : 'vite')) throw new Error('injected build failure');
-  if (!isHugo) {
+  await writeFile(path.join(out, 'index.html'), isHugo ? 'blog' : `${app} app`);
+  if (failure === app) throw new Error('injected build failure');
+  if (app === 'running') {
     await mkdir(path.join(out, 'data'));
     await writeFile(path.join(out, 'data/activities.json'), JSON.stringify([{start_date_local: '2025-12-31'}, {start_date_local: '2026-01-01'}]));
     await writeFile(path.join(out, '404.html'), 'old running redirect');
   }
 };
-for (const failure of ['hugo', 'vite']) test(`${failure} failure leaves the published site intact`, async () => {
+for (const failure of ['hugo', 'running', 'images']) test(`${failure} failure leaves the published site intact`, async () => {
   const root = await fixture();
   try {
     await assert.rejects(buildSite({root, run: buildCommand(failure)}), /injected/);
@@ -31,11 +32,12 @@ for (const failure of ['hugo', 'vite']) test(`${failure} failure leaves the publ
     assert.deepEqual(await readdir(root), ['dist']);
   } finally { await rm(root, {recursive: true, force: true}); }
 });
-test('successful composition publishes both apps and direct summary entries together', async () => {
+test('successful composition publishes all apps and direct summary entries together', async () => {
   const root = await fixture();
   try {
     await buildSite({root, run: buildCommand()});
     assert.equal(await readFile(path.join(root, 'dist/site/index.html'), 'utf8'), 'blog');
+    assert.equal(await readFile(path.join(root, 'dist/site/images/index.html'), 'utf8'), 'images app');
     for (const route of ['index.html', 'summary/index.html', 'summary/2025/index.html', 'summary/2026/index.html']) {
       assert.equal(await readFile(path.join(root, 'dist/site/running', route), 'utf8'), 'running app');
     }

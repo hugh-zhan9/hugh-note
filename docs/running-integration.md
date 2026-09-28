@@ -1,6 +1,6 @@
 # 跑步与博客的同仓维护
 
-Hugo 位于仓库根目录，React/Vite 与 Python 同步程序位于 `apps/running`。跑步入口保持 `/running/`，活动汇总保持 `/running/summary/`，年度总结保持 `/running/summary/:year`。默认使用 Classic，Dashboard 入口保留。
+Hugo 位于仓库根目录，React/Vite 与 Python 同步程序位于 `apps/running`。跑步入口保持 `/running/`，活动汇总保持 `/running/summary/`，年度总结保持 `/running/summary/:year`。默认使用 Classic，Dashboard 入口保留。静态图床位于 `apps/images`，入口 `/images/`，配置及测试见[图床说明](images.md)。
 
 ## 安装、构建和预览
 
@@ -9,15 +9,16 @@ Hugo 位于仓库根目录，React/Vite 与 Python 同步程序位于 `apps/runn
 ```sh
 git submodule update --init --recursive
 pnpm --dir apps/running install --frozen-lockfile
+pnpm --dir apps/images install --frozen-lockfile
 node scripts/build.mjs
 bash scripts/preview.sh
 ```
 
-构建产物为 `dist/site/`，其中 `dist/site/running/` 是 Vite 应用。预览默认 `http://127.0.0.1:1313`；设置 `PORT=1315` 可换端口。`HUGO_BIN` 可指定 Hugo 二进制，`SITE_BASE_URL` 可为单独构建指定域名。`preview.sh` 自动设置本地域名并重新构建；改代码后重新运行。生产构建不设置 `SITE_BASE_URL`，使用 hugo.toml 的正式域名。
+构建产物为 `dist/site/`，其中 `dist/site/running/` 和 `dist/site/images/` 是两个独立 Vite 应用。预览默认 `http://127.0.0.1:1313`；设置 `PORT=1315` 可换端口。`HUGO_BIN` 可指定 Hugo 二进制，`SITE_BASE_URL` 可为单独构建指定域名。`preview.sh` 自动设置本地域名并重新构建；改代码后重新运行。生产构建不设置 `SITE_BASE_URL`，使用 hugo.toml 的正式域名。
 
 根仓库仍跟踪旧的 `public/` 文件，新构建使用独立输出目录，避免改写这些历史产物。
 
-构建先完成两个应用和数据导出，再替换 `dist/site/`；Hugo/Vite 任一步失败，现有产物保留。构建锁防止两个本地构建同时替换输出。进程被强制终止后如遗留 `.site-build.lock`，先确认没有构建进程，再移除该目录。
+构建先完成 Hugo、跑步、图床和数据导出，再替换 `dist/site/`；Hugo/Vite 任一步失败，现有产物保留。构建锁防止两个本地构建同时替换输出。进程被强制终止后如遗留 `.site-build.lock`，先确认没有构建进程，再移除该目录。
 
 开发跑步组件也可执行 `pnpm --dir apps/running dev`，Vite 会在 `/running/` 提供页面与数据接口。全站跳转和 Hugo 页面验收使用组合预览。
 
@@ -63,7 +64,7 @@ SKIN_TEST_URL=http://127.0.0.1:1313 node tests/skin_browser_test.cjs
 
 ## 发布与定时同步
 
-唯一发布入口是根 `.github/workflows/depoly.yml`：检查同一源提交、构建两个应用、确认仍为当前 main，然后发布到原目的仓库 `hugh-zhan9/hugh-zhan9.github.io` 的 main。PR 只测试和构建。发布串行，过期构建跳过。Python 测试与前端构建均使用调用者指定的同一提交。
+唯一发布入口是根 `.github/workflows/depoly.yml`：检查同一源提交、构建 Hugo、跑步和图床、确认仍为当前 main，然后发布到原目的仓库 `hugh-zhan9/hugh-zhan9.github.io` 的 main。PR 只测试和构建。发布串行，过期构建跳过。Python 测试与前端构建均使用调用者指定的同一提交。
 
 根 `.github/workflows/running-sync.yml` 保留每日 UTC 00:00 的 Keep 同步，工作目录改为 `apps/running`，SVG 生成参数沿用原任务。只暂存 DB、原始 JSON、GPX/TCX/FIT、导入记录及顶层生成 SVG。同步和 push 失败直接终止；不吞掉错误或自动处理冲突。成功后通过 reusable workflow 发布该源提交，避免 GITHUB_TOKEN 提交不触发 push workflow 导致页面未更新。
 
