@@ -3,4 +3,4 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 node --check "$ROOT_DIR/static/js/homepage.js"
-node --test "$ROOT_DIR/tests/homepage_test.mjs"
+node --test "$ROOT_DIR/tests/homepage_test.mjs" "$ROOT_DIR/tests/crazy_talk_test.mjs"

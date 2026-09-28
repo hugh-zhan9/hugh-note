@@ -2,6 +2,7 @@
 {{ $pages := (where (where .Site.RegularPages "Section" "crazy-talk") "Params.hidden" "ne" true).ByDate.Reverse }}
 {{ range $pageRank, $page := $pages }}
 	{{ $raw := .RawContent | replaceRE "\r\n" "\n" | strings.TrimSpace }}
+	{{ $raw = $raw | replaceRE `\A(?:[[:space:]]|<br[ \t]*/?>)+` "" | strings.TrimSpace }}
 	{{ $entries := split (replaceRE "(?m)^###\\s+" "@@ENTRY@@" $raw) "@@ENTRY@@" }}
 	{{ range $entries }}
 		{{ $entry := . | strings.TrimSpace }}
