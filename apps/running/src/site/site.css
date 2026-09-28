@@ -71,6 +71,12 @@ html[data-theme] body.running-site {
   gap: 24px;
   font-size: 13px;
 }
+.site-header nav > .nav-divider {
+  width: 1px;
+  height: 14px;
+  background: var(--site-border);
+  flex-shrink: 0;
+}
 .site-header nav > a,
 .site-header nav > button {
   min-height: 44px;

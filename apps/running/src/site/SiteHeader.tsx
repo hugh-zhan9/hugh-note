@@ -11,6 +11,9 @@ export function SiteHeader({ children }: PropsWithChildren) {
         <a href="/crazy-talk/">碎念</a>
         <a href="/running/">跑步</a>
         <a href="/images/">图床</a>
+        {children && (
+          <span className="nav-divider" aria-hidden="true" />
+        )}
         {children}
       </nav>
     </header>
