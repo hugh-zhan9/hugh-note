@@ -32,12 +32,12 @@ icon = "aperture"
 url = "https://ipv4.zhangyk.space:3000"
 
 [[menu.main]]
-name = "Home"
+name = "首页"
 url = "/"
 weight = 1
 
 [[menu.main]]
-name = "Blog"
+name = "文章"
 url = "/blog/"
 weight = 2
 
@@ -47,7 +47,7 @@ url = "/crazy-talk/"
 weight = 3
 
 [[menu.main]]
-name = "Tags"
+name = "标签"
 url = "/tags"
 weight = 4
 

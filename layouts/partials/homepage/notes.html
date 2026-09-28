@@ -7,7 +7,7 @@
 	{{ with $items }}
 		{{ $initial := index . 0 }}
 		<div>
-			<p class="homepage-note-text" id="homepage-crazy-talk" tabindex="0" aria-label="当前碎念">{{ $initial.text | truncate 140 }}</p>
+			<p class="homepage-note-text" id="homepage-crazy-talk" tabindex="0" aria-label="当前疯言疯语">{{ $initial.text | truncate 140 }}</p>
 			<a class="homepage-note-source" id="homepage-crazy-talk-link" href="{{ $initial.url }}">{{ $initial.title }}</a>
 		</div>
 		<div id="homepage-crazy-talk-data" hidden>
@@ -16,6 +16,6 @@
 			{{ end }}
 		</div>
 	{{ else }}
-		<p class="homepage-empty">暂无碎念。</p>
+		<p class="homepage-empty">还没写下什么。</p>
 	{{ end }}
 </section>

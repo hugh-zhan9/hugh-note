@@ -30,3 +30,5 @@ pre code { background-color: transparent; color: inherit; }
 }
 
 header nav { display: flex; align-items: center; flex-wrap: wrap; gap: 0.8rem; }
+header nav .page-nav-links { display: inline-flex; align-items: center; gap: 0.8rem; white-space: nowrap; }
+header nav .nav-divider { color: var(--site-muted); user-select: none; }

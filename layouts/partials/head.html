@@ -2,14 +2,13 @@
 	<div class="main">
 		<a href="{{ relURL "/" }}">{{ .Site.Title }}</a>
 	</div>
-	<nav>
+	<nav aria-label="站点导航">
 		{{ if .IsHome }}
 			<a href="/blog/">文章</a>
-			<a href="/crazy-talk/">碎念</a>
-			<a href="{{ relURL "running/" }}">跑步</a>
-			<a href="{{ relURL "images/" }}">图床</a>
+			<a href="/crazy-talk/">疯言疯语</a>
 		{{ end }}
 		{{ if not .IsHome }}
+			{{ $localLinks := slice }}
 			{{ $currentPath := replaceRE "/+$" "" .RelPermalink }}
 			{{ if eq $currentPath "" }}
 				{{ $currentPath = "/" }}
@@ -19,11 +18,21 @@
 				{{ if eq $menuPath "" }}
 					{{ $menuPath = "/" }}
 				{{ end }}
-				{{ if ne $menuPath $currentPath }}
-					<a href="{{ .URL }}">{{ .Name }}</a>
+				{{ if and (ne $menuPath $currentPath) (not (in (slice "/blog" "/crazy-talk" "/running" "/images") $menuPath)) }}
+					{{ $localLinks = $localLinks | append . }}
 				{{ end }}
 			{{ end }}
+			{{ with $localLinks }}
+				<span class="page-nav-links">
+					{{ range . }}
+						<a href="{{ .URL }}">{{ .Name }}</a>
+					{{ end }}
+					<span class="nav-divider" aria-hidden="true">｜</span>
+				</span>
+			{{ end }}
 		{{ end }}
+		<a href="{{ relURL "running/" }}">跑步</a>
+		<a href="{{ relURL "images/" }}">图床</a>
 		{{ if .IsHome }}
 			{{ partial "appearance.html" . }}
 		{{ end }}

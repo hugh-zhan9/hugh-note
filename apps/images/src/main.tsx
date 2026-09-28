@@ -257,7 +257,7 @@ function App() {
         </a>
         <nav aria-label="站点导航">
           <a href="/blog/">文章</a>
-          <a href="/crazy-talk/">碎念</a>
+          <a href="/crazy-talk/">疯言疯语</a>
           <a href="/running/">跑步</a>
           <a href="/images/" aria-current="page">
             图床
