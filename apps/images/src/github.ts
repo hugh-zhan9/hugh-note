@@ -190,14 +190,22 @@ export class GitHubImages {
           p.type === "blob" &&
           p.mode === "100644" &&
           typeof p.path === "string" &&
-          isImagePath(p.path) &&
-          typeof p.size === "number" &&
-          typeof p.sha === "string",
+          isImagePath(p.path),
       )
-      .map((p: any) => ({ path: p.path, size: p.size, sha: p.sha }))
+      .map((p: any) => {
+        if (
+          !Number.isSafeInteger(p.size) ||
+          p.size < 0 ||
+          typeof p.sha !== "string" ||
+          !p.sha
+        )
+          throw new Error("GitHub 返回的图片列表格式无效。");
+        return { path: p.path, size: p.size, sha: p.sha };
+      })
       .sort((a: Picture, b: Picture) => a.path.localeCompare(b.path));
   }
-  private async existing(image: PreparedImage) {
+  async existing(image: PreparedImage) {
+    validateImagePath(image.path);
     let file;
     try {
       file = await this.api(
@@ -216,12 +224,7 @@ export class GitHubImages {
     return true;
   }
   async upload(image: PreparedImage): Promise<"created" | "existing"> {
-    if (
-      !/^images\/[a-f0-9]{2}\/[a-f0-9]{64}\.(jpg|png|webp|gif)$/.test(
-        image.path,
-      )
-    )
-      throw new Error("无效的图片路径。");
+    validateImagePath(image.path);
     if (await this.existing(image)) return "existing";
     // A missing sha is deliberate: GitHub cannot replace an existing file.
     try {
@@ -243,6 +246,10 @@ export class GitHubImages {
       throw error;
     }
   }
+}
+export function validateImagePath(path: string) {
+  if (!/^images\/[a-f0-9]{2}\/[a-f0-9]{64}\.(jpg|png|webp|gif)$/.test(path))
+    throw new Error("无效的图片路径。");
 }
 export function toBase64(bytes: Uint8Array) {
   let binary = "";

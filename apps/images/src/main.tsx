@@ -1,13 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
-import {
-  defaults,
-  GitHubImages,
-  markdown,
-  pictureUrl,
-  type Picture,
-} from "./github";
+import { markdown } from "./github";
+import { ImagePool, type LibraryPicture } from "./pool";
+import { repositories } from "./repositories";
 import { fileError, formatSize, MAX_BATCH, prepareImage } from "./image";
 import "../../../assets/css/site-tokens.css";
 import "./style.css";
@@ -55,13 +51,13 @@ function App() {
   const [connected, setConnected] = useState(false);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
-  const client = useRef<GitHubImages | null>(null);
+  const client = useRef<ImagePool | null>(null);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [items, setItems] = useState<Item[]>([]);
   const [compress, setCompress] = useState(true);
   const [tab, setTab] = useState<"upload" | "library">("upload");
-  const [pictures, setPictures] = useState<Picture[]>([]);
+  const [pictures, setPictures] = useState<LibraryPicture[]>([]);
   const [libraryState, setLibraryState] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
@@ -111,7 +107,7 @@ function App() {
     client.current = null;
     setConnected(false);
     try {
-      const next = new GitHubImages(defaults, token.trim());
+      const next = new ImagePool(repositories, token.trim());
       client.current = next;
       await next.connect();
       if (client.current !== next) return;
@@ -186,6 +182,7 @@ function App() {
     setError("");
     let completed = 0;
     try {
+      await api.prepareBatch();
       for (const item of batch) {
         try {
           updateItem(item.id, { status: "preparing", message: undefined });
@@ -194,10 +191,10 @@ function App() {
             status: "uploading",
             size: image.bytes.length,
           });
-          const status = await api.upload(image);
+          const { status, url } = await api.upload(image);
           updateItem(item.id, {
             status,
-            url: pictureUrl(api.settings, image.path),
+            url,
           });
           completed++;
         } catch (error) {
@@ -208,6 +205,8 @@ function App() {
         `本次 ${batch.length} 张，${completed} 张已入库或已存在，${batch.length - completed} 张失败。`,
       );
       setLibraryState("idle");
+    } catch (error) {
+      setError(errorText(error));
     } finally {
       setWorking(false);
     }
@@ -519,7 +518,7 @@ function App() {
                         {libraryState === "ready" ? pictures.length : "—"}
                       </span>
                     </h2>
-                    <p className="muted">仓库 images/ 目录 · 按路径排列</p>
+                    <p className="muted">全部图片 · 按路径排列</p>
                   </div>
                   <button
                     disabled={busy || !connected}
@@ -551,10 +550,10 @@ function App() {
                 {connected && libraryState === "ready" && (
                   <div className="gallery">
                     {pictures.slice(0, visible).map((picture) => {
-                      const url = pictureUrl(defaults, picture.path);
+                      const url = picture.url;
                       const name = picture.path.split("/").at(-1)!;
                       return (
-                        <article key={picture.path}>
+                        <article key={picture.key}>
                           <button
                             className="gallery-image"
                             aria-label={`预览 ${name}`}

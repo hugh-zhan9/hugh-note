@@ -14,6 +14,9 @@ const token = "github_pat_browser_test_not_a_real_secret";
 const errors = [];
 const writes = [];
 const files = new Map();
+const repositories = ["hugh-image", "hugh-image-02", "hugh-image-03"];
+const writeTargets = [];
+const retryTargets = new Map();
 let failWrite = 2;
 let treeError = false;
 let truncated = false;
@@ -30,7 +33,10 @@ try {
     const url = new URL(req.url());
     assert.equal(req.headers().authorization, `Bearer ${token}`);
     assert.ok(!req.url().includes(token));
-    assert.match(url.pathname, /^\/repos\/hugh-zhan9\/hugh-image(?:\/|$)/);
+    const repository = url.pathname.split("/")[3];
+    assert.ok(repositories.includes(repository));
+    assert.equal(url.pathname.split("/")[2], "hugh-zhan9");
+    const prefix = `${repository}/`;
     const reply = (status, data) =>
       route.fulfill({
         status,
@@ -47,26 +53,41 @@ try {
       ]);
       assert.equal(body.branch, "main");
       assert.ok(!req.postData().includes(token));
+      const occupancy = repositories.map((repo) =>
+        [...files]
+          .filter(([key]) => key.startsWith(`${repo}/`))
+          .reduce((sum, [, file]) => sum + file.buffer.length, 0),
+      );
+      const least = occupancy.indexOf(Math.min(...occupancy));
+      assert.equal(
+        repository,
+        retryTargets.get(body.content) || repositories[least],
+      );
+      writeTargets.push(repository);
       writes.push(body);
-      if (writes.length === failWrite) return reply(503, { message: token });
+      if (writes.length === failWrite) {
+        retryTargets.set(body.content, repository);
+        return reply(503, { message: token });
+      }
+      retryTargets.delete(body.content);
       const filePath = decodeURIComponent(url.pathname.split("/contents/")[1]);
       assert.match(
         filePath,
         /^images\/[a-f0-9]{2}\/[a-f0-9]{64}\.(png|webp|gif|jpg)$/,
       );
-      if (files.has(filePath)) return reply(422, {});
+      if (files.has(prefix + filePath)) return reply(422, {});
       const buffer = Buffer.from(body.content, "base64");
       const sha = createHash("sha1")
         .update(`blob ${buffer.length}\0`)
         .update(buffer)
         .digest("hex");
-      files.set(filePath, { buffer, sha });
+      files.set(prefix + filePath, { buffer, sha });
       return reply(201, { content: { sha } });
     }
     assert.equal(req.method(), "GET");
     if (url.pathname.includes("/contents/")) {
       const file = files.get(
-        decodeURIComponent(url.pathname.split("/contents/")[1]),
+        prefix + decodeURIComponent(url.pathname.split("/contents/")[1]),
       );
       return file
         ? reply(200, { type: "file", sha: file.sha, size: file.buffer.length })
@@ -76,13 +97,15 @@ try {
       if (treeError) return reply(500, {});
       return reply(200, {
         truncated,
-        tree: [...files].map(([name, file]) => ({
-          path: name,
-          sha: file.sha,
-          size: file.buffer.length,
-          type: "blob",
-          mode: "100644",
-        })),
+        tree: [...files]
+          .filter(([name]) => name.startsWith(prefix))
+          .map(([name, file]) => ({
+            path: name.slice(prefix.length),
+            sha: file.sha,
+            size: file.buffer.length,
+            type: "blob",
+            mode: "100644",
+          })),
       });
     }
     if (url.pathname.includes("/branches/"))
@@ -91,17 +114,15 @@ try {
   });
   await context.route("https://raw.githubusercontent.com/**", async (route) => {
     assert.ok(!route.request().headers().authorization);
+    const pathname = new URL(route.request().url()).pathname;
+    const repository = pathname.split("/")[2];
+    assert.ok(repositories.includes(repository));
     assert.ok(
-      new URL(route.request().url()).pathname.startsWith(
-        "/hugh-zhan9/hugh-image/refs/heads/main/images/",
-      ),
+      pathname.startsWith(`/hugh-zhan9/${repository}/refs/heads/main/images/`),
     );
     const filePath =
-      "images/" +
-      decodeURIComponent(
-        new URL(route.request().url()).pathname.split("/images/")[1],
-      );
-    const file = files.get(filePath);
+      "images/" + decodeURIComponent(pathname.split("/images/")[1]);
+    const file = files.get(`${repository}/${filePath}`);
     if (!file) return route.fulfill({ status: 404 });
     return route.fulfill({
       contentType: filePath.endsWith("webp") ? "image/webp" : "image/png",
@@ -186,18 +207,34 @@ try {
       return canvas.toDataURL("image/png").split(",")[1];
     }),
   );
+  // Existing content remains in the original repository and keeps its URL.
+  const legacyBuffer = Buffer.from(pngs[0], "base64");
+  const legacySha = createHash("sha1")
+    .update(`blob ${legacyBuffer.length}\0`)
+    .update(legacyBuffer)
+    .digest("hex");
+  files.set("hugh-image/images/legacy.png", {
+    buffer: legacyBuffer,
+    sha: legacySha,
+  });
   const uploadFiles = pngs.map((content, i) => ({
     name: i === 0 ? "summer [day].png" : `photo-${i}.png`,
     mimeType: "image/png",
     buffer: Buffer.from(content, "base64"),
   }));
   await page.getByLabel("选择图片文件").setInputFiles(uploadFiles);
+  treeError = true;
+  await page.getByRole("button", { name: "上传 3 张", exact: true }).click();
+  await page.getByRole("alert").filter({ hasText: "500" }).waitFor();
+  assert.equal(writes.length, 0);
+  assert.equal(await page.locator(".queue li").count(), 3);
+  treeError = false;
   await page.getByRole("button", { name: "上传 3 张", exact: true }).click();
   await page
     .getByRole("status")
     .filter({ hasText: "本次 3 张，2 张已入库或已存在，1 张失败。" })
     .waitFor();
-  assert.equal(files.size, 2);
+  assert.equal(files.size, 3);
   assert.equal(writes.length, 3);
   assert.ok(
     !(await page
@@ -210,18 +247,27 @@ try {
     .getByRole("status")
     .filter({ hasText: "本次 1 张，1 张已入库或已存在，0 张失败。" })
     .waitFor();
-  assert.equal(files.size, 3);
+  assert.equal(files.size, 4);
+  assert.ok(writeTargets.includes("hugh-image-02"));
+  assert.ok(writeTargets.includes("hugh-image-03"));
   await page.getByRole("button", { name: "复制全部 Markdown" }).click();
   const clipboard = await page.evaluate(() => navigator.clipboard.readText());
   assert.equal(clipboard.split("\n").length, 3);
   assert.ok(clipboard.includes("summer \\[day\\]"));
   assert.ok(!clipboard.includes(token));
-  assert.equal(
-    clipboard.split(
-      "https://raw.githubusercontent.com/hugh-zhan9/hugh-image/refs/heads/main/images/",
-    ).length,
-    4,
+  const links = clipboard.match(
+    /https:\/\/raw\.githubusercontent\.com\/hugh-zhan9\/hugh-image(?:-0[23])?\/refs\/heads\/main\/images\/[^)]+/g,
   );
+  assert.equal(links.length, 3);
+  for (const link of links) {
+    const url = new URL(link);
+    const repo = url.pathname.split("/")[2];
+    assert.ok(
+      files.has(
+        `${repo}/images/${decodeURIComponent(url.pathname.split("/images/")[1])}`,
+      ),
+    );
+  }
   await page
     .getByRole("button", { name: "预览 summer [day].png", exact: true })
     .click();
@@ -233,7 +279,7 @@ try {
     fullPage: true,
   });
   await page.getByRole("button", { name: "清空队列", exact: true }).click();
-  assert.equal(files.size, 3);
+  assert.equal(files.size, 4);
   // Repeat exactly the same source bytes: deterministic in this browser, no write.
   await page.getByLabel("选择图片文件").setInputFiles(uploadFiles[0]);
   await page.getByRole("button", { name: "上传 1 张", exact: true }).click();
@@ -284,7 +330,19 @@ try {
   );
   await page.getByRole("button", { name: "图片库", exact: true }).click();
   await page.locator(".gallery article").first().waitFor();
-  assert.equal(await page.locator(".gallery article").count(), 3);
+  assert.equal(await page.locator(".gallery article").count(), 4);
+  assert.equal(
+    await page
+      .locator(
+        '.gallery a[href="https://raw.githubusercontent.com/hugh-zhan9/hugh-image/refs/heads/main/images/legacy.png"]',
+      )
+      .count(),
+    1,
+  );
+  assert.deepEqual(files.get("hugh-image/images/legacy.png"), {
+    buffer: legacyBuffer,
+    sha: legacySha,
+  });
   await page.waitForFunction(() =>
     [...document.querySelectorAll(".gallery img")].every(
       (img) => img.naturalWidth > 0,
@@ -305,6 +363,35 @@ try {
   truncated = false;
   await page.getByRole("button", { name: "刷新列表" }).click();
   await page.locator(".gallery article").first().waitFor();
+  // Pagination spans the merged library, including the same path in two repositories.
+  files.set("hugh-image-02/images/legacy.png", {
+    buffer: legacyBuffer,
+    sha: legacySha,
+  });
+  for (let i = 0; i < 60; i++) {
+    files.set(`hugh-image-03/images/page-${i}.png`, {
+      buffer: legacyBuffer,
+      sha: legacySha,
+    });
+  }
+  await page.getByRole("button", { name: "刷新列表" }).click();
+  await page.waitForFunction(
+    () => document.querySelectorAll(".gallery article").length === 60,
+  );
+  await page.getByRole("button", { name: "再显示 60 张" }).click();
+  assert.equal(await page.locator(".gallery article").count(), 65);
+  assert.equal(
+    await page
+      .locator(
+        '.gallery a[href="https://raw.githubusercontent.com/hugh-zhan9/hugh-image-02/refs/heads/main/images/legacy.png"]',
+      )
+      .count(),
+    1,
+  );
+  assert.equal(
+    await page.getByRole("button", { name: "再显示 60 张" }).count(),
+    0,
+  );
   for (const width of [320, 375, 768, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     assert.ok(
@@ -318,7 +405,11 @@ try {
     path: path.join(screenshots, "library-wide.png"),
     fullPage: true,
   });
-  await page.getByRole("button", { name: "清除 Token", exact: true }).click();
+  await page.getByLabel("GitHub Token", { exact: true }).fill("");
+  await page
+    .getByText("连接仓库后，查看已上传图片。", { exact: true })
+    .waitFor();
+  assert.equal(await page.locator(".gallery article").count(), 0);
   assert.equal(
     await page.getByLabel("GitHub Token", { exact: true }).inputValue(),
     "",
@@ -347,7 +438,7 @@ try {
       () => document.documentElement.scrollWidth <= innerWidth + 1,
     ),
   );
-  // Fixed repository connection works even when browser storage is blocked.
+  // Repository pool connection works even when browser storage is blocked.
   const blocked = await context.newPage();
   await blocked.addInitScript(() => {
     Object.defineProperty(window, "localStorage", {
