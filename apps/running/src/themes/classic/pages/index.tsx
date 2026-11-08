@@ -5,12 +5,15 @@ import {
   useCallback,
   useRef,
   useSyncExternalStore,
+  lazy,
+  Suspense,
 } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { Helmet } from 'react-helmet-async';
 import Layout from '@/themes/classic/components/Layout';
 import LocationStat from '@/themes/classic/components/LocationStat';
-import RunMap from '@/themes/classic/components/RunMap';
+import { useRouteActivities } from '@/core/hooks/useRouteActivities';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import RunTable from '@/themes/classic/components/RunTable';
 import SVGStat from '@/themes/classic/components/SVGStat';
 import YearsStat from '@/themes/classic/components/YearsStat';
@@ -42,6 +45,7 @@ import {
 } from '../utils/map';
 
 const HASH_RUN_CHANGE_EVENT = 'running-page-hash-run-change';
+const RunMap = lazy(() => import('../components/RunMap'));
 
 const getRunIdFromHash = () => {
   if (typeof window === 'undefined') return null;
@@ -120,7 +124,7 @@ const Index = () => {
   >(null);
 
   // Memoize expensive calculations
-  const runs = useMemo(() => {
+  const selectedRuns = useMemo(() => {
     return filterAndSortRuns(
       activities,
       currentFilter.item,
@@ -128,6 +132,8 @@ const Index = () => {
       sortDateFunc
     );
   }, [activities, currentFilter.item, currentFilter.func]);
+  const routeState = useRouteActivities(selectedRuns);
+  const runs = routeState.activities;
 
   const geoData = useMemo(() => {
     void themeChangeCounter;
@@ -142,6 +148,24 @@ const Index = () => {
   const [viewState, setViewState] = useState<IViewState>(() => ({
     ...bounds,
   }));
+  const loadedMapScope = useRef<string | null>(null);
+  useEffect(() => {
+    const scope = `${currentFilter.scope}|${selectedTypes.join('-')}`;
+    if (
+      !routeState.pending &&
+      !routeState.error &&
+      loadedMapScope.current !== scope
+    ) {
+      loadedMapScope.current = scope;
+      setViewState(bounds);
+    }
+  }, [
+    routeState.pending,
+    routeState.error,
+    bounds,
+    currentFilter.scope,
+    selectedTypes,
+  ]);
 
   // Add state for animated geoData to handle the animation effect
   const [animatedGeoData, setAnimatedGeoData] = useState(geoData);
@@ -468,15 +492,34 @@ const Index = () => {
       </div>
       <div className="w-full lg:w-2/3" id="map-container">
         <ActivityTypeFilter />
-        <RunMap
-          title={title}
-          viewState={viewState}
-          geoData={animatedGeoData}
-          setViewState={setViewState}
-          changeYear={changeYear}
-          thisYear={year}
-          animationTrigger={animationTrigger}
-        />
+        {routeState.pending && (
+          <p role="status">路线加载中，活动记录已可查看。</p>
+        )}
+        {routeState.error && (
+          <div role="alert">
+            路线加载失败：{routeState.error}{' '}
+            <button onClick={routeState.retry}>重试路线</button>
+          </div>
+        )}
+        <ErrorBoundary>
+          <Suspense
+            fallback={
+              <div className="running-section-status" role="status">
+                正在准备地图，活动记录已可查看。
+              </div>
+            }
+          >
+            <RunMap
+              title={title}
+              viewState={viewState}
+              geoData={animatedGeoData}
+              setViewState={setViewState}
+              changeYear={changeYear}
+              thisYear={year}
+              animationTrigger={animationTrigger}
+            />
+          </Suspense>
+        </ErrorBoundary>
         <TrainingAdvice />
         {year === 'Total' ? (
           <SVGStat />

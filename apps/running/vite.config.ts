@@ -8,6 +8,9 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import yaml from '@modyfi/vite-plugin-yaml';
 import svgr from 'vite-plugin-svgr';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { LoadingShell } from './src/site/LoadingShell';
 
 const colorClassMapping: { [key: string]: string } = {
   '#1a1a1a': 'svg-color-bg',
@@ -22,6 +25,32 @@ const colorClassMapping: { [key: string]: string } = {
 export default defineConfig({
   server: { fs: { allow: [path.resolve(__dirname, '../..')] } },
   plugins: [
+    {
+      name: 'running-loading-shell',
+      transformIndexHtml: {
+        order: 'pre',
+        handler(html) {
+          const css = readFileSync(
+            path.resolve(__dirname, 'src/site/loading.css'),
+            'utf8'
+          );
+          return {
+            html: html.replace(
+              '<div id="root"></div>',
+              `<div id="root">${renderToStaticMarkup(createElement(LoadingShell))}</div>`
+            ),
+            tags: [
+              { tag: 'style', children: css, injectTo: 'head' },
+              {
+                tag: 'script',
+                children: `if (/^\\/running\\/summary\\/\\d{4}(?:\\/|$)/.test(location.pathname)) document.documentElement.dataset.runningStory = 'true';`,
+                injectTo: 'head',
+              },
+            ],
+          };
+        },
+      },
+    },
     {
       name: 'site-appearance',
       transformIndexHtml: {

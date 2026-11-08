@@ -3,6 +3,7 @@ import { resetActivityData } from '../hooks/useActivities';
 
 interface Props {
   children: ReactNode;
+  onRetry?: () => void;
 }
 interface State {
   hasError: boolean;
@@ -30,6 +31,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   private handleRetry = () => {
     resetActivityData();
+    this.props.onRetry?.();
     this.setState({ hasError: false, message: '' });
   };
 
@@ -37,7 +39,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div
-          className="flex min-h-screen flex-col items-center justify-center gap-3"
+          className="running-section-status flex flex-col items-center justify-center gap-3"
           style={{
             backgroundColor: 'var(--color-bg, #0d1117)',
             color: 'var(--color-muted, #8b949e)',

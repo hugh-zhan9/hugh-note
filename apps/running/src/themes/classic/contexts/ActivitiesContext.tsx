@@ -6,7 +6,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { getActivityData } from '@/core/hooks/useActivities';
+import { getActivityIndex } from '@/core/activityIndex';
 import type { Activity } from '../utils/utils';
 import { COUNTRY_STANDARDIZATION } from '@/themes/classic/static/city';
 import {
@@ -88,7 +88,7 @@ export const ActivitiesContext = createContext<ActivitiesContextValue | null>(
 );
 
 export const ActivitiesProvider = ({ children }: { children: ReactNode }) => {
-  const activities = getActivityData();
+  const activities = getActivityIndex();
   const availableTypes = useMemo(
     () => getAvailableActivityTypes(activities),
     [activities]

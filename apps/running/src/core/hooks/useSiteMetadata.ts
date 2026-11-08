@@ -1,12 +1,9 @@
 import siteMetadata from '@/static/site-metadata';
-import {
-  getSummaryYears,
-  getDefaultYearSummaryYear,
-} from '@/utils/yearSummary';
-import { getActivityData } from './useActivities';
+import { getDefaultYearSummaryYear } from '@/utils/yearSummary';
+import { summaryYears } from 'virtual:activity-data';
 
 const getSiteMetadata = () => {
-  const year = getDefaultYearSummaryYear(getSummaryYears(getActivityData()));
+  const year = getDefaultYearSummaryYear(summaryYears);
   const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   return {
     ...siteMetadata,

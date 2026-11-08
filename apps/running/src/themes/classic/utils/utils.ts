@@ -29,6 +29,7 @@ export interface Activity {
   start_date_local: string;
   location_country?: string | null;
   summary_polyline?: string | null;
+  has_route?: boolean;
   average_heartrate?: number | null;
   elevation_gain: number | null;
   average_speed: number;
@@ -46,7 +47,7 @@ const titleForShow = (run: Activity): string => {
     name = run.name;
   }
   return `${name} ${date} ${distance} ${DIST_UNIT} ${
-    !run.summary_polyline ? '(No map data for this run)' : ''
+    !(run.summary_polyline || run.has_route) ? '(No map data for this run)' : ''
   }`;
 };
 

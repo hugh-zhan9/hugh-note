@@ -37,6 +37,16 @@ Python 继续维护 `apps/running/run_page/data.db`、`GPX_OUT` 和 `src/static/
 
 博客偏好优先；没有 `theme-storage` 时，迁移旧跑步 `theme` 的 light/dark 选择。两个应用的布局 CSS 各自维护，跑步不加载 Archie 全局样式。普通跑步页面与地图明暗状态跟随共享选择；年度总结保留源仓库的深色渐变、橙色强调、字体和全屏翻页，不显示站点导航或外观入口，也不改变已保存的主题。普通跑步导航中的「年度总结」复用 metadata 的默认年度逻辑。
 
+## 跑步页面的渐进加载
+
+HTML 和 React 共用带站点导航的页面框架。导航、统计、列表和地图分别等待自己的资源；活动数据失败保留导航，路线失败保留统计与列表，可在出错区域手动重试。年度总结继续使用独立全屏布局。
+
+构建仍导出原来的 `/running/data/activities.json`，供博客及 Dashboard 使用；Classic 改用 `activity-index.<内容哈希>.json`，包含全部历史活动的元信息和 `has_route` 标记，不携带折线。地图和按日路线预览通过同一个资源缓存，按实际选中活动的年份加载 `routes-<年份>.<内容哈希>.json`。全站统计、地区和历史筛选不需要先下载路线。可用年度信息随脚本生成，导航本身不触发活动请求。
+
+页面提前请求活动索引；带内容版本的文件使用标准浏览器缓存，重复组件共享请求。数据变化产生新 URL。快速切换年份后，旧响应不会替换当前范围；未完成的路线不当作没有轨迹。
+
+统一发布流程额外读取当前发布仓库，保留上一版脚本、样式及带版本的数据文件，避免旧页面在发布期间引用到已删除资源。`running/build-assets.json` 只记录本次构建资源，保留范围不会逐代累积，不保留旧 HTML、旧训练报告或已删除文章。构建和普通本地预览不连接发布仓库。
+
 ## 验证
 
 跑步 AI 训练建议和密码解锁的私人报告配置见[跑步 AI 训练建议](running-training.md)。报告在构建时生成，不修改原始活动数据；未配置时只展示统计。
@@ -44,7 +54,7 @@ Python 继续维护 `apps/running/run_page/data.db`、`GPX_OUT` 和 `src/static/
 ```sh
 bash tests/homepage_contract_test.sh
 bash tests/crazy_talk_section_test.sh
-node --test tests/skin_test.cjs tests/site_build_test.mjs tests/running_route_test.cjs tests/site_workflow_test.mjs
+node --test tests/skin_test.cjs tests/site_build_test.mjs tests/running_route_test.cjs tests/site_workflow_test.mjs tests/preserve_running_assets_test.mjs
 pnpm --dir apps/running test
 pnpm --dir apps/running exec tsc --noEmit
 ```
@@ -59,6 +69,7 @@ python -m pytest test_tui_app.py run_page/test_keep_sync.py run_page/test_genera
 
 ```sh
 SITE_TEST_URL=http://127.0.0.1:1313 node tests/site_browser_test.cjs
+SITE_TEST_URL=http://127.0.0.1:1313 node tests/running_loading_browser_test.cjs
 SKIN_TEST_URL=http://127.0.0.1:1313 node tests/skin_browser_test.cjs
 ```
 

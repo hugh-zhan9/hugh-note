@@ -7,6 +7,7 @@ import {
   INDOOR_COLOR,
 } from '../../utils/const';
 import styles from './style.module.css';
+import { useRouteActivities } from '@/core/hooks/useRouteActivities';
 
 interface RoutePreviewProps {
   activities: Activity[];
@@ -14,9 +15,22 @@ interface RoutePreviewProps {
 }
 
 const RoutePreview: React.FC<RoutePreviewProps> = ({
-  activities,
+  activities: input,
   className,
 }) => {
+  const { activities, pending, error, retry } = useRouteActivities(input);
+  if (pending)
+    return (
+      <div className={styles.routePreview} role="status">
+        路线加载中…
+      </div>
+    );
+  if (error)
+    return (
+      <div className={styles.routePreview} role="alert">
+        路线加载失败 <button onClick={retry}>重试路线</button>
+      </div>
+    );
   // Filter activities that have polyline data
   const activitiesWithRoutes = activities.filter(
     (activity) => activity.summary_polyline

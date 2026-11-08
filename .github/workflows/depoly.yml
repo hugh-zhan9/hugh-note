@@ -56,7 +56,7 @@ jobs:
         run: |
           bash tests/homepage_contract_test.sh
           bash tests/crazy_talk_section_test.sh
-          node --test tests/skin_test.cjs tests/site_build_test.mjs tests/running_route_test.cjs tests/site_workflow_test.mjs
+          node --test tests/skin_test.cjs tests/site_build_test.mjs tests/running_route_test.cjs tests/site_workflow_test.mjs tests/preserve_running_assets_test.mjs
           pnpm --dir apps/running test
           pnpm --dir apps/running exec tsc --noEmit
       - name: Build all applications
@@ -73,6 +73,19 @@ jobs:
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         id: head
         run: bash scripts/check-publish-head.sh >> "$GITHUB_OUTPUT"
+      - name: Read previous published assets
+        if: steps.head.outputs.current == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: hugh-zhan9/hugh-zhan9.github.io
+          ref: main
+          path: .previous-site
+          persist-credentials: false
+          sparse-checkout: |
+            running
+      - name: Keep one previous generation of running assets
+        if: steps.head.outputs.current == 'true'
+        run: node scripts/preserve-running-assets.mjs dist/site/running .previous-site/running
       - name: Publish complete site
         if: steps.head.outputs.current == 'true'
         uses: peaceiris/actions-gh-pages@v4

@@ -70,8 +70,6 @@ const RoutePreview = lazy(loadRoutePreview);
 const loadActivityChart = () => import('./ActivityChart');
 const ActivityChart = lazy(loadActivityChart);
 
-void loadActivityChart();
-
 const MonthOfLifeSvg = (sportType: string) => {
   const path = sportType === 'all' ? './mol.svg' : `./mol_${sportType}.svg`;
   return lazy(() => loadSvgComponent(totalStat, path));

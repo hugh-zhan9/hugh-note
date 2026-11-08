@@ -15,3 +15,9 @@ declare module '*.svg' {
   import type { FunctionComponent, SVGProps } from 'react';
   export const ReactComponent: FunctionComponent<SVGProps<SVGSVGElement>>;
 }
+
+declare module 'virtual:activity-data' {
+  export const indexUrl: string;
+  export const routeUrls: Record<string, string>;
+  export const summaryYears: string[];
+}

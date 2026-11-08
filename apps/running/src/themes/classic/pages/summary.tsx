@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, Navigate, useParams } from 'react-router-dom';
-import { getActivityData } from '@/core/hooks/useActivities';
+import { getActivityIndex } from '@/core/activityIndex';
 import useSiteMetadata from '@/hooks/useSiteMetadata';
 import styles from './summary.module.css';
 import {
@@ -151,7 +151,7 @@ const MobilePager = ({
 );
 
 const SummaryRoutePage = () => {
-  const activities = getActivityData();
+  const activities = getActivityIndex();
   const SUMMARY_YEARS = getSummaryYears(activities);
   const { year } = useParams();
   const latestYear = SUMMARY_YEARS.at(-1) ?? null;
