@@ -2,13 +2,14 @@
 title: "【翻译】使用 agents 工作时需要的批判性思维"
 draft: false
 date: 2026-11-13T16:25:45+08:00
-description: "翻译 Critical thinking when agents do the work"
+description: "翻译 [Critical thinking when agents do the work](https://x.com/addyosmani/article/2117512471930167377)"
 tags: [agent, 翻译, AI]
 ---
 
 # 使用 agents 工作时需要的批判性思维
 
 > 原文链接：<https://x.com/addyosmani/article/2117512471930167377>
+>
 > 作者：[Addy Osmani](https://x.com/addyosmani)
 
 Back in the day, critical thinking was taught as approaching new info with humble curiosity and a healthy dose of skepticism - take in different views, form your own opinion. Still true, but increasingly, nothing in my day-to-day forces critical thinking on me now that so much of my work runs through agents. For the engineers and product people who have fully bought into agentic workflows (running multiple sessions in parallel and expecting the models to improve), I'm here to say: I'm a big fan of these tools. I'm not writing this to advocate for less agentic workflows.
@@ -35,9 +36,7 @@ Part of the reason it's hard to self-correct for this is that agentic workflows 
 
 > 其中一个原因是代理工作流程很舒适。在繁忙的一天中，获得快速、愉悦且通常正确的答案令人耳目一新，但这也是为什么你容易放松警惕。
 
-## Offloading, deferral and surrender
-
-## 外包、推迟与放弃
+## Offloading, deferral and surrender /。外包、推迟与放弃
 
 When discussing this with people, I describe it as a spectrum:
 
