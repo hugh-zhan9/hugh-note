@@ -3,7 +3,7 @@ title: "【翻译】使用 agents 工作时需要的批判性思维"
 draft: false
 date: 2026-11-13T16:25:45+08:00
 description: "翻译 [Critical thinking when agents do the work](https://x.com/addyosmani/article/2117512471930167377)"
-tags: [agent, 翻译, AI]
+tags: [翻译, agent, AI]
 ---
 
 # 使用 agents 工作时需要的批判性思维
