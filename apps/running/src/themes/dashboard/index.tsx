@@ -20,7 +20,6 @@ import { ProfileCard } from '@/components/ProfileCard';
 import { PersonalBest } from '@/components/PersonalBest';
 import { TracksPage } from '@/components/TracksPage';
 import { ChinaMap } from '@/components/ChinaMap';
-import { TrainingAdvice } from '@/components/TrainingAdvice';
 
 type Page = 'home' | 'tracks';
 
@@ -80,7 +79,6 @@ function Dashboard() {
                 filter={filter}
                 onSelectActivity={setSelectedActivity}
               />
-              <TrainingAdvice />
               <ActivityLog
                 activities={filtered}
                 years={years}

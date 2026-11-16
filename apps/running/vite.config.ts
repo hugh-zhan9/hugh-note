@@ -1,7 +1,6 @@
 import process from 'node:process';
 import { readFileSync } from 'node:fs';
 import { activityDataPlugin } from './plugins/activity-data';
-import { trainingReportPlugin } from './plugins/training-report';
 import path from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -74,7 +73,6 @@ export default defineConfig({
       },
     },
     activityDataPlugin(path.resolve(__dirname, 'src/static/activities.json')),
-    trainingReportPlugin(path.resolve(__dirname, 'src/static/activities.json')),
     react(),
     tailwindcss(),
     yaml(),

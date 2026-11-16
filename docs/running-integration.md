@@ -49,8 +49,6 @@ HTML 和 React 共用带站点导航的页面框架。导航、统计、列表�
 
 ## 验证
 
-跑步 AI 训练建议和密码解锁的私人报告配置见[跑步 AI 训练建议](running-training.md)。报告在构建时生成，不修改原始活动数据；未配置时只展示统计。
-
 ```sh
 bash tests/homepage_contract_test.sh
 bash tests/crazy_talk_section_test.sh

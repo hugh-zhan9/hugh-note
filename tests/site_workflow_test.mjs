@@ -83,14 +83,13 @@ test('all publishers use the serialized workflow and its current-main gate',asyn
   assert.match(sync,/vars.RUNNING_SYNC_ENABLED == 'true'/);
   assert.doesNotMatch(sync,/continue-on-error|actions-gh-pages|actions\/deploy-pages/);
 });
-test('training secrets are gated to main non-PR builds and never exposed as Vite variables',async()=>{
+test('site publishing no longer injects AI training configuration or report secrets',async()=>{
   const deploy=await readFile(path.join(repository,'.github/workflows/depoly.yml'),'utf8');
-  for(const secret of ['RUNNING_AI_API_KEY','RUNNING_REPORT_PASSWORD','RUNNING_AI_PRIVATE_CONTEXT']) {
-    const line=deploy.split('\n').find(line=>line.trimStart().startsWith(secret+':'));
-    assert.ok(line);
-    assert.ok(line.includes("github.event_name != 'pull_request' && github.ref == 'refs/heads/main'"));
-    assert.ok(line.includes('secrets.'+secret));
-    assert.ok(!deploy.includes('VITE_'+secret));
-  }
-  assert.match(deploy,/vars.RUNNING_AI_ENABLED == 'true'/);
+  assert.doesNotMatch(deploy,/RUNNING_AI_|RUNNING_REPORT_PASSWORD/);
 });
+for(const file of ['src/themes/classic/pages/index.tsx','src/themes/dashboard/index.tsx','vite.config.ts']) {
+  test(`running entry ${file} no longer loads AI training advice or report generation`,async()=>{
+    const source=await readFile(path.join(repository,'apps/running',file),'utf8');
+    assert.doesNotMatch(source,/TrainingAdvice|trainingReportPlugin|training-report/);
+  });
+}

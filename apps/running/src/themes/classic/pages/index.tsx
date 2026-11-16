@@ -18,7 +18,6 @@ import RunTable from '@/themes/classic/components/RunTable';
 import SVGStat from '@/themes/classic/components/SVGStat';
 import YearsStat from '@/themes/classic/components/YearsStat';
 import ActivityTypeFilter from '@/themes/classic/components/ActivityTypeFilter';
-import { TrainingAdvice } from '@/components/TrainingAdvice';
 import useActivities from '@/themes/classic/hooks/useActivities';
 import getSiteMetadata from '@/hooks/useSiteMetadata';
 import { useInterval } from '@/hooks/useInterval';
@@ -520,7 +519,6 @@ const Index = () => {
             />
           </Suspense>
         </ErrorBoundary>
-        <TrainingAdvice />
         {year === 'Total' ? (
           <SVGStat />
         ) : (
