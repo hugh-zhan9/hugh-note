@@ -11,7 +11,7 @@ services:
     restart: always
     environment:
       - MINIO_ROOT_USER=homes4
-      - MINIO_ROOT_PASSWORD=aiy0ooCheephai0ohNahmu3Aijee6eiv
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD}
       - MINIO_DEFAULT_BUCKETS=homes4
     ports:
       - '9000:9000'
@@ -167,9 +167,9 @@ curl "http://localhost:2019/load" -H "Content-Type: text/caddyfile" --data-binar
 
 ```bash
 # 内网
-mc alias set home http://100.90.80.2:9000 homes4 aiy0ooCheephai0ohNahmu3Aijee6eiv
+mc alias set home http://100.90.80.2:9000 homes4 "${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD}"
 # 外网
-mc alias set home https://域名 homes4 aiy0ooCheephai0ohNahmu3Aijee6eiv
+mc alias set home https://域名 homes4 "${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD}"
 ```
 
 更多场景可结合 [restic](https://blog.ysicing.net/backup-restic)，rclone，[下载服务](https://blog.ysicing.net/docker-aria2-pro)等
